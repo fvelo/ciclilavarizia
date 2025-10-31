@@ -1,0 +1,6 @@
+@Ciclilavarizia_HostAddress = http://localhost:5244
+
+GET {{Ciclilavarizia_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
