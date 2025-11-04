@@ -1,4 +1,7 @@
 
+using Ciclilavarizia.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Ciclilavarizia
 {
     public class Program
@@ -13,6 +16,10 @@ namespace Ciclilavarizia
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            //db connection
+            builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
+                o.UseSqlServer(builder.Configuration.GetConnectionString("AdventureWorksLTDbHomelab")));
 
             var app = builder.Build();
 

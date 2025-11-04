@@ -1,0 +1,180 @@
+############################
+# .NET / ASP.NET Core
+############################
+bin/
+obj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Ll]og/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+*.pidb
+*.svclog
+*.userprefs
+
+# Avoid publishing temp folders
+[Tt]est[Rr]esult*/
+[Aa]pp_Data/
+*.dbmdl
+*.bak
+*.mdf
+*.ldf
+
+# Entity Framework Migrations backups
+Migrations/obj/
+*.Designer.cs
+
+############################
+# Visual Studio
+############################
+.vs/
+*.psess
+*.vsp
+*.vspx
+*.vspscc
+*.vssscc
+*.cachefile
+*.ncb
+*.opensdf
+*.sdf
+*.db
+
+############################
+# Visual Studio Code
+############################
+.vscode/
+.history/
+.idea/
+*.code-workspace
+
+############################
+# OS generated files
+############################
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+############################
+# Configuration & Secrets
+############################
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+*.key
+*.pem
+*.pfx
+*.cer
+*.crt
+
+# Environment files
+.env
+.env.*
+
+############################
+# User-specific files
+############################
+*.swp
+*.swo
+*.tmp
+*.temp
+~$*
+*.orig
+*.bak
+
+############################
+# Build / Publish output
+############################
+/publish/
+/dist/
+/artifacts/
+/wwwroot/lib/
+/wwwroot/dist/
+/coverage/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tgz
+
+############################
+# Docker / Containers
+############################
+**/Dockerfile.*
+**/docker-compose*.yml
+**/docker-compose*.override.yml
+**/docker-compose*.local.yml
+**/.dockerignore
+**/compose/
+*.tar
+*.img
+
+############################
+# Rider / JetBrains
+############################
+.idea/
+*.iml
+*.iws
+out/
+
+############################
+# Testing & Coverage
+############################
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.coverlet.json
+
+############################
+# ReSharper
+############################
+_ReSharper*/
+*.DotSettings.user
+
+############################
+# Package managers
+############################
+*.nupkg
+*.snupkg
+*.nuspec
+*.psmdcp
+project.lock.json
+project.fragment.lock.json
+artifacts/
+packages/
+*.Cache/
+.nuget/
+*.nuget.props
+*.nuget.targets
+
+############################
+# Temporary files
+############################
+~$*
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.orig
+*.rej
+
+############################
+# SQLite / Local DBs (optional)
+############################
+*.sqlite
+*.sqlite3
+*.db
+
+############################
+# Rider & JetBrains settings
+############################
+.idea/
+*.DotSettings
