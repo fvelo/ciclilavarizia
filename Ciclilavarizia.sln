@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ciclilavarizia", "Ciclilava
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonCiclilavarizia", "CommonCiclilavarizia\CommonCiclilavarizia.csproj", "{8E461FC5-0414-4D58-BDD0-74BE390B89C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{79021B8D-032F-4FD0-A0CE-08D6DFC5EF36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79021B8D-032F-4FD0-A0CE-08D6DFC5EF36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79021B8D-032F-4FD0-A0CE-08D6DFC5EF36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79021B8D-032F-4FD0-A0CE-08D6DFC5EF36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79021B8D-032F-4FD0-A0CE-08D6DFC5EF36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

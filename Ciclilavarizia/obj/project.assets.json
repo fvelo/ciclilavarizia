@@ -2893,6 +2893,29 @@
             "rid": "win"
           }
         }
+      },
+      "CommonCiclilavarizia/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/CommonCiclilavarizia.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CommonCiclilavarizia.dll": {}
+        }
+      },
+      "DataAccessLayer/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "Microsoft.Data.SqlClient": "5.1.6"
+        },
+        "compile": {
+          "bin/placeholder/DataAccessLayer.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/DataAccessLayer.dll": {}
+        }
       }
     }
   },
@@ -8182,10 +8205,22 @@
         "system.windows.extensions.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "CommonCiclilavarizia/1.0.0": {
+      "type": "project",
+      "path": "../CommonCiclilavarizia/CommonCiclilavarizia.csproj",
+      "msbuildProject": "../CommonCiclilavarizia/CommonCiclilavarizia.csproj"
+    },
+    "DataAccessLayer/1.0.0": {
+      "type": "project",
+      "path": "../DataAccessLayer/DataAccessLayer.csproj",
+      "msbuildProject": "../DataAccessLayer/DataAccessLayer.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
+      "CommonCiclilavarizia >= 1.0.0",
+      "DataAccessLayer >= 1.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.10",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.10",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.11",
@@ -8224,7 +8259,14 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj": {
+              "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj"
+            },
+            "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj": {
+              "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

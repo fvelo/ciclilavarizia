@@ -286,3 +286,7 @@ C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizi
 C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Windows.Extensions.dll
+C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\CommonCiclilavarizia.dll
+C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\DataAccessLayer.dll
+C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\CommonCiclilavarizia.pdb
+C:\Users\velof\source\repos\Academy-betacom\backend\Ciclilavarizia\Ciclilavarizia\bin\Debug\net8.0\DataAccessLayer.pdb

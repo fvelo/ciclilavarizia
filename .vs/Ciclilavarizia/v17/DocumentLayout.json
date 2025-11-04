@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\controllers\\productscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -11,35 +15,23 @@
       "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\data\\adventureworksltcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\data\\adventureworksltcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\models\\customer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\models\\customer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\models\\address.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\models\\address.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\models\\candpstore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\models\\candpstore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\velof\\AppData\\Roaming\\Microsoft\\UserSecrets\\77558fdc-78ba-4ddc-a8d2-5c91a64be5ef\\secrets.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8E461FC5-0414-4D58-BDD0-74BE390B89C8}|CommonCiclilavarizia\\CommonCiclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\commonciclilavarizia\\encryptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8E461FC5-0414-4D58-BDD0-74BE390B89C8}|CommonCiclilavarizia\\CommonCiclilavarizia.csproj|solutionrelative:commonciclilavarizia\\encryptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\models\\dtos\\addressdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\models\\dtos\\addressdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\models\\servicesextentions\\dbsecureserviceextention.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\models\\servicesextentions\\dbsecureserviceextention.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\ciclilavarizia.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\ciclilavarizia.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|c:\\users\\velof\\source\\repos\\academy-betacom\\backend\\ciclilavarizia\\ciclilavarizia\\blogic\\candpstore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}|Ciclilavarizia\\Ciclilavarizia.csproj|solutionrelative:ciclilavarizia\\blogic\\candpstore.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -49,7 +41,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -57,128 +49,106 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "CustomersController.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\CustomersController.cs",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Controllers\\CustomersController.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\CustomersController.cs",
-              "RelativeToolTip": "Ciclilavarizia\\Controllers\\CustomersController.cs",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAcwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T15:58:00.037Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "AdventureWorksLTContext.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Data\\AdventureWorksLTContext.cs",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Data\\AdventureWorksLTContext.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Data\\AdventureWorksLTContext.cs",
-              "RelativeToolTip": "Ciclilavarizia\\Data\\AdventureWorksLTContext.cs",
-              "ViewState": "AgIAACgAAAAAAAAAAAAUwEMAAABOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T15:55:19.076Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Customer.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Customer.cs",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Customer.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Customer.cs",
-              "RelativeToolTip": "Ciclilavarizia\\Models\\Customer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T15:55:08.779Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Address.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Address.cs",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Address.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Address.cs",
-              "RelativeToolTip": "Ciclilavarizia\\Models\\Address.cs",
-              "ViewState": "AgIAADgAAAAAAAAAAAAuwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T15:54:51.457Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
               "Title": "secrets.json",
               "DocumentMoniker": "C:\\Users\\velof\\AppData\\Roaming\\Microsoft\\UserSecrets\\77558fdc-78ba-4ddc-a8d2-5c91a64be5ef\\secrets.json",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\77558fdc-78ba-4ddc-a8d2-5c91a64be5ef\\secrets.json",
               "ToolTip": "C:\\Users\\velof\\AppData\\Roaming\\Microsoft\\UserSecrets\\77558fdc-78ba-4ddc-a8d2-5c91a64be5ef\\secrets.json",
               "RelativeToolTip": "..\\..\\..\\..\\..\\AppData\\Roaming\\Microsoft\\UserSecrets\\77558fdc-78ba-4ddc-a8d2-5c91a64be5ef\\secrets.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-04T15:36:24.177Z",
+              "WhenOpened": "2025-11-04T17:37:16.608Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\appsettings.json",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\appsettings.json",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\appsettings.json",
-              "RelativeToolTip": "Ciclilavarizia\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-04T07:35:52.841Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "launchSettings.json",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Properties\\launchSettings.json",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Properties\\launchSettings.json",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Properties\\launchSettings.json",
-              "RelativeToolTip": "Ciclilavarizia\\Properties\\launchSettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-04T07:35:48.813Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Ciclilavarizia.csproj",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Ciclilavarizia.csproj",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
-              "RelativeToolTip": "Ciclilavarizia\\Ciclilavarizia.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-11-04T07:35:28.234Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "EncryptionHandler.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\EncryptionHandler.cs",
-              "RelativeDocumentMoniker": "CommonCiclilavarizia\\EncryptionHandler.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\EncryptionHandler.cs",
-              "RelativeToolTip": "CommonCiclilavarizia\\EncryptionHandler.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAAAUwJgAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "ProductsController.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\ProductsController.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Controllers\\ProductsController.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\ProductsController.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Controllers\\ProductsController.cs",
+              "ViewState": "AgIAAIIAAAAAAAAAAAAcwA0BAACoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T13:51:20.949Z"
+              "WhenOpened": "2025-11-04T17:35:34.301Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "CustomersController.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\CustomersController.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Controllers\\CustomersController.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\CustomersController.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Controllers\\CustomersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T17:33:33.419Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AddressDto.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\AddressDto.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Dtos\\AddressDto.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\AddressDto.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Models\\Dtos\\AddressDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T17:32:51.723Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Program.cs",
               "RelativeDocumentMoniker": "Ciclilavarizia\\Program.cs",
               "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Program.cs",
               "RelativeToolTip": "Ciclilavarizia\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAABHAAAAAAAAAA==",
+              "ViewState": "AgIAACkAAAAAAAAAAAAkwDwAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T13:50:51.296Z",
+              "WhenOpened": "2025-11-04T17:30:17.778Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DbSecureServiceExtention.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\ServicesExtentions\\DbSecureServiceExtention.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\ServicesExtentions\\DbSecureServiceExtention.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\ServicesExtentions\\DbSecureServiceExtention.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Models\\ServicesExtentions\\DbSecureServiceExtention.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T17:29:59.937Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CAndPStore.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\CAndPStore.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\CAndPStore.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\CAndPStore.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Models\\CAndPStore.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T17:29:51.608Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "CAndPStore.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\BLogic\\CAndPStore.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\BLogic\\CAndPStore.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\BLogic\\CAndPStore.cs",
+              "RelativeToolTip": "Ciclilavarizia\\BLogic\\CAndPStore.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-04T17:29:46.353Z",
               "EditorCaption": ""
             }
           ]
