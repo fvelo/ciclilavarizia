@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36511.14 d17.14
+VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ciclilavarizia", "Ciclilavarizia\Ciclilavarizia.csproj", "{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonCiclilavarizia", "CommonCiclilavarizia\CommonCiclilavarizia.csproj", "{8E461FC5-0414-4D58-BDD0-74BE390B89C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06A6B488-997C-4A07-9DF6-B01BDDB5D2E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E461FC5-0414-4D58-BDD0-74BE390B89C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

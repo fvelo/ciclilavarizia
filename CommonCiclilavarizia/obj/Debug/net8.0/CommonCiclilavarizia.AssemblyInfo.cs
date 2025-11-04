@@ -11,13 +11,12 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("77558fdc-78ba-4ddc-a8d2-5c91a64be5ef")]
-[assembly: System.Reflection.AssemblyCompanyAttribute("Ciclilavarizia")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("CommonCiclilavarizia")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca27990d34d22ff847e0d3d69874647f2abc6837")]
-[assembly: System.Reflection.AssemblyProductAttribute("Ciclilavarizia")]
-[assembly: System.Reflection.AssemblyTitleAttribute("Ciclilavarizia")]
+[assembly: System.Reflection.AssemblyProductAttribute("CommonCiclilavarizia")]
+[assembly: System.Reflection.AssemblyTitleAttribute("CommonCiclilavarizia")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Generato dalla classe WriteCodeFragment di MSBuild.

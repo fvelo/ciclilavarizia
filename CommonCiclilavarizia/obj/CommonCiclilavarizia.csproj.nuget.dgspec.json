@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj": {}
+    "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj": {}
   },
   "projects": {
-    "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj": {
+    "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
-        "projectName": "Ciclilavarizia",
-        "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
+        "projectUniqueName": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj",
+        "projectName": "CommonCiclilavarizia",
+        "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj",
         "packagesPath": "C:\\Users\\velof\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\obj\\",
+        "outputPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,22 +49,6 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.EntityFrameworkCore.Design": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[9.0.10, )"
-            },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[9.0.10, )"
-            },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[6.6.2, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",
@@ -77,9 +61,6 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
-            "Microsoft.AspNetCore.App": {
-              "privateAssets": "none"
-            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
