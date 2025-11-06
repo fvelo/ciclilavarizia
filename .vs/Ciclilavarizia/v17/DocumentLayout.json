@@ -53,37 +53,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{56df62a4-05a3-4e5b-aa1a-99371ccfb997}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "CustomerAddressDto.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
-              "RelativeToolTip": "Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T16:17:49.909Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CustomerDto.cs",
-              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
-              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
-              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
-              "RelativeToolTip": "Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAfAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-05T16:17:45.639Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -129,10 +103,34 @@
               "RelativeDocumentMoniker": "Ciclilavarizia\\Controllers\\CustomersController.cs",
               "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Controllers\\CustomersController.cs",
               "RelativeToolTip": "Ciclilavarizia\\Controllers\\CustomersController.cs",
-              "ViewState": "AgIAAEcBAAAAAAAAAAAUwFgBAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAM0BAAAAAAAAAAAAANsBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-04T17:33:33.419Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CustomerDto.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Models\\Dtos\\CustomerDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-05T16:17:45.639Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CustomerAddressDto.cs",
+              "DocumentMoniker": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
+              "RelativeDocumentMoniker": "Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
+              "ToolTip": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
+              "RelativeToolTip": "Ciclilavarizia\\Models\\Dtos\\CustomerAddressDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-05T16:17:49.909Z"
             },
             {
               "$type": "Document",
@@ -144,8 +142,7 @@
               "RelativeToolTip": "Ciclilavarizia\\Models\\Dtos\\AddressDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-04T17:32:51.723Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-04T17:32:51.723Z"
             },
             {
               "$type": "Document",

@@ -317,84 +317,222 @@ namespace Ciclilavarizia.Controllers
             }
             return Results.NoContent();
         }
+        // V0
+        //[HttpPut("listActions/{customerId}")]
+        //public IResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
+        //{
+        //    try
+        //    {
+        //        if (customer.CustomerId != customerId) return Results.BadRequest(); // questa sembra essere una best practrice di controllo
 
+        //        CustomerDto? _customer = store._customers
+        //            .Where(c => c.CustomerId == customerId)
+        //            .FirstOrDefault();
+        //        if (_customer == null) return Results.BadRequest();
+        //        if (customer == null) return Results.BadRequest();
+        //        Console.WriteLine($"Old Customer: {_customer}");
+
+
+        //        if (!customer.Title.IsNullOrEmpty())
+        //        {
+        //            _customer.Title = customer.Title;
+        //        }
+        //        if (!customer.FirstName.IsNullOrEmpty())
+        //        {
+        //            _customer.FirstName = customer.FirstName;
+        //        }
+        //        if (!customer.MiddleName.IsNullOrEmpty())
+        //        {
+        //            _customer.MiddleName = customer.MiddleName;
+        //        }
+        //        if (!customer.LastName.IsNullOrEmpty())
+        //        {
+        //            _customer.LastName = customer.LastName;
+        //        }
+        //        if (!customer.Suffix.IsNullOrEmpty())
+        //        {
+        //            _customer.Suffix = customer.Suffix;
+        //        }
+        //        if (!customer.CompanyName.IsNullOrEmpty())
+        //        {
+        //            _customer.CompanyName = customer.CompanyName;
+        //        }
+        //        if (!customer.SalesPerson.IsNullOrEmpty())
+        //        {
+        //            _customer.SalesPerson = customer.SalesPerson;
+        //        }
+        //        for (int i = 0; i < _customer.CustomerAddresses.Count(); i++)
+        //        {
+        //            if (customer.CustomerAddresses.ElementAt(i) == null) continue;
+        //            var customerAddress = customer.CustomerAddresses.ElementAt(i);
+
+        //            var _customerAddress = _customer.CustomerAddresses.ElementAt(i);
+
+        //            if (!customerAddress.AddressType.IsNullOrEmpty())
+        //            {
+        //                _customerAddress.AddressType = customerAddress.AddressType;
+        //            }
+
+        //            if (!customerAddress.Address.AddressLine1.IsNullOrEmpty())
+        //            {
+        //                _customerAddress.Address.AddressLine1 = customerAddress.Address.AddressLine1;
+        //            }
+        //            if (!customerAddress.Address.City.IsNullOrEmpty())
+        //            {
+        //                _customerAddress.Address.City = customerAddress.Address.City;
+        //            }
+        //            if (!customerAddress.Address.StateProvince.IsNullOrEmpty())
+        //            {
+        //                _customerAddress.Address.StateProvince = customerAddress.Address.StateProvince;
+        //            }
+        //            if (!customerAddress.Address.CountryRegion.IsNullOrEmpty())
+        //            {
+        //                _customerAddress.Address.CountryRegion = customerAddress.Address.CountryRegion;
+        //            }
+        //            if (!customerAddress.Address.PostalCode.IsNullOrEmpty())
+        //            {
+        //                _customerAddress.Address.PostalCode = customerAddress.Address.PostalCode;
+        //            }
+        //        }
+        //        Console.WriteLine($"New Customer: {_customer}");
+
+
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Results.Problem();
+        //    }
+        //    return Results.NoContent();
+        //}
         [HttpPut("listActions/{customerId}")]
         public IResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
         {
             try
             {
-                if (customer.CustomerId != customerId) return Results.BadRequest(); // questa sembra essere una best practrice di controllo
+                var incomingCustomer = customer; // more readable
+                if (incomingCustomer.CustomerId != customerId) return Results.BadRequest(); // questa sembra essere una best practrice di controllo
 
-                CustomerDto? _customer = store._customers
+                CustomerDto? existingCustomer = store._customers
                     .Where(c => c.CustomerId == customerId)
                     .FirstOrDefault();
-                if (_customer == null) return Results.BadRequest();
-                if (customer == null) return Results.BadRequest();
-                Console.WriteLine($"Old Customer: {_customer}");
+                if (existingCustomer == null) return Results.BadRequest();
+                if (incomingCustomer == null) return Results.BadRequest();
+                Console.WriteLine($"Old Customer: {existingCustomer}");
 
 
-                if (!customer.Title.IsNullOrEmpty())
+                if (!incomingCustomer.Title.IsNullOrEmpty())
                 {
-                    _customer.Title = customer.Title;
+                    existingCustomer.Title = incomingCustomer.Title;
                 }
-                if (!customer.FirstName.IsNullOrEmpty())
+                if (!incomingCustomer.FirstName.IsNullOrEmpty())
                 {
-                    _customer.FirstName = customer.FirstName;
+                    existingCustomer.FirstName = incomingCustomer.FirstName;
                 }
-                if (!customer.MiddleName.IsNullOrEmpty())
+                if (!incomingCustomer.MiddleName.IsNullOrEmpty())
                 {
-                    _customer.MiddleName = customer.MiddleName;
+                    existingCustomer.MiddleName = incomingCustomer.MiddleName;
                 }
-                if (!customer.LastName.IsNullOrEmpty())
+                if (!incomingCustomer.LastName.IsNullOrEmpty())
                 {
-                    _customer.LastName = customer.LastName;
+                    existingCustomer.LastName = incomingCustomer.LastName;
                 }
-                if (!customer.Suffix.IsNullOrEmpty())
+                if (!incomingCustomer.Suffix.IsNullOrEmpty())
                 {
-                    _customer.Suffix = customer.Suffix;
+                    existingCustomer.Suffix = incomingCustomer.Suffix;
                 }
-                if (!customer.CompanyName.IsNullOrEmpty())
+                if (!incomingCustomer.CompanyName.IsNullOrEmpty())
                 {
-                    _customer.CompanyName = customer.CompanyName;
+                    existingCustomer.CompanyName = incomingCustomer.CompanyName;
                 }
-                if (!customer.SalesPerson.IsNullOrEmpty())
+                if (!incomingCustomer.SalesPerson.IsNullOrEmpty())
                 {
-                    _customer.SalesPerson = customer.SalesPerson;
+                    existingCustomer.SalesPerson = incomingCustomer.SalesPerson;
                 }
-                for (int i = 0; i < _customer.CustomerAddresses.Count(); i++)
-                {
-                    if (customer.CustomerAddresses.ElementAt(i) == null) continue;
-                    var customerAddress = customer.CustomerAddresses.ElementAt(i);
 
-                    var _customerAddress = _customer.CustomerAddresses.ElementAt(i);
+                // assume _customer already resolved and 'customer' is the incoming DTO
+                // handle addresses:
+                var incomingAddresses = incomingCustomer.CustomerAddresses ?? new List<CustomerAddressDto>();
+                var existingAddresses = existingCustomer.CustomerAddresses ?? new List<CustomerAddressDto>();
 
-                    if (!customerAddress.AddressType.IsNullOrEmpty())
-                    {
-                        _customerAddress.AddressType = customerAddress.AddressType;
-                    }
+                // fast lookup with dictionary of existing addresses by id
+                var existingById = existingAddresses.ToDictionary(a => a.AddressId);
 
-                    if (!customerAddress.Address.AddressLine1.IsNullOrEmpty())
-                    {
-                        _customerAddress.Address.AddressLine1 = customerAddress.Address.AddressLine1;
-                    }
-                    if (!customerAddress.Address.City.IsNullOrEmpty())
-                    {
-                        _customerAddress.Address.City = customerAddress.Address.City;
-                    }
-                    if (!customerAddress.Address.StateProvince.IsNullOrEmpty())
-                    {
-                        _customerAddress.Address.StateProvince = customerAddress.Address.StateProvince;
-                    }
-                    if (!customerAddress.Address.CountryRegion.IsNullOrEmpty())
-                    {
-                        _customerAddress.Address.CountryRegion = customerAddress.Address.CountryRegion;
-                    }
-                    if (!customerAddress.Address.PostalCode.IsNullOrEmpty())
-                    {
-                        _customerAddress.Address.PostalCode = customerAddress.Address.PostalCode;
-                    }
+                
+                if (!incomingAddresses.Any()) // If incoming is empty allora clear all existing addresses
+                {
+                    existingCustomer.CustomerAddresses.Clear();
                 }
-                Console.WriteLine($"New Customer: {_customer}");
+                else
+                {
+                    // Track which existing ids are present in the incoming payload
+                    var incomingIds = new HashSet<int>();
+
+                    foreach (var incomingAddr in incomingAddresses)
+                    {
+                        // if AddressId is present and matches an existing address -> update fields
+                        if (incomingAddr.AddressId != 0 && existingById.TryGetValue(incomingAddr.AddressId, out var existAddr))
+                        {
+                            incomingIds.Add(incomingAddr.AddressId);
+
+                            // update AddressType
+                            if (!string.IsNullOrWhiteSpace(incomingAddr.AddressType))
+                                existAddr.AddressType = incomingAddr.AddressType;
+
+                            // ensure nested AddressDto exists
+                            if (existAddr.Address == null)
+                                existAddr.Address = new AddressDto();
+
+                            if (incomingAddr.Address != null)
+                            {
+                                // update nested fields only when provided
+                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.AddressLine1))
+                                    existAddr.Address.AddressLine1 = incomingAddr.Address.AddressLine1;
+                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.City))
+                                    existAddr.Address.City = incomingAddr.Address.City;
+                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.StateProvince))
+                                    existAddr.Address.StateProvince = incomingAddr.Address.StateProvince;
+                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.CountryRegion))
+                                    existAddr.Address.CountryRegion = incomingAddr.Address.CountryRegion;
+                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.PostalCode))
+                                    existAddr.Address.PostalCode = incomingAddr.Address.PostalCode;
+                            }
+                        }
+                        else
+                        {
+                            // New address (no id or id not found) -> validate minimal fields then add
+                            int newId = (existingAddresses.Any() ? existingAddresses.Max(a => a.AddressId) : 0) + 1; // se esiste un address nel customer then I add 1, if not 0 WORKS ONLY BECAUSE ARE LIST AND NOT DB
+
+                            var addrToAdd = new CustomerAddressDto
+                            {
+                                AddressId = newId,
+                                AddressType = incomingAddr.AddressType ?? string.Empty,
+                                Address = new AddressDto
+                                {
+                                    AddressLine1 = incomingAddr.Address?.AddressLine1 ?? string.Empty,
+                                    City = incomingAddr.Address?.City ?? string.Empty,
+                                    StateProvince = incomingAddr.Address?.StateProvince ?? string.Empty,
+                                    CountryRegion = incomingAddr.Address?.CountryRegion ?? string.Empty,
+                                    PostalCode = incomingAddr.Address?.PostalCode ?? string.Empty
+                                }
+                            };
+
+                            existingAddresses.Add(addrToAdd); // also updates the existing list reference inside _customer
+                            existingById[addrToAdd.AddressId] = addrToAdd;
+                            incomingIds.Add(addrToAdd.AddressId);
+                        }
+                    }
+
+                    // 3) Remove existing addresses that are not listed in incomingIds
+                    // Build a list of addresses to remove to avoid mutating collection while iterating
+                    var toRemove = existingAddresses.Where(a => !incomingIds.Contains(a.AddressId)).ToList();
+                    foreach (var r in toRemove)
+                        existingAddresses.Remove(r);
+
+                    // assign back in case _customer.CustomerAddresses was null originally
+                    existingCustomer.CustomerAddresses = existingAddresses;
+                }
+
+                Console.WriteLine($"New Customer: {existingCustomer}");
 
 
             }
@@ -404,5 +542,13 @@ namespace Ciclilavarizia.Controllers
             }
             return Results.NoContent();
         }
+        static void CopyIfNotEmpty(ref string target, string? source)
+        {
+            if (!string.IsNullOrWhiteSpace(source))
+                target = source!;
+        }
     }
 }
+
+
+
