@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/Customers": {
+    "/api/v1/Customers": {
       "get": {
         "tags": [
           "Customers"
@@ -89,7 +89,7 @@
         }
       }
     },
-    "/api/Customers/{id}": {
+    "/api/v1/Customers/{id}": {
       "get": {
         "tags": [
           "Customers"
@@ -190,7 +190,7 @@
         }
       }
     },
-    "/api/Customers/CustomerStream": {
+    "/api/v1/Customers/CustomerStream": {
       "get": {
         "tags": [
           "Customers"
@@ -228,7 +228,7 @@
         }
       }
     },
-    "/api/Customers/listActions/{customerId}": {
+    "/api/v1/Customers/listActions/{customerId}": {
       "get": {
         "tags": [
           "Customers"
@@ -329,7 +329,7 @@
         }
       }
     },
-    "/api/Customers/listActions": {
+    "/api/v1/Customers/listActions": {
       "get": {
         "tags": [
           "Customers"

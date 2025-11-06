@@ -1,233 +1,5 @@
 [
   {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "GetCustomers",
-    "RelativePath": "api/Customers",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "PostCustomer",
-    "RelativePath": "api/Customers",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "customer",
-        "Type": "Ciclilavarizia.Models.Customer",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "Ciclilavarizia.Models.Customer",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "GetCustomer",
-    "RelativePath": "api/Customers/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "PutCustomer",
-    "RelativePath": "api/Customers/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "customer",
-        "Type": "Ciclilavarizia.Models.Customer",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "DeleteCustomer",
-    "RelativePath": "api/Customers/{id}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "GetCustomersDtoStream",
-    "RelativePath": "api/Customers/CustomerStream",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IAsyncEnumerable\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "GetCustomersList",
-    "RelativePath": "api/Customers/listActions",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "AddCustomer",
-    "RelativePath": "api/Customers/listActions",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "customer",
-        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "GetCustomer",
-    "RelativePath": "api/Customers/listActions/{customerId}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "customerId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "DeleteCustomer",
-    "RelativePath": "api/Customers/listActions/{customerId}",
-    "HttpMethod": "DELETE",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "customerId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
-    "Method": "UpdateCustomer",
-    "RelativePath": "api/Customers/listActions/{customerId}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "customerId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "customer",
-        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "WebBetacomeDbFirst.Controllers.LoginController",
     "Method": "IsRegistered",
     "RelativePath": "api/Login",
@@ -470,5 +242,233 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "GetCustomers",
+    "RelativePath": "api/v1/Customers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "PostCustomer",
+    "RelativePath": "api/v1/Customers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "customer",
+        "Type": "Ciclilavarizia.Models.Customer",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Ciclilavarizia.Models.Customer",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "GetCustomer",
+    "RelativePath": "api/v1/Customers/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "PutCustomer",
+    "RelativePath": "api/v1/Customers/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "customer",
+        "Type": "Ciclilavarizia.Models.Customer",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "DeleteCustomer",
+    "RelativePath": "api/v1/Customers/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "GetCustomersDtoStream",
+    "RelativePath": "api/v1/Customers/CustomerStream",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IAsyncEnumerable\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "GetCustomersList",
+    "RelativePath": "api/v1/Customers/listActions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "AddCustomer",
+    "RelativePath": "api/v1/Customers/listActions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "customer",
+        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "GetCustomer",
+    "RelativePath": "api/v1/Customers/listActions/{customerId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "customerId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "DeleteCustomer",
+    "RelativePath": "api/v1/Customers/listActions/{customerId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "customerId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.CustomersController",
+    "Method": "UpdateCustomer",
+    "RelativePath": "api/v1/Customers/listActions/{customerId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "customerId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "customer",
+        "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]

@@ -26,17 +26,23 @@ namespace Ciclilavarizia
             var AnyOrigin = "_anyOrigin";
             var LiveServerOrigin = "_liveServerOrigin";
 
-            builder.Services.AddCors(options =>
+
+            if (builder.Environment.IsDevelopment())
             {
-                options.AddPolicy(name: LiveServerOrigin,
-                                  policy =>
-                                  {
-                                      policy.WithOrigins("http://127.0.0.1:5500", // this was the live server 
-                                          "https://localhost:4200") // this is the SPA made with angular
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                                  });
-            });
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy(name: LiveServerOrigin,
+                                      policy =>
+                                      {
+                                          policy.AllowAnyOrigin()
+                                          //policy.WithOrigins(//"http://127.0.0.1:5500", // this was the live server 
+                                          //                   "http://localhost:4200/") // this is the SPA made with angular
+                                                .AllowAnyHeader()
+                                                .AllowAnyMethod();
+                                      });
+                });
+            }
+            
 
             builder.Services.AddCAndPStore();
             builder.Services.AddDbSecure(
@@ -56,6 +62,12 @@ namespace Ciclilavarizia
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            if (builder.Environment.IsDevelopment())
+            {
+                app.UseCors(LiveServerOrigin);
+            }
+
 
 
             app.MapControllers();

@@ -8,7 +8,7 @@ using Ciclilavarizia.Data;
 
 namespace Ciclilavarizia.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")] //for now v1, to change version make a new controller
     [ApiController]
     public class CustomersController : ControllerBase
     {
@@ -213,9 +213,20 @@ namespace Ciclilavarizia.Controllers
         //
 
         [HttpGet("listActions/{customerId}")]
-        public CustomerDto GetCustomer(CAndPStore store, int customerId)
+        public ActionResult<CustomerDto> GetCustomer(CAndPStore store, int customerId)
         {
-            return store._customers.Where(c => c.CustomerId == customerId).Single();
+            CustomerDto customer;
+            IActionResult result;
+            try
+            {
+                customer = store._customers.Where(c => c.CustomerId == customerId).Single();
+                result = Ok(customer);
+            }
+            catch (Exception)
+            {
+                result = BadRequest();
+            }
+            return (ActionResult)result;
         }
 
 
@@ -297,7 +308,8 @@ namespace Ciclilavarizia.Controllers
             {
                 var customer = store._customers.FirstOrDefault(c => c.CustomerId == customerId);
                 if (customer == null) return Results.BadRequest();
-                store._customers.Remove(customer);
+                var tmp = store._customers.Remove(customer);
+                Console.WriteLine($"Customer deleted: {tmp}");
             }
             catch (Exception)
             {
@@ -311,11 +323,15 @@ namespace Ciclilavarizia.Controllers
         {
             try
             {
+                if (customer.CustomerId != customerId) return Results.BadRequest(); // questa sembra essere una best practrice di controllo
+
                 CustomerDto? _customer = store._customers
                     .Where(c => c.CustomerId == customerId)
                     .FirstOrDefault();
                 if (_customer == null) return Results.BadRequest();
                 if (customer == null) return Results.BadRequest();
+                Console.WriteLine($"Old Customer: {_customer}");
+
 
                 if (!customer.Title.IsNullOrEmpty())
                 {
@@ -328,6 +344,10 @@ namespace Ciclilavarizia.Controllers
                 if (!customer.MiddleName.IsNullOrEmpty())
                 {
                     _customer.MiddleName = customer.MiddleName;
+                }
+                if (!customer.LastName.IsNullOrEmpty())
+                {
+                    _customer.LastName = customer.LastName;
                 }
                 if (!customer.Suffix.IsNullOrEmpty())
                 {
@@ -374,6 +394,9 @@ namespace Ciclilavarizia.Controllers
                         _customerAddress.Address.PostalCode = customerAddress.Address.PostalCode;
                     }
                 }
+                Console.WriteLine($"New Customer: {_customer}");
+
+
             }
             catch (Exception)
             {
