@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Ciclilavarizia.BLogic;
+﻿using Ciclilavarizia.BLogic;
+using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
-using Ciclilavarizia.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Ciclilavarizia.Controllers
 {
@@ -30,7 +30,10 @@ namespace Ciclilavarizia.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
         {
-            var customers = await _context.Customers
+            List<CustomerDto> customers;
+            try
+            {
+                customers = await _context.Customers
                 .AsNoTracking()
                 .Include(c => c.CustomerAddresses)
                     .ThenInclude(ca => ca.Address)
@@ -61,14 +64,23 @@ namespace Ciclilavarizia.Controllers
                         .ToList()
                 })
                 .ToListAsync();
-            return customers;
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
+
+            return Ok(customers);
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
-            var customer = await _context.Customers
+            CustomerDto customer;
+            try
+            {
+                customer = await _context.Customers
                 .AsNoTracking()
                 .Select(c => new CustomerDto
                 {
@@ -99,49 +111,55 @@ namespace Ciclilavarizia.Controllers
                 .Where(c => c.CustomerId == id)
                 .SingleAsync();
 
-            if (customer == null)
+                if (customer == null)
+                {
+                    return NotFound();
+                }
+
+            }
+            catch (Exception)
             {
-                return NotFound();
+                return Problem();
             }
 
-            return customer;
+            return Ok(customer);
         }
 
         [HttpGet("CustomerStream/")]
-        public async IAsyncEnumerable<CustomerDto> GetCustomersDtoStream()
+        public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream()
         {
             var customers = _context.Customers
-                .AsNoTracking()
-                .Select(c => new CustomerDto
-                {
-                    CustomerId = c.CustomerID,
-                    Title = c.Title,
-                    FirstName = c.FirstName,
-                    MiddleName = c.MiddleName,
-                    LastName = c.LastName,
-                    Suffix = c.Suffix,
-                    CompanyName = c.CompanyName,
-                    SalesPerson = c.SalesPerson,
-                    CustomerAddresses = c.CustomerAddresses
-                        .Select(ca => new CustomerAddressDto
+            .AsNoTracking()
+            .Select(c => new CustomerDto
+            {
+                CustomerId = c.CustomerID,
+                Title = c.Title,
+                FirstName = c.FirstName,
+                MiddleName = c.MiddleName,
+                LastName = c.LastName,
+                Suffix = c.Suffix,
+                CompanyName = c.CompanyName,
+                SalesPerson = c.SalesPerson,
+                CustomerAddresses = c.CustomerAddresses
+                    .Select(ca => new CustomerAddressDto
+                    {
+                        AddressId = ca.AddressID,
+                        AddressType = ca.AddressType,
+                        Address = new AddressDto
                         {
-                            AddressId = ca.AddressID,
-                            AddressType = ca.AddressType,
-                            Address = new AddressDto
-                            {
-                                AddressLine1 = ca.Address.AddressLine1,
-                                City = ca.Address.City,
-                                StateProvince = ca.Address.StateProvince,
-                                CountryRegion = ca.Address.CountryRegion,
-                                PostalCode = ca.Address.PostalCode
-                            }
-                        })
-                        .ToList()
-                })
-                .AsAsyncEnumerable();
+                            AddressLine1 = ca.Address.AddressLine1,
+                            City = ca.Address.City,
+                            StateProvince = ca.Address.StateProvince,
+                            CountryRegion = ca.Address.CountryRegion,
+                            PostalCode = ca.Address.PostalCode
+                        }
+                    })
+                    .ToList()
+            })
+            .AsAsyncEnumerable();
             await foreach (var customer in customers)
             {
-                yield return customer;
+                yield return Ok(customer);
             }
         }
 
@@ -181,24 +199,38 @@ namespace Ciclilavarizia.Controllers
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
-            _context.Customers.Add(customer);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
+                return Ok(CreatedAtAction("GetCustomer", new { id = customer.CustomerID }, customer));
 
-            return CreatedAtAction("GetCustomer", new { id = customer.CustomerID }, customer);
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
         }
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
-            var customer = await _context.Customers.FindAsync(id);
-            if (customer == null)
+            try
             {
-                return NotFound();
-            }
+                var customer = await _context.Customers.FindAsync(id);
+                if (customer == null)
+                {
+                    return NotFound();
+                }
 
-            _context.Customers.Remove(customer);
-            await _context.SaveChangesAsync();
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
 
             return NoContent();
         }
@@ -215,107 +247,112 @@ namespace Ciclilavarizia.Controllers
         [HttpGet("listActions/{customerId}")]
         public ActionResult<CustomerDto> GetCustomer(CAndPStore store, int customerId)
         {
-            CustomerDto customer;
-            IActionResult result;
             try
             {
-                customer = store._customers.Where(c => c.CustomerId == customerId).Single();
-                result = Ok(customer);
+                var customer = store._customers.Where(c => c.CustomerId == customerId).Single();
+                if (customer == null) { return NotFound(); }
+                return Ok(customer);
             }
             catch (Exception)
             {
-                result = BadRequest();
+                return Problem();
             }
-            return (ActionResult)result;
         }
 
 
         [HttpGet("listActions/")]
-        public List<CustomerDto> GetCustomersList(CAndPStore store)
+        public ActionResult<List<CustomerDto>> GetCustomersList(CAndPStore store)
         {
-            if (store._customers.Count() == 0)
+            try
             {
-                var customers = _context.Customers
-                .AsNoTracking()
-                .Select(c => new CustomerDto
+                if (store._customers.Count() == 0)
                 {
-                    CustomerId = c.CustomerID,
-                    Title = c.Title,
-                    FirstName = c.FirstName,
-                    MiddleName = c.MiddleName,
-                    LastName = c.LastName,
-                    Suffix = c.Suffix,
-                    CompanyName = c.CompanyName,
-                    SalesPerson = c.SalesPerson,
-                    CustomerAddresses = c.CustomerAddresses
-                        .Select(ca => new CustomerAddressDto
-                        {
-                            AddressId = ca.AddressID,
-                            AddressType = ca.AddressType,
-                            Address = new AddressDto
+                    var customers = _context.Customers
+                    .AsNoTracking()
+                    .Select(c => new CustomerDto
+                    {
+                        CustomerId = c.CustomerID,
+                        Title = c.Title,
+                        FirstName = c.FirstName,
+                        MiddleName = c.MiddleName,
+                        LastName = c.LastName,
+                        Suffix = c.Suffix,
+                        CompanyName = c.CompanyName,
+                        SalesPerson = c.SalesPerson,
+                        CustomerAddresses = c.CustomerAddresses
+                            .Select(ca => new CustomerAddressDto
                             {
-                                AddressLine1 = ca.Address.AddressLine1,
-                                City = ca.Address.City,
-                                StateProvince = ca.Address.StateProvince,
-                                CountryRegion = ca.Address.CountryRegion,
-                                PostalCode = ca.Address.PostalCode
-                            }
-                        })
-                        .ToList()
-                })
-                .ToList();
+                                AddressId = ca.AddressID,
+                                AddressType = ca.AddressType,
+                                Address = new AddressDto
+                                {
+                                    AddressLine1 = ca.Address.AddressLine1,
+                                    City = ca.Address.City,
+                                    StateProvince = ca.Address.StateProvince,
+                                    CountryRegion = ca.Address.CountryRegion,
+                                    PostalCode = ca.Address.PostalCode
+                                }
+                            })
+                            .ToList()
+                    })
+                    .ToList();
 
-                foreach (var custumerFor in customers)
-                {
-                    store._customers.Add(custumerFor);
+                    foreach (var custumerFor in customers)
+                    {
+                        store._customers.Add(custumerFor);
+                    }
                 }
             }
-            return store._customers;
+            catch (Exception)
+            {
+                return Problem();
+            }
+            return Ok(store._customers);
         }
 
         [HttpPost("listActions/")]
-        public async Task<IResult> AddCustomer([FromBody] CustomerDto customer, CAndPStore store)
+        public async Task<ActionResult> AddCustomer([FromBody] CustomerDto customer, CAndPStore store)
         {
-            if (store._customers.Count() == 0)
-            {
-                var c = await _context.Customers
-                    .AsNoTracking()
-                    .OrderByDescending(c => c.CustomerID)
-                    .Take(1)
-                    .SingleOrDefaultAsync();
-                customer.CustomerId = c.CustomerID + 1;
-            }
-            else
-            {
-                customer.CustomerId = store._customers.Last().CustomerId + 1;
-            }
-
             try
             {
+                if (store._customers.Count() == 0)
+                {
+                    var c = await _context.Customers
+                        .AsNoTracking()
+                        .OrderByDescending(c => c.CustomerID)
+                        .Take(1)
+                        .SingleOrDefaultAsync();
+                    customer.CustomerId = c.CustomerID + 1;
+                }
+                else
+                {
+                    customer.CustomerId = store._customers.Last().CustomerId + 1;
+                }
+
                 store._customers.Add(customer);
             }
             catch (Exception)
             {
-                return Results.Problem();
+                return Problem();
             }
-            return Results.Created();
+            return Created();
         }
 
         [HttpDelete("listActions/{customerId}")]
-        public IResult DeleteCustomer(int customerId, CAndPStore store)
+        public ActionResult DeleteCustomer(int customerId, CAndPStore store)
         {
             try
             {
                 var customer = store._customers.FirstOrDefault(c => c.CustomerId == customerId);
-                if (customer == null) return Results.BadRequest();
+                if (customer == null) return BadRequest();
                 var tmp = store._customers.Remove(customer);
                 Console.WriteLine($"Customer deleted: {tmp}");
             }
             catch (Exception)
             {
-                return Results.Problem();
+                return Problem();
             }
-            return Results.NoContent();
+            return NoContent();
         }
         // V0
         //[HttpPut("listActions/{customerId}")]
@@ -405,18 +442,18 @@ namespace Ciclilavarizia.Controllers
         //    return Results.NoContent();
         //}
         [HttpPut("listActions/{customerId}")]
-        public IResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
+        public ActionResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
         {
             try
             {
                 var incomingCustomer = customer; // more readable
-                if (incomingCustomer.CustomerId != customerId) return Results.BadRequest(); // questa sembra essere una best practrice di controllo
+                if (incomingCustomer.CustomerId != customerId) return BadRequest(); // questa sembra essere una best practrice di controllo
 
                 CustomerDto? existingCustomer = store._customers
                     .Where(c => c.CustomerId == customerId)
                     .FirstOrDefault();
-                if (existingCustomer == null) return Results.BadRequest();
-                if (incomingCustomer == null) return Results.BadRequest();
+                if (existingCustomer == null) return BadRequest();
+                if (incomingCustomer == null) return BadRequest();
                 Console.WriteLine($"Old Customer: {existingCustomer}");
 
 
@@ -457,7 +494,7 @@ namespace Ciclilavarizia.Controllers
                 // fast lookup with dictionary of existing addresses by id
                 var existingById = existingAddresses.ToDictionary(a => a.AddressId);
 
-                
+
                 if (!incomingAddresses.Any()) // If incoming is empty allora clear all existing addresses
                 {
                     existingCustomer.CustomerAddresses.Clear();
@@ -551,9 +588,9 @@ namespace Ciclilavarizia.Controllers
             }
             catch (Exception)
             {
-                return Results.Problem();
+                return Problem();
             }
-            return Results.NoContent();
+            return NoContent();
         }
     }
 }

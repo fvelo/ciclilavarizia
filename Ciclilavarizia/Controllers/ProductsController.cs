@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Ciclilavarizia.BLogic;
+﻿using Ciclilavarizia.BLogic;
+using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
-using Ciclilavarizia.Data;
-
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Ciclilavarizia.Controllers
 {
@@ -24,7 +23,10 @@ namespace Ciclilavarizia.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
         {
-            var products = await _context.Products
+            List<ProductDto> products;
+            try
+            {
+                products = await _context.Products
                 .Select(p => new ProductDto
                 {
                     ProductId = p.ProductID,
@@ -42,14 +44,23 @@ namespace Ciclilavarizia.Controllers
                     }
                 })
                 .ToListAsync();
-            return products;
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
+
+            return Ok(products);
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
-            var product = await _context.Products
+            ProductDto product;
+            try
+            {
+                product = await _context.Products
                 .Select(p => new ProductDto
                 {
                     ProductId = p.ProductID,
@@ -69,16 +80,21 @@ namespace Ciclilavarizia.Controllers
                 .Where(p => p.ProductId == id)
                 .SingleAsync();
 
-            if (product == null)
+                if (product == null)
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception)
             {
-                return NotFound();
+                return Problem();
             }
 
-            return product;
+            return Ok(product);
         }
 
         [HttpGet("ProductsStream/")]
-        public async IAsyncEnumerable<ProductDto> GetProductsDtoStream()
+        public async IAsyncEnumerable<ActionResult<ProductDto>> GetProductsDtoStream()
         {
             var customers = _context.Products
                 .AsNoTracking()
@@ -101,7 +117,7 @@ namespace Ciclilavarizia.Controllers
                 .AsAsyncEnumerable();
             await foreach (var customer in customers)
             {
-                yield return customer;
+                yield return Ok(customer);
             }
         }
 
@@ -142,24 +158,38 @@ namespace Ciclilavarizia.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { id = product.ProductID }, product);
+                return Ok(CreatedAtAction("GetProduct", new { id = product.ProductID }, product));
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
         }
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
-            }
+                var product = await _context.Products.FindAsync(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
 
             return NoContent();
         }
@@ -174,45 +204,62 @@ namespace Ciclilavarizia.Controllers
         //
 
         [HttpGet("listActions/{productId}")]
-        public ProductDto GetProduct(CAndPStore store, int productId)
+        public ActionResult<ProductDto> GetProduct(CAndPStore store, int productId)
         {
-            return store._products.Where(p => p.ProductId == productId).Single();
+            try
+            {
+                var product = store._products.Where(p => p.ProductId == productId).Single();
+                if (product == null) { return NotFound(); }
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                return Problem();
+            }
         }
 
         [HttpGet("listActions/")]
-        public List<ProductDto> GetProductsList(CAndPStore store)
+        public ActionResult<List<ProductDto>> GetProductsList(CAndPStore store)
         {
-            if (store._products.Count() == 0)
+            try
             {
-                var products = _context.Products
-                .Select(p => new ProductDto
+                if (store._products.Count() == 0)
                 {
-                    ProductId = p.ProductID,
-                    Name = p.Name,
-                    ProductNumber = p.ProductNumber,
-                    Color = p.Color,
-                    StandardCost = p.StandardCost,
-                    ListPrice = p.ListPrice,
-                    Size = p.Size,
-                    Weight = p.Weight,
-                    ProductModel = new ProductModelDto
+                    var products = _context.Products
+                    .Select(p => new ProductDto
                     {
-                        Name = p.ProductModel.Name,
-                        CatalogDescription = p.ProductModel.CatalogDescription
-                    }
-                })
-                .ToList();
+                        ProductId = p.ProductID,
+                        Name = p.Name,
+                        ProductNumber = p.ProductNumber,
+                        Color = p.Color,
+                        StandardCost = p.StandardCost,
+                        ListPrice = p.ListPrice,
+                        Size = p.Size,
+                        Weight = p.Weight,
+                        ProductModel = new ProductModelDto
+                        {
+                            Name = p.ProductModel.Name,
+                            CatalogDescription = p.ProductModel.CatalogDescription
+                        }
+                    })
+                    .ToList();
 
-                foreach (var productFor in products)
-                {
-                    store._products.Add(productFor);
+                    foreach (var productFor in products)
+                    {
+                        store._products.Add(productFor);
+                    }
                 }
             }
-            return store._products;
+            catch (Exception)
+            {
+                return Problem();
+            }
+
+            return Ok(store._products);
         }
 
         [HttpPost("listActions/")]
-        public async Task<IResult> AddProduct([FromBody] ProductDto product, CAndPStore store)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDto product, CAndPStore store)
         {
             if (store._products.Count() == 0)
             {
@@ -235,37 +282,37 @@ namespace Ciclilavarizia.Controllers
             }
             catch (Exception)
             {
-                return Results.Problem();
+                return Problem();
             }
-            return Results.Created();
+            return Created();
         }
 
         [HttpDelete("listActions/{productId}")]
-        public IResult DeleteProduct(int productId, CAndPStore store)
+        public IActionResult DeleteProduct(int productId, CAndPStore store)
         {
             try
             {
                 var product = store._products.FirstOrDefault(p => p.ProductId == productId);
-                if (product == null) return Results.BadRequest();
+                if (product == null) return BadRequest();
                 store._products.Remove(product);
             }
             catch (Exception)
             {
-                return Results.Problem();
+                return Problem();
             }
-            return Results.NoContent();
+            return NoContent();
         }
 
         [HttpPut("listActions/{productId}")]
-        public IResult UpdateProduct(int productId, [FromBody] ProductDto product, CAndPStore store)
+        public IActionResult UpdateProduct(int productId, [FromBody] ProductDto product, CAndPStore store)
         {
             try
             {
                 ProductDto? _product = store._products
                     .Where(p => p.ProductId == productId)
                     .FirstOrDefault();
-                if (_product == null) return Results.BadRequest();
-                if (product == null) return Results.BadRequest();
+                if (_product == null) return BadRequest();
+                if (product == null) return BadRequest();
 
                 if (!product.Name.IsNullOrEmpty()) //this is very puzzolente e brutto, but the "foreach" way to do is much harder and confusing, I will keep it for the v2
                 {
@@ -298,10 +345,9 @@ namespace Ciclilavarizia.Controllers
             }
             catch (Exception)
             {
-                return Results.Problem();
+                return Problem();
             }
-            return Results.NoContent();
+            return NoContent();
         }
-
     }
 }
