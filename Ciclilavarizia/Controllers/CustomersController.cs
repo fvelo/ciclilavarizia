@@ -465,12 +465,13 @@ namespace Ciclilavarizia.Controllers
                 else
                 {
                     // Track which existing ids are present in the incoming payload
-                    var incomingIds = new HashSet<int>();
+                    var incomingIds = new HashSet<int>();// this is a Dictionary<Tgaved,bool> do not accept duplicates
 
                     foreach (var incomingAddr in incomingAddresses)
                     {
                         // if AddressId is present and matches an existing address -> update fields
-                        if (incomingAddr.AddressId != 0 && existingById.TryGetValue(incomingAddr.AddressId, out var existAddr))
+                        if (incomingAddr.AddressId != 0 && existingById.TryGetValue(incomingAddr.AddressId, out var existAddr)) //make sure to send new addresses with the id set to zero,
+                                                                                                                                // this way they will be recognized as new
                         {
                             incomingIds.Add(incomingAddr.AddressId);
 
@@ -486,21 +487,32 @@ namespace Ciclilavarizia.Controllers
                             {
                                 // update nested fields only when provided
                                 if (!string.IsNullOrWhiteSpace(incomingAddr.Address.AddressLine1))
+                                {
                                     existAddr.Address.AddressLine1 = incomingAddr.Address.AddressLine1;
+                                }
                                 if (!string.IsNullOrWhiteSpace(incomingAddr.Address.City))
+                                {
                                     existAddr.Address.City = incomingAddr.Address.City;
+                                }
                                 if (!string.IsNullOrWhiteSpace(incomingAddr.Address.StateProvince))
+                                {
                                     existAddr.Address.StateProvince = incomingAddr.Address.StateProvince;
+                                }
                                 if (!string.IsNullOrWhiteSpace(incomingAddr.Address.CountryRegion))
+                                {
                                     existAddr.Address.CountryRegion = incomingAddr.Address.CountryRegion;
+                                }
                                 if (!string.IsNullOrWhiteSpace(incomingAddr.Address.PostalCode))
+                                {
                                     existAddr.Address.PostalCode = incomingAddr.Address.PostalCode;
+                                }
                             }
                         }
-                        else
+                        else // address is new
                         {
                             // New address (no id or id not found) -> validate minimal fields then add
-                            int newId = (existingAddresses.Any() ? existingAddresses.Max(a => a.AddressId) : 0) + 1; // se esiste un address nel customer then I add 1, if not 0 WORKS ONLY BECAUSE ARE LIST AND NOT DB
+                            int newId = (existingAddresses.Any() ? existingAddresses.Max(a => a.AddressId) : 0) + 1; // se esiste un address nel customer then I add 1,
+                                                                                                                     // if not 0 WORKS ONLY BECAUSE ARE LIST AND NOT DB
 
                             var addrToAdd = new CustomerAddressDto
                             {
@@ -516,19 +528,20 @@ namespace Ciclilavarizia.Controllers
                                 }
                             };
 
-                            existingAddresses.Add(addrToAdd); // also updates the existing list reference inside _customer
+                            existingAddresses.Add(addrToAdd); // also updates the existing list reference inside existingCustomer
                             existingById[addrToAdd.AddressId] = addrToAdd;
                             incomingIds.Add(addrToAdd.AddressId);
                         }
                     }
 
-                    // 3) Remove existing addresses that are not listed in incomingIds
-                    // Build a list of addresses to remove to avoid mutating collection while iterating
+                    // Here I create the actual removing and inserting of the addresses,
+                    // more redeable because outside for and it does not impact
+                    // Time Complexity, this is still O(n) n= new addresses number
                     var toRemove = existingAddresses.Where(a => !incomingIds.Contains(a.AddressId)).ToList();
                     foreach (var r in toRemove)
                         existingAddresses.Remove(r);
 
-                    // assign back in case _customer.CustomerAddresses was null originally
+                    // assign back in case existingCustomer.CustomerAddresses was empty
                     existingCustomer.CustomerAddresses = existingAddresses;
                 }
 
@@ -541,11 +554,6 @@ namespace Ciclilavarizia.Controllers
                 return Results.Problem();
             }
             return Results.NoContent();
-        }
-        static void CopyIfNotEmpty(ref string target, string? source)
-        {
-            if (!string.IsNullOrWhiteSpace(source))
-                target = source!;
         }
     }
 }
