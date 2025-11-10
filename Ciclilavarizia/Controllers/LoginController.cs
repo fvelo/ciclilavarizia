@@ -1,5 +1,7 @@
 ﻿using DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
+using Models.Models.Dtos;
+
 
 namespace WebBetacomeDbFirst.Controllers
 {
@@ -12,14 +14,12 @@ namespace WebBetacomeDbFirst.Controllers
         {
             _dbSecure = dbSecure;
         }
-
-        public record LoginRecord(string email, string password);
         [HttpPost]
-        public async Task<IActionResult> IsRegistered([FromBody] LoginRecord loginRecord)
+        public async Task<IActionResult> IsRegistered([FromBody] CredentialsDto credentials)
         {
-            if (loginRecord == null) return NotFound();
-            string email = loginRecord.email;
-            string password = loginRecord.password;
+            if (credentials == null) return NotFound();
+            string email = credentials.EmailAddress;
+            string password = credentials.PasswordHash;
 
             email = email ?? string.Empty;
             email = email.ToLower().Replace(" ", "");

@@ -1,8 +1,19 @@
 ﻿using Microsoft.Data.SqlClient;
-using System.ComponentModel.Design;
+using Microsoft.Extensions.DependencyInjection;
+using Models.Models;
 
 namespace DataAccessLayer
 {
+    public static class DbSecureServiceExtention
+    {
+        public static IServiceCollection AddDbSecure(this IServiceCollection services, string ccnString)
+        {
+            DbSecure dbSecure = new(ccnString);
+            services.AddSingleton(dbSecure);
+            return services;
+        }
+    }
+
     public class DbSecure
     {
         private readonly SqlConnection _connection = new();

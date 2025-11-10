@@ -1,4 +1,4 @@
-﻿namespace Ciclilavarizia.Models.Settings
+﻿namespace Models.Models.Settings
 {
     public class MapSettings
     {

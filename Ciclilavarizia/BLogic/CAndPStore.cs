@@ -1,4 +1,4 @@
-﻿using Ciclilavarizia.Models.Dtos;
+﻿using Models.Models.Dtos;
 
 namespace WebBetacomeDbFirst.BLogic
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DataAccessLayer
+namespace Models.Models
 {
     public class Credentials
     {

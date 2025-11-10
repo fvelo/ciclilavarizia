@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ciclilavarizia.Models;
+namespace Models.Models;
 
 [Table("ProductModel", Schema = "SalesLT")]
 [Index("Name", Name = "AK_ProductModel_Name", IsUnique = true)]

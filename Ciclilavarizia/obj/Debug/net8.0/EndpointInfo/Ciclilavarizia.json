@@ -203,7 +203,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CustomerDto"
+                    "$ref": "#/components/schemas/CustomerDtoActionResult"
                   }
                 }
               },
@@ -211,7 +211,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CustomerDto"
+                    "$ref": "#/components/schemas/CustomerDtoActionResult"
                   }
                 }
               },
@@ -219,7 +219,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CustomerDto"
+                    "$ref": "#/components/schemas/CustomerDtoActionResult"
                   }
                 }
               }
@@ -625,7 +625,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ProductDto"
+                    "$ref": "#/components/schemas/ProductDtoActionResult"
                   }
                 }
               },
@@ -633,7 +633,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ProductDto"
+                    "$ref": "#/components/schemas/ProductDtoActionResult"
                   }
                 }
               },
@@ -641,7 +641,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ProductDto"
+                    "$ref": "#/components/schemas/ProductDtoActionResult"
                   }
                 }
               }
@@ -821,6 +821,10 @@
   },
   "components": {
     "schemas": {
+      "ActionResult": {
+        "type": "object",
+        "additionalProperties": false
+      },
       "Address": {
         "type": "object",
         "properties": {
@@ -1119,6 +1123,18 @@
         },
         "additionalProperties": false
       },
+      "CustomerDtoActionResult": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/ActionResult"
+          },
+          "value": {
+            "$ref": "#/components/schemas/CustomerDto"
+          }
+        },
+        "additionalProperties": false
+      },
       "LoginRecord": {
         "type": "object",
         "properties": {
@@ -1351,6 +1367,18 @@
           },
           "productModel": {
             "$ref": "#/components/schemas/ProductModelDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProductDtoActionResult": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "$ref": "#/components/schemas/ActionResult"
+          },
+          "value": {
+            "$ref": "#/components/schemas/ProductDto"
           }
         },
         "additionalProperties": false

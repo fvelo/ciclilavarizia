@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ciclilavarizia.Models;
+namespace Models.Models;
 
 /// <summary>
 /// Cross-reference table mapping product descriptions and the language the description is written in.

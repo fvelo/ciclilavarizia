@@ -233,7 +233,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IAsyncEnumerable\u00601[[Ciclilavarizia.Models.Dtos.ProductDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IAsyncEnumerable\u00601[[Microsoft.AspNetCore.Mvc.ActionResult\u00601[[Ciclilavarizia.Models.Dtos.ProductDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], Microsoft.AspNetCore.Mvc.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -362,7 +362,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IAsyncEnumerable\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IAsyncEnumerable\u00601[[Microsoft.AspNetCore.Mvc.ActionResult\u00601[[Ciclilavarizia.Models.Dtos.CustomerDto, Ciclilavarizia, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], Microsoft.AspNetCore.Mvc.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

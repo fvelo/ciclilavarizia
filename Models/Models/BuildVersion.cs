@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ciclilavarizia.Models;
+namespace Models.Models;
 
 /// <summary>
 /// Current version number of the AdventureWorksLT 2012 sample database. 

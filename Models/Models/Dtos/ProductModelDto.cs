@@ -1,4 +1,4 @@
-﻿namespace Ciclilavarizia.Models.Dtos
+﻿namespace Models.Models.Dtos
 {
     public class ProductModelDto
     {
