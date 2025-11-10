@@ -2107,10 +2107,22 @@
       },
       "DataAccessLayer/1.0.0": {
         "dependencies": {
-          "Microsoft.Data.SqlClient": "5.1.6"
+          "Microsoft.Data.SqlClient": "5.1.6",
+          "Models": "1.0.0"
         },
         "runtime": {
           "DataAccessLayer.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Models/1.0.0": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "9.0.10"
+        },
+        "runtime": {
+          "Models.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -3292,6 +3304,11 @@
       "sha512": ""
     },
     "DataAccessLayer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Models/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

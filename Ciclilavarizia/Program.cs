@@ -1,7 +1,7 @@
+using Ciclilavarizia.Data;
 using Microsoft.EntityFrameworkCore;
 using Ciclilavarizia.BLogic;
-using Ciclilavarizia.Data;
-using Ciclilavarizia.Models.ServicesExtentions;
+using DataAccessLayer;
 
 
 namespace Ciclilavarizia
@@ -42,7 +42,7 @@ namespace Ciclilavarizia
                                       });
                 });
             }
-            
+
 
             builder.Services.AddCAndPStore();
             builder.Services.AddDbSecure(

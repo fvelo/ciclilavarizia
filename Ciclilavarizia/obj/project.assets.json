@@ -8244,7 +8244,6 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.10",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.11",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 8.0.7",
-      "Models >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
   },
@@ -8285,9 +8284,6 @@
             },
             "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj": {
               "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj"
-            },
-            "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Models\\Models.csproj": {
-              "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Models\\Models.csproj"
             }
           }
         }

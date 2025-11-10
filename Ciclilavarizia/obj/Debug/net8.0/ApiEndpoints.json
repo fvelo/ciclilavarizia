@@ -8,8 +8,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "loginRecord",
-        "Type": "WebBetacomeDbFirst.Controllers.LoginController\u002BLoginRecord",
+        "Name": "credentials",
+        "Type": "Models.Models.Dtos.CredentialsDto",
         "IsRequired": true
       }
     ],

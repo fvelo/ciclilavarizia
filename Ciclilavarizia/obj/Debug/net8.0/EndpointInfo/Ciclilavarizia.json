@@ -405,17 +405,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRecord"
+                "$ref": "#/components/schemas/CredentialsDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRecord"
+                "$ref": "#/components/schemas/CredentialsDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRecord"
+                "$ref": "#/components/schemas/CredentialsDto"
               }
             }
           }
@@ -926,6 +926,24 @@
         },
         "additionalProperties": false
       },
+      "CredentialsDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "emailAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "passwordHash": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "Customer": {
         "type": "object",
         "properties": {
@@ -1131,20 +1149,6 @@
           },
           "value": {
             "$ref": "#/components/schemas/CustomerDto"
-          }
-        },
-        "additionalProperties": false
-      },
-      "LoginRecord": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "password": {
-            "type": "string",
-            "nullable": true
           }
         },
         "additionalProperties": false

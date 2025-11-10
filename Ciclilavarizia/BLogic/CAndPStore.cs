@@ -1,6 +1,6 @@
-﻿using Models.Models.Dtos;
+﻿using Ciclilavarizia.Models.Dtos;
 
-namespace WebBetacomeDbFirst.BLogic
+namespace Ciclilavarizia.BLogic
 {
     public class CAndPStore
     {
