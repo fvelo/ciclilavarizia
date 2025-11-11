@@ -396,7 +396,7 @@
         }
       }
     },
-    "/api/Login": {
+    "/api/v1/Login": {
       "post": {
         "tags": [
           "Login"

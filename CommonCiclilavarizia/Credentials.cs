@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ciclilavarizia.Models
+namespace CommonCiclilavarizia
 {
     public class Credentials
     {

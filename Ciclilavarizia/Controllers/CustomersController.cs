@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.BLogic;
+using Microsoft.AspNetCore.Authorization;
 
 
 
@@ -28,6 +29,7 @@ namespace Ciclilavarizia.Controllers
         //    return await _context.Customers.ToListAsync();
         //}
 
+        [Authorize(Policy = "AdminPolicy")]
         // GET: api/Customers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
@@ -261,7 +263,7 @@ namespace Ciclilavarizia.Controllers
             }
         }
 
-
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("listActions/")]
         public ActionResult<List<CustomerDto>> GetCustomersList(CAndPStore store)
         {

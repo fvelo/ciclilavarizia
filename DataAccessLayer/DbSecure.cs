@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
-using Models.Models;
+using CommonCiclilavarizia;
 
 namespace DataAccessLayer
 {

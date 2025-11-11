@@ -1,7 +1,11 @@
-using Ciclilavarizia.Data;
-using Microsoft.EntityFrameworkCore;
 using Ciclilavarizia.BLogic;
+using Ciclilavarizia.Data;
+using Ciclilavarizia.Models.Settings;
 using DataAccessLayer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 namespace Ciclilavarizia
@@ -19,14 +23,20 @@ namespace Ciclilavarizia
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // bind IOptions
+            builder.Services.Configure<JwtSettings>(
+                builder.Configuration.GetSection(nameof(JwtSettings)));
+
             //db connection
             builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
                 o.UseSqlServer(builder.Configuration.GetConnectionString("AdventureWorksLTDbHomelab")));
 
+            builder.Services.AddDbSecure(
+                builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab"));
+
+            // CORS
             var AnyOrigin = "_anyOrigin";
             var LiveServerOrigin = "_liveServerOrigin";
-
-
             if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddCors(options =>
@@ -43,12 +53,19 @@ namespace Ciclilavarizia
                 });
             }
 
+            //
+            // Start Custom Services Extentions
+            //
 
+            // Service for exercises
             builder.Services.AddCAndPStore();
-            builder.Services.AddDbSecure(
-                builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab"));
 
+            builder.Services.AddAuthenticationOptions();
+            builder.Services.AddAuthorizationOptions();
 
+            //
+            // End Custom Services Extentions
+            //
 
             var app = builder.Build();
 

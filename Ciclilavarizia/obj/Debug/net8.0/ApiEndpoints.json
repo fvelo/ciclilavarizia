@@ -1,21 +1,5 @@
 [
   {
-    "ContainingType": "WebBetacomeDbFirst.Controllers.LoginController",
-    "Method": "IsRegistered",
-    "RelativePath": "api/Login",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "credentials",
-        "Type": "Models.Models.Dtos.CredentialsDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
     "ContainingType": "Ciclilavarizia.Controllers.ProductsController",
     "Method": "GetProducts",
     "RelativePath": "api/Products",
@@ -466,6 +450,22 @@
       {
         "Name": "customer",
         "Type": "Ciclilavarizia.Models.Dtos.CustomerDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Ciclilavarizia.Controllers.LoginController",
+    "Method": "IsRegistered",
+    "RelativePath": "api/v1/Login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "credentials",
+        "Type": "Ciclilavarizia.Models.Dtos.CredentialsDto",
         "IsRequired": true
       }
     ],
