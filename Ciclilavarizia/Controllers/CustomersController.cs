@@ -267,6 +267,7 @@ namespace Ciclilavarizia.Controllers
         [HttpGet("listActions/")]
         public ActionResult<List<CustomerDto>> GetCustomersList(CAndPStore store)
         {
+            Console.WriteLine("\n\tI entered the GetCustomersList even if there is a Authorize!!!");
             try
             {
                 if (store._customers.Count() == 0)

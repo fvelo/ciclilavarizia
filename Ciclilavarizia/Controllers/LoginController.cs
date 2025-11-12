@@ -38,7 +38,11 @@ namespace Ciclilavarizia.Controllers
             var role = "admin";
 
             var jwtToken = GenerateJwtToken(credentials, role.ToLower());
-
+            Response.Cookies.Append("FlashMessage", "Sì il cannone", new CookieOptions
+            {
+                Secure = true
+            });
+            Console.WriteLine($"Dentro IsRegistered ${email} as entered!");
             //return Ok(jwtToken);
             return Ok(new { token = jwtToken });
         }

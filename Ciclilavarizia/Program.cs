@@ -2,10 +2,7 @@ using Ciclilavarizia.BLogic;
 using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
 using DataAccessLayer;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 
 namespace Ciclilavarizia
@@ -46,7 +43,7 @@ namespace Ciclilavarizia
                                       {
                                           policy.AllowAnyOrigin()
                                           //policy.WithOrigins(//"http://127.0.0.1:5500", // this was the live server 
-                                          //                   "http://localhost:4200/") // this is the SPA made with angular
+                                                             //"http://localhost:4200/") // this is the SPA made with angular
                                                 .AllowAnyHeader()
                                                 .AllowAnyMethod();
                                       });
@@ -77,7 +74,7 @@ namespace Ciclilavarizia
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             if (builder.Environment.IsDevelopment())
@@ -88,7 +85,6 @@ namespace Ciclilavarizia
 
 
             app.MapControllers();
-
             app.Run();
         }
     }
