@@ -2100,6 +2100,7 @@
         "dependencies": {
           "CommonCiclilavarizia": "1.0.0",
           "Microsoft.Data.SqlClient": "5.1.6",
+          "Microsoft.Extensions.DependencyInjection": "9.0.10",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.10"
         },
         "runtime": {
