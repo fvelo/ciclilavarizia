@@ -1,4 +1,6 @@
-﻿namespace Ciclilavarizia.Models.Dtos
+﻿using System.Xml.Serialization;
+
+namespace Ciclilavarizia.Models.Dtos
 {
     public class CustomerDto
     {
@@ -10,8 +12,10 @@
         public string? Suffix { get; set; }
         public string? CompanyName { get; set; }
         public string? SalesPerson { get; set; }
-        public virtual ICollection<CustomerAddressDto> CustomerAddresses { get; set; } = new List<CustomerAddressDto>();
+        [XmlArray("CustomerAddresses")]
+        [XmlArrayItem("CustomerAddress")]
+        public virtual List<CustomerAddressDto> CustomerAddresses { get; set; } = new List<CustomerAddressDto>();
+        //public virtual ICollection<CustomerAddressDto> CustomerAddresses { get; set; } = new List<CustomerAddressDto>();
         //public virtual ICollection<SalesOrderHeader> SalesOrderHeaders { get; set; } = new List<SalesOrderHeader>();
-
     }
 }

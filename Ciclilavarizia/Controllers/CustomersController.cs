@@ -1,11 +1,11 @@
 ﻿using Ciclilavarizia.Data;
+using Ciclilavarizia.Models;
+using Ciclilavarizia.Models.Dtos;
+using Ciclilavarizia.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Ciclilavarizia.Models.Dtos;
-using Ciclilavarizia.Models;
-using Ciclilavarizia.BLogic;
-using Microsoft.AspNetCore.Authorization;
 
 
 
@@ -16,121 +16,52 @@ namespace Ciclilavarizia.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly AdventureWorksLTContext _context;
+        private readonly ICustomersService _customersService;
+        private readonly ILogger<CustomersController> _logger;
 
-        public CustomersController(AdventureWorksLTContext context)
+        public CustomersController(AdventureWorksLTContext context, ICustomersService customersService, ILogger<CustomersController> logger)
         {
             _context = context;
+            _customersService = customersService;
+            _logger = logger;
         }
-
-        //// GET: api/Customers
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
-        //{
-        //    return await _context.Customers.ToListAsync();
-        //}
 
         [Authorize(Policy = "AdminPolicy")]
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CustomerDto>>> GetCustomers()
+        public async Task<IActionResult> GetCustomers(CancellationToken cancellationToken)
         {
-            List<CustomerDto> customers;
-            try
+            var result = await _customersService.GetAsync(cancellationToken);
+
+            if (!result.IsSuccess)
             {
-                customers = await _context.Customers
-                .AsNoTracking()
-                .Include(c => c.CustomerAddresses)
-                    .ThenInclude(ca => ca.Address)
-                .Select(c => new CustomerDto
-                {
-                    CustomerId = c.CustomerID,
-                    Title = c.Title,
-                    FirstName = c.FirstName,
-                    MiddleName = c.MiddleName,
-                    LastName = c.LastName,
-                    Suffix = c.Suffix,
-                    CompanyName = c.CompanyName,
-                    SalesPerson = c.SalesPerson,
-                    CustomerAddresses = c.CustomerAddresses
-                        .Select(ca => new CustomerAddressDto
-                        {
-                            AddressId = ca.AddressID,
-                            AddressType = ca.AddressType,
-                            Address = new AddressDto
-                            {
-                                AddressLine1 = ca.Address.AddressLine1,
-                                City = ca.Address.City,
-                                StateProvince = ca.Address.StateProvince,
-                                CountryRegion = ca.Address.CountryRegion,
-                                PostalCode = ca.Address.PostalCode
-                            }
-                        })
-                        .ToList()
-                })
-                .ToListAsync();
-            }
-            catch (Exception)
-            {
-                return Problem();
+                _logger.LogWarning($"GetCustomers failed: {result.ErrorMessage}");
+                return Problem(detail: result.ErrorMessage);
             }
 
-            return Ok(customers);
+            return Ok(result.Value);
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
+        public async Task<ActionResult<CustomerDto>> GetCustomer(int id, CancellationToken cancellationToken)
         {
-            CustomerDto customer;
-            try
-            {
-                customer = await _context.Customers
-                .AsNoTracking()
-                .Select(c => new CustomerDto
-                {
-                    CustomerId = c.CustomerID,
-                    Title = c.Title,
-                    FirstName = c.FirstName,
-                    MiddleName = c.MiddleName,
-                    LastName = c.LastName,
-                    Suffix = c.Suffix,
-                    CompanyName = c.CompanyName,
-                    SalesPerson = c.SalesPerson,
-                    CustomerAddresses = c.CustomerAddresses
-                        .Select(ca => new CustomerAddressDto
-                        {
-                            AddressId = ca.AddressID,
-                            AddressType = ca.AddressType,
-                            Address = new AddressDto
-                            {
-                                AddressLine1 = ca.Address.AddressLine1,
-                                City = ca.Address.City,
-                                StateProvince = ca.Address.StateProvince,
-                                CountryRegion = ca.Address.CountryRegion,
-                                PostalCode = ca.Address.PostalCode
-                            }
-                        })
-                        .ToList()
-                })
-                .Where(c => c.CustomerId == id)
-                .SingleAsync();
+            var result = await _customersService.GetByIdAsync(id, cancellationToken);
 
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-
-            }
-            catch (Exception)
+            if (!result.IsSuccess)
             {
-                return Problem();
+                _logger.LogWarning($"GetCustomers failed: {result.ErrorMessage}");
+                return Problem(detail: result.ErrorMessage);
             }
 
-            return Ok(customer);
+            if (result.Value is null)
+                return NotFound();
+            return Ok(result.Value);
         }
 
+
         [HttpGet("CustomerStream/")]
-        public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream()
+        public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream(CancellationToken cancellationToken)
         {
             var customers = _context.Customers
             .AsNoTracking()
@@ -218,25 +149,21 @@ namespace Ciclilavarizia.Controllers
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        public async Task<IActionResult> DeleteCustomer(int id, CancellationToken cancellationToken)
         {
-            try
-            {
-                var customer = await _context.Customers.FindAsync(id);
-                if (customer == null)
-                {
-                    return NotFound();
-                }
+            var result = await _customersService.DeleteAsync(id, cancellationToken);
 
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception)
+            if (!result.IsSuccess)
             {
-                return Problem();
+                _logger.LogWarning($"DeleteCustomer failed: {result.ErrorMessage}");
+                return Problem(result.ErrorMessage);
+            }
+            if (result.Value == -1)
+            {
+                return NotFound();
             }
 
-            return NoContent();
+            return Ok(result.Value);
         }
 
         private bool CustomerExists(int id)

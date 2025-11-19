@@ -1,6 +1,6 @@
 ﻿using Ciclilavarizia.Models.Dtos;
 
-namespace Ciclilavarizia.BLogic
+namespace Ciclilavarizia.Services
 {
     public class CAndPStore
     {

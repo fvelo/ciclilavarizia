@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Ciclilavarizia.BLogic
+namespace Ciclilavarizia.Services.ServicesExtentions
 {
     public static class AuthenticationServicesOptionsConfiguration
     {

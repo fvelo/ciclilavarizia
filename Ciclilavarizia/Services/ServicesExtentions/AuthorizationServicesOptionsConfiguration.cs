@@ -1,4 +1,4 @@
-﻿namespace Ciclilavarizia.BLogic
+﻿namespace Ciclilavarizia.Services.ServicesExtentions
 {
     public static class AuthorizationServicesOptionsConfiguration
     {
@@ -9,9 +9,7 @@
                 opt.AddPolicy("AdminPolicy", p => p.RequireRole("admin"));
                 opt.AddPolicy("UserPolicy", p => p.RequireRole("user", "admin"));
             });
-
             return services;
         }
-
     }
 }

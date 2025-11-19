@@ -1,6 +1,7 @@
-using Ciclilavarizia.BLogic;
 using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
+using Ciclilavarizia.Services;
+using Ciclilavarizia.Services.ServicesExtentions;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,12 @@ namespace Ciclilavarizia
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(opt =>
+            {
+                opt.RespectBrowserAcceptHeader = true;
+                //opt.OutputFormatters.RemoveType<StringOutputFormatter>();
+            })
+                .AddXmlSerializerFormatters();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -38,15 +44,13 @@ namespace Ciclilavarizia
             {
                 builder.Services.AddCors(options =>
                 {
-                    options.AddPolicy(name: LiveServerOrigin,
-                                      policy =>
-                                      {
-                                          policy.AllowAnyOrigin()
-                                          //policy.WithOrigins(//"http://127.0.0.1:5500", // this was the live server 
-                                                             //"http://localhost:4200/") // this is the SPA made with angular
-                                                .AllowAnyHeader()
-                                                .AllowAnyMethod();
-                                      });
+                    options.AddPolicy(name: LiveServerOrigin, policy =>
+                    {
+                        policy.AllowAnyOrigin()
+                        //policy.WithOrigins("http://localhost:4200") // this is the SPA made with angular
+                        //.AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
                 });
             }
 
@@ -55,10 +59,12 @@ namespace Ciclilavarizia
             //
 
             // Service for exercises
-            builder.Services.AddCAndPStore();
 
             builder.Services.AddAuthenticationOptions();
             builder.Services.AddAuthorizationOptions();
+
+            builder.Services.AddCAndPStore();
+            builder.Services.AddCustomerService();
 
             //
             // End Custom Services Extentions
@@ -81,8 +87,6 @@ namespace Ciclilavarizia
             {
                 app.UseCors(LiveServerOrigin);
             }
-
-
 
             app.MapControllers();
             app.Run();
