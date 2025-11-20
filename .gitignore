@@ -519,6 +519,3 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# Added by pietro
-Ciclilavarizia/obj/*
-CommonCiclilavarizia/obj/*
