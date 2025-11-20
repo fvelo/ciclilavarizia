@@ -39,6 +39,9 @@ namespace Ciclilavarizia.Controllers
                 return Problem(detail: result.ErrorMessage);
             }
 
+            if (result.Value == null)
+                return NotFound();
+
             return Ok(result.Value);
         }
 
@@ -60,43 +63,26 @@ namespace Ciclilavarizia.Controllers
         }
 
 
-        [HttpGet("CustomerStream/")]
-        public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream(CancellationToken cancellationToken)
-        {
-            var customers = _context.Customers
-            .AsNoTracking()
-            .Select(c => new CustomerDto
-            {
-                CustomerId = c.CustomerID,
-                Title = c.Title,
-                FirstName = c.FirstName,
-                MiddleName = c.MiddleName,
-                LastName = c.LastName,
-                Suffix = c.Suffix,
-                CompanyName = c.CompanyName,
-                SalesPerson = c.SalesPerson,
-                CustomerAddresses = c.CustomerAddresses
-                    .Select(ca => new CustomerAddressDto
-                    {
-                        AddressId = ca.AddressID,
-                        AddressType = ca.AddressType,
-                        Address = new AddressDto
-                        {
-                            AddressLine1 = ca.Address.AddressLine1,
-                            City = ca.Address.City,
-                            StateProvince = ca.Address.StateProvince,
-                            CountryRegion = ca.Address.CountryRegion,
-                            PostalCode = ca.Address.PostalCode
-                        }
-                    })
-                    .ToList()
-            })
-            .AsAsyncEnumerable();
-            await foreach (var customer in customers)
-            {
-                yield return Ok(customer);
-            }
-        }
+        //[HttpGet("CustomerStream/")]
+        //public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream(CancellationToken cancellationToken)
+        //{
+        //    var result = await _customersService.GetAsync(cancellationToken);
+
+        //    if (!result.IsSuccess)
+        //    {
+        //        _logger.LogWarning($"GetCustomers failed: {result.ErrorMessage}");
+        //        yield return Problem(detail: result.ErrorMessage);
+        //    }
+
+        //    if (result.Value == null)
+        //        yield return NotFound();
+
+        //    List<CustomerDto> customers = result.Value.ToList();
+        //    await foreach (var customer in customers)
+        //    {
+        //        yield return Ok(customer);
+        //    }
+        //}
 
         // PUT: api/Customers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

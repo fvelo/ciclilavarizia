@@ -64,7 +64,8 @@ namespace Ciclilavarizia
             builder.Services.AddAuthorizationOptions();
 
             builder.Services.AddCAndPStore();
-            builder.Services.AddCustomerService();
+            builder.Services.AddCustomersService();
+            builder.Services.AddProductsService();
 
             //
             // End Custom Services Extentions
