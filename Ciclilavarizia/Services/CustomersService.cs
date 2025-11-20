@@ -1,7 +1,6 @@
 ﻿using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ciclilavarizia.Services
@@ -139,6 +138,61 @@ namespace Ciclilavarizia.Services
             {
                 _logger.LogError(ex, "Error while deleting customer");
                 return Result<int>.Failure("An error occurred while deleting a customer.");
+            }
+        }
+
+        public async Task<Result<int>> CreateAsync(Customer incomingCustomer, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                /*
+                NameStyle: 0 di default
+                Title: Null
+                FisrtName: obbligatorio
+                MiddleName: null
+                LastName: obbligatorio
+                Suffix: null
+                CompanyName: null
+                SalesPerson: null
+                EmailAddress: null, qui, ma diventerà obbligatorio perché serve come autenticaione univoca su Secure
+                Phone: null
+                PasswordHash: obbligatorio, ma passerà solo su Secure
+                PasswordSalt: obbligatorio
+                rowguid: obbligatorio, non so come generarlo? boh
+                ModifiedDate: obbligatorio, si mette default a now e poi si traduce in stringa
+                 */
+                Customer customerToAdd = new Customer
+                {
+                    CustomerID = default, // the Db will assign it
+                    NameStyle = false,
+                    Title = null,
+                    FirstName = incomingCustomer.FirstName,
+                    MiddleName = null,
+                    LastName = incomingCustomer.LastName,
+                    Suffix = null,
+                    CompanyName = null,
+                    EmailAddress = incomingCustomer.EmailAddress, // può essere null, ma diventerà obbligatoria da aggiungere al Secure. anche se in tanto lo faccio qui
+                    Phone = null,
+                    PasswordHash = "1234567890", // when the encription is ready implement it
+                    PasswordSalt = "1234567890", // when the encription is ready implement it
+                    rowguid = default,
+                    ModifiedDate = DateTime.Now
+                };
+                var entity = _context.Customers.Add(customerToAdd);
+                _context.SaveChanges();
+                var values = entity.CurrentValues;
+                var idCreatedCustumer = values.GetValue<int>("CustomerID");
+                return Result<int>.Success(idCreatedCustumer);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("CreateAsync was cancelled");
+                return Result<int>.Failure("Operation cancelled.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while creating a customer");
+                return Result<int>.Failure("An error occurred while creating a customer.");
             }
         }
     }
