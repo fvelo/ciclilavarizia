@@ -195,5 +195,10 @@ namespace Ciclilavarizia.Services
                 return Result<int>.Failure("An error occurred while creating a customer.");
             }
         }
+        public async Task<Result<int>> UpdateAsync(int id, Customer incomingCustomer, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
