@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CommonCiclilavarizia")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a6f415ac87501342c0789506971fcede74eafe6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8d5c6a4d6d00e5510e4153b735984f4725d2c45")]
 [assembly: System.Reflection.AssemblyProductAttribute("CommonCiclilavarizia")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CommonCiclilavarizia")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

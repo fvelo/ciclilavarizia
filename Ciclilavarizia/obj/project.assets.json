@@ -7952,23 +7952,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\velof\\.nuget\\packages\\": {},
+    "C:\\Users\\Francesco\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
+      "projectUniqueName": "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
       "projectName": "Ciclilavarizia",
-      "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
-      "packagesPath": "C:\\Users\\velof\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\obj\\",
+      "projectPath": "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\Ciclilavarizia.csproj",
+      "packagesPath": "C:\\Users\\Francesco\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\Ciclilavarizia\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\velof\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Francesco\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -7983,11 +7983,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj": {
-              "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj"
+            "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj": {
+              "projectPath": "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\CommonCiclilavarizia\\CommonCiclilavarizia.csproj"
             },
-            "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj": {
-              "projectPath": "C:\\Users\\velof\\source\\repos\\Academy-betacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj"
+            "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj": {
+              "projectPath": "C:\\Users\\Francesco\\source\\repos\\accademyBetacom\\backend\\Ciclilavarizia\\DataAccessLayer\\DataAccessLayer.csproj"
             }
           }
         }
@@ -8056,7 +8056,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.307/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
