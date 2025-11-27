@@ -15,6 +15,8 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        // TODO: Add an actual error logging for Problem() response in every ActionMethod
+
         public DbSecure _dbSecure { get; set; }
         private readonly IOptionsMonitor<JwtSettings> _jwtSettingsMonitor;
 

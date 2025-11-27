@@ -1,4 +1,5 @@
 ﻿using Ciclilavarizia.Data;
+using Ciclilavarizia.Filters;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
@@ -12,86 +13,186 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+        // TODO: Add an actual error logging for Problem() response in every ActionMethod
         private readonly CiclilavariziaDevContext _context;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(CiclilavariziaDevContext context)
+        public ProductsController(CiclilavariziaDevContext context, ILogger<ProductsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+        public async Task<ActionResult<ProductLessDetails>> GetProductsDetailsAsync(CancellationToken cancellationToken)
         {
-            List<ProductDto> products;
             try
             {
-                products = await _context.Products
-                .Select(p => new ProductDto
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // disconnected logic to better copy/paste :)
+                var query = _context.Products
+                .AsNoTracking()
+                .Where(p => !p.DiscontinuedDate.HasValue);
+
+                var items = await query
+                .Select(p => new ProductLessDetails
                 {
                     ProductId = p.ProductID,
                     Name = p.Name,
-                    ProductNumber = p.ProductNumber,
-                    Color = p.Color,
-                    StandardCost = p.StandardCost,
+                    // TODO: build string through a way that will change if the endpoit get modified
+                    ThumbnailUrl = "/api/images/product/" + p.ProductID,
+                    ProductCategory = p.ProductCategory != null ? p.ProductCategory.Name : "",
+                    ProductModel = p.ProductModel != null ? p.ProductModel.Name : "",
                     ListPrice = p.ListPrice,
-                    Size = p.Size,
-                    Weight = p.Weight,
-                    ProductModel = new ProductModelDto
-                    {
-                        Name = p.ProductModel.Name,
-                        CatalogDescription = p.ProductModel.CatalogDescription
-                    }
+                    Color = p.Color ?? ""
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
+                return Ok(items);
             }
-            catch (Exception)
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("GetProductsDetailsAsync was cancelled");
+                return BadRequest("GetProductsDetailsAsync was cancelled");
+            }
+            catch (Exception ex)
             {
                 return Problem();
             }
-
-            return Ok(products);
         }
 
-        // GET: api/Products/5
+        [EnsureProductExists]
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> GetProduct(int id)
+        public async Task<ActionResult<ProductDetails>> GetProductByIdAsycn(int id, CancellationToken cancellationToken)
         {
-            ProductDto product;
             try
             {
-                product = await _context.Products
-                .Select(p => new ProductDto
-                {
-                    ProductId = p.ProductID,
-                    Name = p.Name,
-                    ProductNumber = p.ProductNumber,
-                    Color = p.Color,
-                    StandardCost = p.StandardCost,
-                    ListPrice = p.ListPrice,
-                    Size = p.Size,
-                    Weight = p.Weight,
-                    ProductModel = new ProductModelDto
-                    {
-                        Name = p.ProductModel.Name,
-                        CatalogDescription = p.ProductModel.CatalogDescription
-                    }
-                })
-                .Where(p => p.ProductId == id)
-                .SingleAsync();
+                var now = DateTime.UtcNow;
 
-                if (product == null)
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var product = await _context.Products
+                    .AsNoTracking()
+                    // Filter by id and availability rules:
+                    .Where(p => p.ProductID == id
+                                && p.DiscontinuedDate == null // exclude discontinued
+                                && (p.SellEndDate == null || p.SellEndDate > now) // exclude sell ended
+                                && p.SellStartDate <= now) // Items with future releast date
+                    .Select(p => new ProductDetails
+                    {
+                        ProductId = p.ProductID,
+                        name = p.Name,
+                        ProductNumber = p.ProductNumber,
+                        Color = p.Color,
+                        //StandardCost = (int)Math.Round(p.StandardCost, 0),
+                        ListPrice = (int)Math.Round(p.ListPrice, 0),
+                        Size = p.Size ?? "Undefined",
+                        Weight = (int?)Math.Round(p.Weight.Value, 0) ?? 0,
+                        SellStartDate = p.SellStartDate,
+                        // We intentionally do not include DiscontinuedDate in the projection/DTO output
+                        CatalogDescription = p.ProductModel != null ? p.ProductModel.CatalogDescription : null,
+                        Culture = p.ProductModel.ProductModelProductDescriptions
+                                     .OrderBy(pm => pm.Culture)
+                                     .Select(pm => pm.Culture)
+                                     .FirstOrDefault() ?? string.Empty,
+                        Description = p.ProductModel.ProductModelProductDescriptions
+                                        .OrderBy(pm => pm.Culture)
+                                        .Select(pm => pm.ProductDescription.Description)
+                                        .FirstOrDefault() ?? string.Empty
+                    })
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (product == null) // discontinued, selldate ended or sell in future
                 {
                     return NotFound();
                 }
+
+                return Ok(product);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("GetProductByIdAsycn was cancelled");
+                return BadRequest("GetProductByIdAsycn was cancelled");
             }
             catch (Exception)
             {
                 return Problem();
             }
-
-            return Ok(product);
         }
+
+        //// GET: api/Products
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
+        //{
+        //    List<ProductDto> products;
+        //    try
+        //    {
+        //        products = await _context.Products
+        //        .Select(p => new ProductDto
+        //        {
+        //            ProductId = p.ProductID,
+        //            Name = p.Name,
+        //            ProductNumber = p.ProductNumber,
+        //            Color = p.Color,
+        //            StandardCost = p.StandardCost,
+        //            ListPrice = p.ListPrice,
+        //            Size = p.Size,
+        //            Weight = p.Weight,
+        //            ProductModel = new ProductModelDto
+        //            {
+        //                Name = p.ProductModel.Name,
+        //                CatalogDescription = p.ProductModel.CatalogDescription
+        //            }
+        //        })
+        //        .ToListAsync();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Problem();
+        //    }
+
+        //    return Ok(products);
+        //}
+
+        ////GET: api/Products/5
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<ProductDto>> GetProduct(int id)
+        //{
+        //    ProductDto product;
+        //    try
+        //    {
+        //        product = await _context.Products
+        //        .Select(p => new ProductDto
+        //        {
+        //            ProductId = p.ProductID,
+        //            Name = p.Name,
+        //            ProductNumber = p.ProductNumber,
+        //            Color = p.Color,
+        //            StandardCost = p.StandardCost,
+        //            ListPrice = p.ListPrice,
+        //            Size = p.Size,
+        //            Weight = p.Weight,
+        //            ProductModel = new ProductModelDto
+        //            {
+        //                Name = p.ProductModel.Name,
+        //                CatalogDescription = p.ProductModel.CatalogDescription
+        //            }
+        //        })
+        //        .Where(p => p.ProductId == id)
+        //        .SingleAsync();
+
+        //        if (product == null)
+        //        {
+        //            return NotFound();
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return Problem();
+        //    }
+
+        //    return Ok(product);
+        //}
 
         [HttpGet("ProductsStream/")]
         public async IAsyncEnumerable<ActionResult<ProductDto>> GetProductsDtoStream()

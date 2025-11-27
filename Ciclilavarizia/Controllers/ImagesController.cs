@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 namespace Ciclilavarizia.Controllers
 {
     [ApiController]
-    [Route("api/images")]
+    [Route("api/images/")]
     public class ImagesController : Controller
     {
+        // TODO: Create Error handleing and, add an actual error logging for Problem() response in every ActionMethod
+
         private CiclilavariziaDevContext _context;
         public ImagesController(CiclilavariziaDevContext context)
         {
@@ -16,7 +18,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [EnsureProductExists]
-        [HttpGet("/product/{id}")]
+        [HttpGet("product/{id}")]
         public async Task<IActionResult> GetProductThumbnail(int id, CancellationToken cancellationToken)
         {
             var product = await _context.Products

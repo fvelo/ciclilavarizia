@@ -15,6 +15,8 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
+        // TODO: Add an actual error logging for Problem() response in every ActionMethod
+
         private readonly CiclilavariziaDevContext _context;
         private readonly ICustomersService _customersService;
         private readonly ILogger<CustomersController> _logger;
@@ -262,7 +264,7 @@ namespace Ciclilavarizia.Controllers
             try
             {
                 var customer = store._customers.FirstOrDefault(c => c.CustomerId == customerId);
-                if (customer == null) return BadRequest();
+                if (customer == null) return NotFound();
                 var tmp = store._customers.Remove(customer);
                 Console.WriteLine($"Customer deleted: {tmp}");
             }

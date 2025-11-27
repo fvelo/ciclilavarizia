@@ -8,7 +8,7 @@ namespace Ciclilavarizia.Models.Dtos
         
         public string Name { get; set; } = null!;
         
-        public string ThumbNailPhoto { get; set; }
+        public string ThumbnailUrl { get; set; }
         
         public string ProductCategory { get; set; }
         

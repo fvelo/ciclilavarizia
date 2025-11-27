@@ -13,7 +13,7 @@ namespace Ciclilavarizia.Models.Dtos
         
         public string Color { get; set; }
         
-        public int StandardCost { get; set; }
+        //public int StandardCost { get; set; }
         
         public int ListPrice { get; set; }
         
@@ -27,8 +27,8 @@ namespace Ciclilavarizia.Models.Dtos
         [Column(TypeName = "datetime")]
         public DateTime? SellEndDate { get; set; } // se esiste non dovresti mostrare l'elementto nel frontend, romane nel backend
         
-        [Column(TypeName = "datetime")]
-        public DateTime? DiscontinuedDate { get; set; } // uguale, stessa cosa, se esiste non va nel front end
+        //[Column(TypeName = "datetime")]
+        //public DateTime? DiscontinuedDate { get; set; } // uguale, stessa cosa, se esiste non va nel front end
 
         [Column(TypeName = "xml")]
         public string? CatalogDescription { get; set; }
