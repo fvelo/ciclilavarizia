@@ -31,11 +31,24 @@ namespace Ciclilavarizia
                 builder.Configuration.GetSection(nameof(JwtSettings)));
 
             //db connection
-            builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
-                o.UseSqlServer(builder.Configuration.GetConnectionString("AdventureWorksLTDbHomelab")));
 
-            builder.Services.AddDbSecure(
-                builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab"));
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
+                    o.UseSqlServer(builder.Configuration.GetConnectionString("CiclilavariziaDev")));
+                builder.Services.AddDbSecure(
+                    builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"));
+            }else if (builder.Environment.IsProduction())
+            {
+                //builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
+                //    o.UseSqlServer(builder.Configuration.GetConnectionString("CiclilavariziaDev")));
+                //builder.Services.AddDbSecure(
+                //    builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"));
+            }
+
+
+            //builder.Services.AddDbSecure(
+            //builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab") ?? string.Empty);
 
             // CORS
             var AnyOrigin = "_anyOrigin";
