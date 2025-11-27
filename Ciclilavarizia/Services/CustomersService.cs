@@ -7,10 +7,10 @@ namespace Ciclilavarizia.Services
 {
     public class CustomersService : ICustomersService
     {
-        private readonly AdventureWorksLTContext _context;
+        private readonly CiclilavariziaDevContext _context;
         private readonly ILogger<CustomersService> _logger;
 
-        public CustomersService(AdventureWorksLTContext context, ILogger<CustomersService> logger)
+        public CustomersService(CiclilavariziaDevContext context, ILogger<CustomersService> logger)
         {
             _context = context;
             _logger = logger;

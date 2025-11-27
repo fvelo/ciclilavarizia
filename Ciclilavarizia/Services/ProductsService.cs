@@ -8,8 +8,8 @@ namespace Ciclilavarizia.Services
 {
     public class ProductsService : IProductsService
     {
-        private readonly AdventureWorksLTContext _context;
-        public ProductsService(AdventureWorksLTContext ctx) 
+        private readonly CiclilavariziaDevContext _context;
+        public ProductsService(CiclilavariziaDevContext ctx) 
         {
             _context = ctx;
         }

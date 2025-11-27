@@ -34,7 +34,7 @@ namespace Ciclilavarizia
 
             if (builder.Environment.IsDevelopment())
             {
-                builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
+                builder.Services.AddDbContext<CiclilavariziaDevContext>(o =>
                     o.UseSqlServer(builder.Configuration.GetConnectionString("CiclilavariziaDev")));
                 builder.Services.AddDbSecure(
                     builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"));

@@ -12,9 +12,9 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly AdventureWorksLTContext _context;
+        private readonly CiclilavariziaDevContext _context;
 
-        public ProductsController(AdventureWorksLTContext context)
+        public ProductsController(CiclilavariziaDevContext context)
         {
             _context = context;
         }

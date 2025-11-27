@@ -15,11 +15,11 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly AdventureWorksLTContext _context;
+        private readonly CiclilavariziaDevContext _context;
         private readonly ICustomersService _customersService;
         private readonly ILogger<CustomersController> _logger;
 
-        public CustomersController(AdventureWorksLTContext context, ICustomersService customersService, ILogger<CustomersController> logger)
+        public CustomersController(CiclilavariziaDevContext context, ICustomersService customersService, ILogger<CustomersController> logger)
         {
             _context = context;
             _customersService = customersService;

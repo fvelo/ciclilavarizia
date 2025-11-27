@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Ciclilavarizia.Models;
+﻿using Ciclilavarizia.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ciclilavarizia.Data;
 
-public partial class AdventureWorksLTContext : DbContext
+public partial class CiclilavariziaDevContext : DbContext
 {
-    public AdventureWorksLTContext()
+    public CiclilavariziaDevContext()
     {
     }
 
-    public AdventureWorksLTContext(DbContextOptions<AdventureWorksLTContext> options)
+    public CiclilavariziaDevContext(DbContextOptions<CiclilavariziaDevContext> options)
         : base(options)
     {
     }
