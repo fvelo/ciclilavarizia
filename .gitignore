@@ -518,3 +518,50 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Visual Studio / .NET ignores (put at repo root)
+# Visual Studio workspace & user files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output - per-project
+[Bb]in/
+[Oo]bj/
+# specific debug/release folders
+[Dd]ebug*/
+[Rr]elease*/
+
+# VS caches
+**/.futdcache*
+**/.dtbcache*
+**/.dtbcache.v2
+**/.sourcelink.json
+
+# Temporary and cache files
+*.cache
+*.tmp
+*.log
+
+# Rider/IDE, VSCode
+.idea/
+.vscode/
+.history/
+
+# NuGet packages folder
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Ignore generated binaries under build output (these live in bin/ obj/)
+# do not ignore `lib/` or `packages/` if you intentionally check those in
