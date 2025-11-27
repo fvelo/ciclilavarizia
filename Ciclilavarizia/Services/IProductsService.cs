@@ -18,7 +18,7 @@ namespace Ciclilavarizia.Services
         /// <param name="id">ProductId</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Return customer if found, otherways null</returns>
-        Task<Result<IEnumerable<ProductDto>>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<Result<ProductDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a Product in the db if present
