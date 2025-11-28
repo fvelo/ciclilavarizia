@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Ciclilavarizia.Controllers
 {
     [ApiController]
-    [Route("api/images/")]
+    [Route("api/[controller]")]
     public class ImagesController : Controller
     {
         // TODO: Create Error handleing and, add an actual error logging for Problem() response in every ActionMethod

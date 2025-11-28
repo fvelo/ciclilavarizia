@@ -11,8 +11,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Ciclilavarizia.Controllers
 {
-    [Route("api/v1/[controller]")] //for now v1, to change version make a new controller
     [ApiController]
+    [Route("api/[controller]")] //for now v1, to change version make a new controller
     public class CustomersController : ControllerBase
     {
         // TODO: Add an actual error logging for Problem() response in every ActionMethod
@@ -49,9 +49,9 @@ namespace Ciclilavarizia.Controllers
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDetailDto>> GetCustomer(int id, CancellationToken cancellationToken = default)
+        public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _customersService.GetByIdAsync(id, cancellationToken);
+            var result = await _customersService.GetCustomerByIdAsync(id, cancellationToken);
 
             if (!result.IsSuccess)
             {

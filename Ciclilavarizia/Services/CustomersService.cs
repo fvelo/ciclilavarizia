@@ -2,14 +2,14 @@
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using DataAccessLayer;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 
 namespace Ciclilavarizia.Services
 {
     public class CustomersService : ICustomersService
     {
+        // TODO: Create an actual error handling
+
         private readonly CiclilavariziaDevContext _db;
         private readonly ILogger<CustomersService> _logger;
         private readonly SecureDbService _secureDb;
@@ -66,7 +66,7 @@ namespace Ciclilavarizia.Services
             {
                 return Result<IEnumerable<CustomerSummaryDto>>.Failure($"Request Cancelled.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result<IEnumerable<CustomerSummaryDto>>.Failure($"Unexpected error.");
                 throw;
@@ -125,7 +125,7 @@ namespace Ciclilavarizia.Services
             }
         }
 
-        public async Task<Result<CustomerDetailDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<CustomerDetailDto>> GetCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             try
             {
