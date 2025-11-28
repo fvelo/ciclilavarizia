@@ -171,10 +171,10 @@ namespace Ciclilavarizia.Services
                     LastName = incomingCustomer.LastName,
                     Suffix = null,
                     CompanyName = null,
-                    EmailAddress = incomingCustomer.EmailAddress, // può essere null, ma diventerà obbligatoria da aggiungere al Secure. anche se in tanto lo faccio qui
+                    //EmailAddress = incomingCustomer.EmailAddress, // può essere null, ma diventerà obbligatoria da aggiungere al Secure. anche se in tanto lo faccio qui
                     Phone = null,
-                    PasswordHash = "1234567890", // when the encription is ready implement it
-                    PasswordSalt = "1234567890", // when the encription is ready implement it
+                    //PasswordHash = "1234567890", // when the encription is ready implement it
+                    //PasswordSalt = "1234567890", // when the encription is ready implement it
                     rowguid = default,
                     ModifiedDate = DateTime.Now
                 };

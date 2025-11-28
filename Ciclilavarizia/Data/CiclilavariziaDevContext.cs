@@ -1,14 +1,12 @@
-﻿using Ciclilavarizia.Models;
+﻿using System;
+using System.Collections.Generic;
+using Ciclilavarizia.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ciclilavarizia.Data;
 
 public partial class CiclilavariziaDevContext : DbContext
 {
-    public CiclilavariziaDevContext()
-    {
-    }
-
     public CiclilavariziaDevContext(DbContextOptions<CiclilavariziaDevContext> options)
         : base(options)
     {
@@ -88,7 +86,6 @@ public partial class CiclilavariziaDevContext : DbContext
 
             entity.Property(e => e.CustomerID).HasComment("Primary key for Customer records.");
             entity.Property(e => e.CompanyName).HasComment("The customer's organization.");
-            entity.Property(e => e.EmailAddress).HasComment("E-mail address for the person.");
             entity.Property(e => e.FirstName).HasComment("First name of the person.");
             entity.Property(e => e.LastName).HasComment("Last name of the person.");
             entity.Property(e => e.MiddleName).HasComment("Middle name or middle initial of the person.");
@@ -96,8 +93,6 @@ public partial class CiclilavariziaDevContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasComment("Date and time the record was last updated.");
             entity.Property(e => e.NameStyle).HasComment("0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order.");
-            entity.Property(e => e.PasswordHash).HasComment("Password for the e-mail account.");
-            entity.Property(e => e.PasswordSalt).HasComment("Random value concatenated with the password string before the password is hashed.");
             entity.Property(e => e.Phone).HasComment("Phone number associated with the person.");
             entity.Property(e => e.SalesPerson).HasComment("The customer's sales person, an employee of AdventureWorks Cycles.");
             entity.Property(e => e.Suffix).HasComment("Surname suffix. For example, Sr. or Jr.");

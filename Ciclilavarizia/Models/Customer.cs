@@ -11,7 +11,6 @@ namespace Ciclilavarizia.Models;
 /// </summary>
 [Table("Customer", Schema = "SalesLT")]
 [Index("rowguid", Name = "AK_Customer_rowguid", IsUnique = true)]
-[Index("EmailAddress", Name = "IX_Customer_EmailAddress")]
 public partial class Customer
 {
     /// <summary>
@@ -68,30 +67,10 @@ public partial class Customer
     public string? SalesPerson { get; set; }
 
     /// <summary>
-    /// E-mail address for the person.
-    /// </summary>
-    [StringLength(50)]
-    public string? EmailAddress { get; set; }
-
-    /// <summary>
     /// Phone number associated with the person.
     /// </summary>
     [StringLength(25)]
     public string? Phone { get; set; }
-
-    /// <summary>
-    /// Password for the e-mail account.
-    /// </summary>
-    [StringLength(128)]
-    [Unicode(false)]
-    public string PasswordHash { get; set; } = null!;
-
-    /// <summary>
-    /// Random value concatenated with the password string before the password is hashed.
-    /// </summary>
-    [StringLength(10)]
-    [Unicode(false)]
-    public string PasswordSalt { get; set; } = null!;
 
     /// <summary>
     /// ROWGUIDCOL number uniquely identifying the record. Used to support a merge replication sample.
@@ -103,6 +82,8 @@ public partial class Customer
     /// </summary>
     [Column(TypeName = "datetime")]
     public DateTime ModifiedDate { get; set; }
+
+    public bool IsDeleted { get; set; }
 
     [InverseProperty("Customer")]
     public virtual ICollection<CustomerAddress> CustomerAddresses { get; set; } = new List<CustomerAddress>();

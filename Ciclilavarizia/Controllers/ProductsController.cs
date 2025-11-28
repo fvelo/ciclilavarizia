@@ -81,7 +81,7 @@ namespace Ciclilavarizia.Controllers
                     .Select(p => new ProductDetailDto
                     {
                         ProductId = p.ProductID,
-                        name = p.Name,
+                        Name = p.Name,
                         ProductNumber = p.ProductNumber,
                         Color = p.Color,
                         //StandardCost = (int)Math.Round(p.StandardCost, 0),
