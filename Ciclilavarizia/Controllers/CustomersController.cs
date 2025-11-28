@@ -28,12 +28,12 @@ namespace Ciclilavarizia.Controllers
             _logger = logger;
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        //[Authorize(Policy = "AdminPolicy")]
         // GET: api/Customers
         [HttpGet]
-        public async Task<IActionResult> GetCustomers(CancellationToken cancellationToken)
+        public async Task<ActionResult<CustomerSummaryDto>> GetCustomersAsync(CancellationToken cancellationToken = default)
         {
-            var result = await _customersService.GetAsync(cancellationToken);
+            var result = await _customersService.GetCustomersSummaryAsync(cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -49,7 +49,7 @@ namespace Ciclilavarizia.Controllers
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDetailDto>> GetCustomer(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CustomerDetailDto>> GetCustomer(int id, CancellationToken cancellationToken = default)
         {
             var result = await _customersService.GetByIdAsync(id, cancellationToken);
 

@@ -22,6 +22,14 @@ namespace Ciclilavarizia
                 //opt.OutputFormatters.RemoveType<StringOutputFormatter>();
             })
                 .AddXmlSerializerFormatters();
+
+            builder.Services.Configure<RouteOptions>((o) =>
+            {
+                o.LowercaseUrls = true;
+                o.LowercaseQueryStrings = false;
+                o.AppendTrailingSlash = true;
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

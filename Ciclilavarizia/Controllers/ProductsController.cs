@@ -55,7 +55,7 @@ namespace Ciclilavarizia.Controllers
                 _logger.LogInformation("GetProductsDetailsAsync was cancelled");
                 return BadRequest("GetProductsDetailsAsync was cancelled");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Problem();
             }
@@ -89,7 +89,7 @@ namespace Ciclilavarizia.Controllers
                         Size = p.Size ?? "Undefined",
                         Weight = (int?)Math.Round(p.Weight.Value, 0) ?? 0,
                         SellStartDate = p.SellStartDate,
-                        // We intentionally do not include DiscontinuedDate in the projection/DTO output
+                        // I intentionally do not include DiscontinuedDate in the DTO
                         CatalogDescription = p.ProductModel != null ? p.ProductModel.CatalogDescription : null,
                         Culture = p.ProductModel.ProductModelProductDescriptions
                                      .OrderBy(pm => pm.Culture)

@@ -17,17 +17,17 @@ namespace Ciclilavarizia.Controllers
     {
         // TODO: Add an actual error logging for Problem() response in every ActionMethod
 
-        public DbSecure _dbSecure { get; set; }
+        public SecureDbService _dbSecure { get; set; }
         private readonly IOptionsMonitor<JwtSettings> _jwtSettingsMonitor;
 
-        public LoginController(DbSecure dbSecure, IOptionsMonitor<JwtSettings> jwtSettingsMonitor)
+        public LoginController(SecureDbService dbSecure, IOptionsMonitor<JwtSettings> jwtSettingsMonitor)
         {
             _dbSecure = dbSecure;
             _jwtSettingsMonitor = jwtSettingsMonitor;
         }
 
         [HttpPost]
-        public async Task<IActionResult> IsRegistered([FromBody] CredentialsDto credentials)
+        public async Task<IActionResult> IsRegistered([FromBody] CredentialDto credentials)
         {
             if (credentials == null) return NotFound();
             string email = credentials.EmailAddress;
@@ -49,7 +49,7 @@ namespace Ciclilavarizia.Controllers
             return Ok(new { token = jwtToken });
         }
 
-        private string GenerateJwtToken(CredentialsDto credentials, string role)
+        private string GenerateJwtToken(CredentialDto credentials, string role)
         {
             var jwtSettings = _jwtSettingsMonitor.CurrentValue;
             var secretKey = jwtSettings.SecretKey;
