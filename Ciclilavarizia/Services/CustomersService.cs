@@ -1,26 +1,85 @@
 ﻿using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
+using DataAccessLayer;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 
 namespace Ciclilavarizia.Services
 {
     public class CustomersService : ICustomersService
     {
-        private readonly CiclilavariziaDevContext _context;
+        private readonly CiclilavariziaDevContext _db;
         private readonly ILogger<CustomersService> _logger;
+        private readonly SecureDbService _secureDb;
 
-        public CustomersService(CiclilavariziaDevContext context, ILogger<CustomersService> logger)
+
+        public CustomersService(CiclilavariziaDevContext db, ILogger<CustomersService> logger, SecureDbService secureDb)
         {
-            _context = context;
+            _db = db;
             _logger = logger;
+            _secureDb = secureDb;
+        }
+
+        public async Task<Result<IEnumerable<CustomerSummaryDto>>> GetCustomersSummaryAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var customers = await _db.Customers
+                .AsNoTracking()
+                .Where(c => c.IsDeleted == false)
+                .Select(c => new CustomerSummaryDto
+                {
+                    CustomerId = c.CustomerID,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName
+                })
+                .ToListAsync(cancellationToken);
+
+                if (!customers.Any())
+                {
+                    return Result<IEnumerable<CustomerSummaryDto>>
+                        .Success(Enumerable.Empty<CustomerSummaryDto>());
+                }
+
+                var customerSummaryTasks = customers.Select(async c =>
+                {
+                    string emailAddress = await _secureDb.GetEmailAddressByCustomerIdAsync(c.CustomerId);
+
+                    return new CustomerSummaryDto
+                    {
+                        CustomerId = c.CustomerId,
+                        FirstName = c.FirstName,
+                        LastName = c.LastName,
+                        EmailAddress = emailAddress
+                    };
+                }).ToList();
+
+                var customerSummaries = await Task.WhenAll(customerSummaryTasks); // Execute the list of Tasks passed
+
+                return Result<IEnumerable<CustomerSummaryDto>>.Success(customerSummaries);
+            }
+            catch (OperationCanceledException)
+            {
+                return Result<IEnumerable<CustomerSummaryDto>>.Failure($"Request Cancelled.");
+            }
+            catch (Exception ex)
+            {
+                return Result<IEnumerable<CustomerSummaryDto>>.Failure($"Unexpected error.");
+                throw;
+            }
         }
 
         public async Task<Result<IEnumerable<CustomerDetailDto>>> GetAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                var customers = await _context.Customers
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var customers = await _db.Customers
                     .AsNoTracking()
                     .Include(c => c.CustomerAddresses)
                         .ThenInclude(ca => ca.Address)
@@ -70,7 +129,9 @@ namespace Ciclilavarizia.Services
         {
             try
             {
-                var customer = await _context.Customers
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var customer = await _db.Customers
                 .AsNoTracking()
                 .Select(c => new CustomerDetailDto
                 {
@@ -119,14 +180,16 @@ namespace Ciclilavarizia.Services
         {
             try
             {
-                var customer = await _context.Customers.FindAsync(id, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var customer = await _db.Customers.FindAsync(id, cancellationToken);
                 if (customer == null)
                 {
                     return Result<int>.Success(-1);
                 }
 
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
+                _db.Customers.Remove(customer);
+                await _db.SaveChangesAsync();
                 return Result<int>.Success(id);
             }
             catch (OperationCanceledException)
@@ -178,8 +241,8 @@ namespace Ciclilavarizia.Services
                     rowguid = default,
                     ModifiedDate = DateTime.Now
                 };
-                var entity = _context.Customers.Add(customerToAdd);
-                _context.SaveChanges();
+                var entity = _db.Customers.Add(customerToAdd);
+                _db.SaveChanges();
                 var values = entity.CurrentValues;
                 var idCreatedCustumer = values.GetValue<int>("CustomerID");
                 return Result<int>.Success(idCreatedCustumer);

@@ -46,6 +46,14 @@ namespace Ciclilavarizia.Services
         /// <returns>Returns the CustomerId. If customer not foud -1.</returns>
         Task<Result<int>> UpdateAsync(int id, Customer incomingCustomer, CancellationToken cancellationToken = default);
 
+
+        /// <summary>
+        /// Get all customers for Admin view
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns>An IEnumerable of CustomerSummaryDto</returns>
+        Task<Result<IEnumerable<CustomerSummaryDto>>> GetCustomersSummaryAsync(CancellationToken cancellationToken = default);
+
         // Add other methods: GetByIdAsync, CreateAsync, UpdateAsync, DeleteAsync etc.
     }
 }
