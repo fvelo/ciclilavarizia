@@ -1,4 +1,6 @@
-﻿namespace Ciclilavarizia.Services.ServicesExtentions
+﻿using Ciclilavarizia.Services.Interfaces;
+
+namespace Ciclilavarizia.Services.ServicesExtentions
 {
     public static class ProductsServiceExtention
     {

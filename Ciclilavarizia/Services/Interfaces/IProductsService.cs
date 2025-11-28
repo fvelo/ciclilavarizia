@@ -1,7 +1,7 @@
 ﻿using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 
-namespace Ciclilavarizia.Services
+namespace Ciclilavarizia.Services.Interfaces
 {
     public interface IProductsService
     {

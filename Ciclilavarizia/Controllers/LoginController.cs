@@ -1,5 +1,6 @@
 ﻿using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Models.Settings;
+using Ciclilavarizia.Services;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -16,14 +17,18 @@ namespace Ciclilavarizia.Controllers
     public class LoginController : ControllerBase
     {
         // TODO: Add an actual error logging for Problem() response in every ActionMethod
+        // TODO: Implement the login controller for real and not FAKEEEEE
 
-        public SecureDbService _dbSecure { get; set; }
+        private readonly SecureDbService _secureDb;
         private readonly IOptionsMonitor<JwtSettings> _jwtSettingsMonitor;
+        private readonly LoginService _loginService;
 
-        public LoginController(SecureDbService dbSecure, IOptionsMonitor<JwtSettings> jwtSettingsMonitor)
+
+        public LoginController(SecureDbService secureDb, IOptionsMonitor<JwtSettings> jwtSettingsMonitor, LoginService loginService)
         {
-            _dbSecure = dbSecure;
+            _secureDb = secureDb;
             _jwtSettingsMonitor = jwtSettingsMonitor;
+            _loginService = loginService;
         }
 
         [HttpPost]
@@ -35,11 +40,11 @@ namespace Ciclilavarizia.Controllers
 
             email = email ?? string.Empty;
             email = email.ToLower().Replace(" ", "");
-            bool isThereAUSer = await _dbSecure.FindUserByEmail(email);
+            bool isThereAUSer = await _secureDb.FindUserByEmail(email);
             if (!isThereAUSer) return NotFound();
             var role = "admin";
 
-            var jwtToken = GenerateJwtToken(credentials, role.ToLower());
+            var jwtToken = _loginService.GenerateJwtTokenAsync(credentials, role.ToLower());
             Response.Cookies.Append("FlashMessage", "Sì il cannone", new CookieOptions
             {
                 Secure = true
@@ -47,38 +52,6 @@ namespace Ciclilavarizia.Controllers
             Console.WriteLine($"Dentro IsRegistered ${email} as entered!");
             //return Ok(jwtToken);
             return Ok(new { token = jwtToken });
-        }
-
-        private string GenerateJwtToken(CredentialDto credentials, string role)
-        {
-            var jwtSettings = _jwtSettingsMonitor.CurrentValue;
-            var secretKey = jwtSettings.SecretKey;
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(secretKey);
-            role = role.ToLower();
-
-            var tokenDescrition = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity([
-                    new Claim(ClaimTypes.Name, credentials.EmailAddress),
-                    new Claim(ClaimTypes.Role, role),
-                    
-                    //new Claim(ClaimTypes.Role, "Admin"),
-                    //new Claim(ClaimTypes.Role, "Customer"),
-                    //new Claim(ClaimTypes.Role, "MagazineManager"),
-
-                    ]),
-                Expires = DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationMinutes),
-                Issuer = jwtSettings.Issuer,
-                Audience = jwtSettings.Audience,
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescrition);
-            var tokenString = tokenHandler.WriteToken(token);
-            return tokenString;
-            //return tokenHandler.CreateToken(tokenDescrition);
         }
     }
 }
