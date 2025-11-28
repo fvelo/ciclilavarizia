@@ -16,7 +16,7 @@ namespace Ciclilavarizia.Services
             _logger = logger;
         }
 
-        public async Task<Result<IEnumerable<CustomerDto>>> GetAsync(CancellationToken cancellationToken = default)
+        public async Task<Result<IEnumerable<CustomerDetailDto>>> GetAsync(CancellationToken cancellationToken = default)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace Ciclilavarizia.Services
                     .AsNoTracking()
                     .Include(c => c.CustomerAddresses)
                         .ThenInclude(ca => ca.Address)
-                    .Select(c => new CustomerDto
+                    .Select(c => new CustomerDetailDto
                     {
                         CustomerId = c.CustomerID,
                         Title = c.Title,
@@ -52,27 +52,27 @@ namespace Ciclilavarizia.Services
                     })
                     .ToListAsync(cancellationToken);
 
-                return Result<IEnumerable<CustomerDto>>.Success(customers);
+                return Result<IEnumerable<CustomerDetailDto>>.Success(customers);
             }
             catch (OperationCanceledException)
             {
                 _logger.LogInformation("GetAsync was cancelled");
-                return Result<IEnumerable<CustomerDto>>.Failure("Operation cancelled.");
+                return Result<IEnumerable<CustomerDetailDto>>.Failure("Operation cancelled.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting customers");
-                return Result<IEnumerable<CustomerDto>>.Failure("An error occurred while retrieving customers.");
+                return Result<IEnumerable<CustomerDetailDto>>.Failure("An error occurred while retrieving customers.");
             }
         }
 
-        public async Task<Result<CustomerDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<CustomerDetailDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             try
             {
                 var customer = await _context.Customers
                 .AsNoTracking()
-                .Select(c => new CustomerDto
+                .Select(c => new CustomerDetailDto
                 {
                     CustomerId = c.CustomerID,
                     Title = c.Title,
@@ -101,17 +101,17 @@ namespace Ciclilavarizia.Services
                 .Where(c => c.CustomerId == id)
                 .SingleOrDefaultAsync(cancellationToken);
 
-                return Result<CustomerDto>.Success(customer);
+                return Result<CustomerDetailDto>.Success(customer);
             }
             catch (OperationCanceledException)
             {
                 _logger.LogInformation("GetByIdAsync was cancelled");
-                return Result<CustomerDto>.Failure("Operation cancelled.");
+                return Result<CustomerDetailDto>.Failure("Operation cancelled.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting customer");
-                return Result<CustomerDto>.Failure("An error occurred while retrieving a customer.");
+                return Result<CustomerDetailDto>.Failure("An error occurred while retrieving a customer.");
             }
         }
 

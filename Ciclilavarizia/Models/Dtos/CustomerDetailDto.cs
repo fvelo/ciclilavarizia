@@ -2,7 +2,7 @@
 
 namespace Ciclilavarizia.Models.Dtos
 {
-    public class CustomerDto
+    public class CustomerDetailDto
     {
         public int CustomerId { get; set; }
         public string? Title { get; set; }

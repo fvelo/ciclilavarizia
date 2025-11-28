@@ -24,7 +24,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ProductLessDetails>> GetProductsDetailsAsync(CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductSummaryDto>> GetProductsDetailsAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace Ciclilavarizia.Controllers
                 .Where(p => !p.DiscontinuedDate.HasValue);
 
                 var items = await query
-                .Select(p => new ProductLessDetails
+                .Select(p => new ProductSummaryDto
                 {
                     ProductId = p.ProductID,
                     Name = p.Name,
@@ -63,7 +63,7 @@ namespace Ciclilavarizia.Controllers
 
         [EnsureProductExists]
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDetails>> GetProductByIdAsycn(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDetailDto>> GetProductByIdAsycn(int id, CancellationToken cancellationToken)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace Ciclilavarizia.Controllers
                                 && p.DiscontinuedDate == null // exclude discontinued
                                 && (p.SellEndDate == null || p.SellEndDate > now) // exclude sell ended
                                 && p.SellStartDate <= now) // Items with future releast date
-                    .Select(p => new ProductDetails
+                    .Select(p => new ProductDetailDto
                     {
                         ProductId = p.ProductID,
                         name = p.Name,

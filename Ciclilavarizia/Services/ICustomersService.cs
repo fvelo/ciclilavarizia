@@ -10,7 +10,7 @@ namespace Ciclilavarizia.Services
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>IEnumerable of CustomerDto.</returns>
-        Task<Result<IEnumerable<CustomerDto>>> GetAsync(CancellationToken cancellationToken = default);
+        Task<Result<IEnumerable<CustomerDetailDto>>> GetAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a customer present in the db by it's id.
@@ -19,7 +19,7 @@ namespace Ciclilavarizia.Services
         /// <param name="cancellationToken"></param>
         /// <returns>Return customer if found, otherways null.</returns>
 
-        Task<Result<CustomerDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<Result<CustomerDetailDto>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete a customer in the db if it is present.

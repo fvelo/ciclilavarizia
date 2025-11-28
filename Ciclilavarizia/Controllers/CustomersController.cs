@@ -49,7 +49,7 @@ namespace Ciclilavarizia.Controllers
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDto>> GetCustomer(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CustomerDetailDto>> GetCustomer(int id, CancellationToken cancellationToken)
         {
             var result = await _customersService.GetByIdAsync(id, cancellationToken);
 
@@ -164,7 +164,7 @@ namespace Ciclilavarizia.Controllers
         //
 
         [HttpGet("listActions/{customerId}")]
-        public ActionResult<CustomerDto> GetCustomer(CAndPStore store, int customerId)
+        public ActionResult<CustomerDetailDto> GetCustomer(CAndPStore store, int customerId)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace Ciclilavarizia.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpGet("listActions/")]
-        public ActionResult<List<CustomerDto>> GetCustomersList(CAndPStore store)
+        public ActionResult<List<CustomerDetailDto>> GetCustomersList(CAndPStore store)
         {
             Console.WriteLine("\n\tI entered the GetCustomersList even if there is a Authorize!!!");
             try
@@ -189,7 +189,7 @@ namespace Ciclilavarizia.Controllers
                 {
                     var customers = _context.Customers
                     .AsNoTracking()
-                    .Select(c => new CustomerDto
+                    .Select(c => new CustomerDetailDto
                     {
                         CustomerId = c.CustomerID,
                         Title = c.Title,
@@ -231,7 +231,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpPost("listActions/")]
-        public async Task<ActionResult> AddCustomer([FromBody] CustomerDto customer, CAndPStore store)
+        public async Task<ActionResult> AddCustomer([FromBody] CustomerDetailDto customer, CAndPStore store)
         {
             try
             {
@@ -362,14 +362,14 @@ namespace Ciclilavarizia.Controllers
         //    return Results.NoContent();
         //}
         [HttpPut("listActions/{customerId}")]
-        public ActionResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
+        public ActionResult UpdateCustomer(int customerId, [FromBody] CustomerDetailDto customer, CAndPStore store)
         {
             try
             {
                 var incomingCustomer = customer; // more readable
                 if (incomingCustomer.CustomerId != customerId) return BadRequest(); // questa sembra essere una best practrice di controllo
 
-                CustomerDto? existingCustomer = store._customers
+                CustomerDetailDto? existingCustomer = store._customers
                     .Where(c => c.CustomerId == customerId)
                     .FirstOrDefault();
                 if (existingCustomer == null) return BadRequest();

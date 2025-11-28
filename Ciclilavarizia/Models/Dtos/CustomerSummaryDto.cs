@@ -1,6 +1,6 @@
 ﻿namespace Ciclilavarizia.Models.Dtos
 {
-    public class CustomerDetailsDto
+    public class CustomerSummaryDto
     {
         public int CustomerId { get; set; }
         public string FirstName { get; set; } = string.Empty;
