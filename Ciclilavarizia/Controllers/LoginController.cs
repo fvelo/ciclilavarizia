@@ -4,15 +4,11 @@ using Ciclilavarizia.Services;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 
 namespace Ciclilavarizia.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
     {
@@ -45,11 +41,11 @@ namespace Ciclilavarizia.Controllers
             var role = "admin";
 
             var jwtToken = _loginService.GenerateJwtTokenAsync(credentials, role.ToLower());
-            Response.Cookies.Append("FlashMessage", "Sì il cannone", new CookieOptions
-            {
-                Secure = true
-            });
-            Console.WriteLine($"Dentro IsRegistered ${email} as entered!");
+            //Response.Cookies.Append("FlashMessage", "Sì il cannone", new CookieOptions
+            //{
+            //    Secure = true
+            //});
+            //Console.WriteLine($"Dentro IsRegistered ${email} as entered!");
             //return Ok(jwtToken);
             return Ok(new { token = jwtToken });
         }
