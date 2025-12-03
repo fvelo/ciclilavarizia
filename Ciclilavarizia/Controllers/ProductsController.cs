@@ -98,7 +98,10 @@ namespace Ciclilavarizia.Controllers
                         Description = p.ProductModel.ProductModelProductDescriptions
                                         .OrderBy(pm => pm.Culture)
                                         .Select(pm => pm.ProductDescription.Description)
-                                        .FirstOrDefault() ?? string.Empty
+                                        .FirstOrDefault() ?? string.Empty,
+                        ProductCategory = p.ProductCategory.Name,
+                        ProductModel = p.ProductModel.Name,
+                        ThumbnailUrl = "/api/images/product/" + p.ProductID
                     })
                     .FirstOrDefaultAsync(cancellationToken);
 
