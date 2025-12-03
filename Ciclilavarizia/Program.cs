@@ -69,7 +69,7 @@ namespace Ciclilavarizia
                     {
                         policy.AllowAnyOrigin()
                         //policy.WithOrigins("http://localhost:4200") // this is the SPA made with angular
-                        //.AllowAnyHeader()
+                        .AllowAnyHeader()
                         .AllowAnyMethod();
                     });
                 });
@@ -87,6 +87,7 @@ namespace Ciclilavarizia
             builder.Services.AddCAndPStore();
             builder.Services.AddCustomersService();
             builder.Services.AddProductsService();
+            builder.Services.AddLoginService();
 
             //
             // End Custom Services Extentions
