@@ -1,8 +1,10 @@
-﻿namespace Ciclilavarizia.Services.ServicesExtentions
+﻿using Ciclilavarizia.Services.Interfaces;
+
+namespace Ciclilavarizia.Services.ServicesExtentions
 {
     public static class CustomersServiceExtention
     {
-        public static IServiceCollection AddCustomerService(this IServiceCollection services)
+        public static IServiceCollection AddCustomersService(this IServiceCollection services)
         {
             services.AddScoped<ICustomersService, CustomersService>();
             return services;

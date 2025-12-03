@@ -4,7 +4,7 @@ namespace Ciclilavarizia.Services
 {
     public class CAndPStore
     {
-        public List<CustomerDto> _customers { get; set; } = new List<CustomerDto>();
+        public List<CustomerDetailDto> _customers { get; set; } = new List<CustomerDetailDto>();
         public List<ProductDto> _products { get; set; } = new List<ProductDto>();
     }
 

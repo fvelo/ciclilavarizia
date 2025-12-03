@@ -2,6 +2,7 @@
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
+using Ciclilavarizia.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,27 +12,29 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Ciclilavarizia.Controllers
 {
-    [Route("api/v1/[controller]")] //for now v1, to change version make a new controller
     [ApiController]
+    [Route("api/[controller]")] //for now v1, to change version make a new controller
     public class CustomersController : ControllerBase
     {
-        private readonly AdventureWorksLTContext _context;
+        // TODO: Add an actual error logging for Problem() response in every ActionMethod
+
+        private readonly CiclilavariziaDevContext _context;
         private readonly ICustomersService _customersService;
         private readonly ILogger<CustomersController> _logger;
 
-        public CustomersController(AdventureWorksLTContext context, ICustomersService customersService, ILogger<CustomersController> logger)
+        public CustomersController(CiclilavariziaDevContext context, ICustomersService customersService, ILogger<CustomersController> logger)
         {
             _context = context;
             _customersService = customersService;
             _logger = logger;
         }
 
-        [Authorize(Policy = "AdminPolicy")]
+        //[Authorize(Policy = "AdminPolicy")]
         // GET: api/Customers
         [HttpGet]
-        public async Task<IActionResult> GetCustomers(CancellationToken cancellationToken)
+        public async Task<ActionResult<CustomerSummaryDto>> GetCustomersAsync(CancellationToken cancellationToken = default)
         {
-            var result = await _customersService.GetAsync(cancellationToken);
+            var result = await _customersService.GetCustomersSummaryAsync(cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -39,14 +42,17 @@ namespace Ciclilavarizia.Controllers
                 return Problem(detail: result.ErrorMessage);
             }
 
+            if (result.Value == null)
+                return NotFound();
+
             return Ok(result.Value);
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDto>> GetCustomer(int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int id, CancellationToken cancellationToken = default)
         {
-            var result = await _customersService.GetByIdAsync(id, cancellationToken);
+            var result = await _customersService.GetCustomerByIdAsync(id, cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -60,43 +66,26 @@ namespace Ciclilavarizia.Controllers
         }
 
 
-        [HttpGet("CustomerStream/")]
-        public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream(CancellationToken cancellationToken)
-        {
-            var customers = _context.Customers
-            .AsNoTracking()
-            .Select(c => new CustomerDto
-            {
-                CustomerId = c.CustomerID,
-                Title = c.Title,
-                FirstName = c.FirstName,
-                MiddleName = c.MiddleName,
-                LastName = c.LastName,
-                Suffix = c.Suffix,
-                CompanyName = c.CompanyName,
-                SalesPerson = c.SalesPerson,
-                CustomerAddresses = c.CustomerAddresses
-                    .Select(ca => new CustomerAddressDto
-                    {
-                        AddressId = ca.AddressID,
-                        AddressType = ca.AddressType,
-                        Address = new AddressDto
-                        {
-                            AddressLine1 = ca.Address.AddressLine1,
-                            City = ca.Address.City,
-                            StateProvince = ca.Address.StateProvince,
-                            CountryRegion = ca.Address.CountryRegion,
-                            PostalCode = ca.Address.PostalCode
-                        }
-                    })
-                    .ToList()
-            })
-            .AsAsyncEnumerable();
-            await foreach (var customer in customers)
-            {
-                yield return Ok(customer);
-            }
-        }
+        //[HttpGet("CustomerStream/")]
+        //public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream(CancellationToken cancellationToken)
+        //{
+        //    var result = await _customersService.GetAsync(cancellationToken);
+
+        //    if (!result.IsSuccess)
+        //    {
+        //        _logger.LogWarning($"GetCustomers failed: {result.ErrorMessage}");
+        //        yield return Problem(detail: result.ErrorMessage);
+        //    }
+
+        //    if (result.Value == null)
+        //        yield return NotFound();
+
+        //    List<CustomerDto> customers = result.Value.ToList();
+        //    await foreach (var customer in customers)
+        //    {
+        //        yield return Ok(customer);
+        //    }
+        //}
 
         // PUT: api/Customers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -176,7 +165,7 @@ namespace Ciclilavarizia.Controllers
         //
 
         [HttpGet("listActions/{customerId}")]
-        public ActionResult<CustomerDto> GetCustomer(CAndPStore store, int customerId)
+        public ActionResult<CustomerDetailDto> GetCustomer(CAndPStore store, int customerId)
         {
             try
             {
@@ -192,7 +181,7 @@ namespace Ciclilavarizia.Controllers
 
         [Authorize(Policy = "AdminPolicy")]
         [HttpGet("listActions/")]
-        public ActionResult<List<CustomerDto>> GetCustomersList(CAndPStore store)
+        public ActionResult<List<CustomerDetailDto>> GetCustomersList(CAndPStore store)
         {
             Console.WriteLine("\n\tI entered the GetCustomersList even if there is a Authorize!!!");
             try
@@ -201,7 +190,7 @@ namespace Ciclilavarizia.Controllers
                 {
                     var customers = _context.Customers
                     .AsNoTracking()
-                    .Select(c => new CustomerDto
+                    .Select(c => new CustomerDetailDto
                     {
                         CustomerId = c.CustomerID,
                         Title = c.Title,
@@ -243,7 +232,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpPost("listActions/")]
-        public async Task<ActionResult> AddCustomer([FromBody] CustomerDto customer, CAndPStore store)
+        public async Task<ActionResult> AddCustomer([FromBody] CustomerDetailDto customer, CAndPStore store)
         {
             try
             {
@@ -276,7 +265,7 @@ namespace Ciclilavarizia.Controllers
             try
             {
                 var customer = store._customers.FirstOrDefault(c => c.CustomerId == customerId);
-                if (customer == null) return BadRequest();
+                if (customer == null) return NotFound();
                 var tmp = store._customers.Remove(customer);
                 Console.WriteLine($"Customer deleted: {tmp}");
             }
@@ -374,14 +363,14 @@ namespace Ciclilavarizia.Controllers
         //    return Results.NoContent();
         //}
         [HttpPut("listActions/{customerId}")]
-        public ActionResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
+        public ActionResult UpdateCustomer(int customerId, [FromBody] CustomerDetailDto customer, CAndPStore store)
         {
             try
             {
                 var incomingCustomer = customer; // more readable
                 if (incomingCustomer.CustomerId != customerId) return BadRequest(); // questa sembra essere una best practrice di controllo
 
-                CustomerDto? existingCustomer = store._customers
+                CustomerDetailDto? existingCustomer = store._customers
                     .Where(c => c.CustomerId == customerId)
                     .FirstOrDefault();
                 if (existingCustomer == null) return BadRequest();

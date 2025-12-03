@@ -22,6 +22,14 @@ namespace Ciclilavarizia
                 //opt.OutputFormatters.RemoveType<StringOutputFormatter>();
             })
                 .AddXmlSerializerFormatters();
+
+            builder.Services.Configure<RouteOptions>((o) =>
+            {
+                o.LowercaseUrls = true;
+                o.LowercaseQueryStrings = false;
+                o.AppendTrailingSlash = true;
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -31,11 +39,24 @@ namespace Ciclilavarizia
                 builder.Configuration.GetSection(nameof(JwtSettings)));
 
             //db connection
-            builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
-                o.UseSqlServer(builder.Configuration.GetConnectionString("AdventureWorksLTDbHomelab")));
 
-            builder.Services.AddDbSecure(
-                builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab"));
+            if (builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddDbContext<CiclilavariziaDevContext>(o =>
+                    o.UseSqlServer(builder.Configuration.GetConnectionString("CiclilavariziaDev")));
+                builder.Services.AddDbSecure(
+                    builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"));
+            }else if (builder.Environment.IsProduction())
+            {
+                //builder.Services.AddDbContext<AdventureWorksLTContext>(o =>
+                //    o.UseSqlServer(builder.Configuration.GetConnectionString("CiclilavariziaDev")));
+                //builder.Services.AddDbSecure(
+                //    builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"));
+            }
+
+
+            //builder.Services.AddDbSecure(
+            //builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab") ?? string.Empty);
 
             // CORS
             var AnyOrigin = "_anyOrigin";
@@ -48,7 +69,7 @@ namespace Ciclilavarizia
                     {
                         policy.AllowAnyOrigin()
                         //policy.WithOrigins("http://localhost:4200") // this is the SPA made with angular
-                        //.AllowAnyHeader()
+                        .AllowAnyHeader()
                         .AllowAnyMethod();
                     });
                 });
@@ -64,7 +85,9 @@ namespace Ciclilavarizia
             builder.Services.AddAuthorizationOptions();
 
             builder.Services.AddCAndPStore();
-            builder.Services.AddCustomerService();
+            builder.Services.AddCustomersService();
+            builder.Services.AddProductsService();
+            builder.Services.AddLoginService();
 
             //
             // End Custom Services Extentions

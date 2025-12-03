@@ -1,0 +1,1 @@
+dotnet ef dbcontext scaffold "CcnString" Microsoft.EntityFrameworkCore.SqlServer --output-dir Models --context-dir Data --context CiclilavariziaDevContext --data-annotations --use-database-names --no-onconfiguring -f

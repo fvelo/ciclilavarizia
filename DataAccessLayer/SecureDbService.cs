@@ -1,6 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using CommonCiclilavarizia;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
-using CommonCiclilavarizia;
 
 namespace DataAccessLayer
 {
@@ -8,14 +8,16 @@ namespace DataAccessLayer
     {
         public static IServiceCollection AddDbSecure(this IServiceCollection services, string ccnString)
         {
-            DbSecure dbSecure = new(ccnString);
-            services.AddSingleton(dbSecure);
+            SecureDbService secureDb = new(ccnString);
+            services.AddSingleton(secureDb);
             return services;
         }
     }
 
-    public class DbSecure
+    public class SecureDbService
     {
+        // TODO: Implement an actual logger of errors and problems
+
         private readonly SqlConnection _connection = new();
         private readonly SqlCommand _command = new();
         public bool IsDbOnline = false;
@@ -25,7 +27,7 @@ namespace DataAccessLayer
         /// You need to pass the ConnectionString to the Db;
         /// </summary>
         /// <param name="cnnString"></param>
-        public DbSecure(string cnnString)
+        public SecureDbService(string cnnString)
         {
             try
             {
@@ -39,7 +41,11 @@ namespace DataAccessLayer
                 Console.WriteLine(ex.ToString());
                 throw;
             }
-            finally { _connection.Close(); }
+            finally
+            {
+                _connection.Close();
+                IsDbOnline = false;
+            }
         }
 
         public bool FindUserByCustomerId(long customerId)
@@ -48,20 +54,19 @@ namespace DataAccessLayer
             Credentials credentials = new();
             try
             {
-                using(SqlConnection connection = new(sqlCcnString))
+                using (SqlConnection connection = new(sqlCcnString))
                 {
                     connection.Open();
-                    using(SqlCommand command = connection.CreateCommand())
+                    using (SqlCommand command = connection.CreateCommand())
                     {
                         command.CommandText = @"
                                                   SELECT *
                                                   FROM [dbo].[Credentials]
                                                   WHERE [CustomerId] = @CustomerId;
                                               ";
-
                         command.Parameters.AddWithValue("@CustomerId", customerId);
 
-                        using(SqlDataReader reader = command.ExecuteReader())
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
                             {
@@ -143,6 +148,47 @@ namespace DataAccessLayer
                 return result;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Search in SecureDb for the email by customerId.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns>Returns EmailAddress if exists, otherwise empty.</returns>
+        public async Task<string> GetEmailAddressByCustomerIdAsync(int customerId)
+        {
+            string emailAddress = string.Empty;
+            try
+            {
+                using (SqlConnection connection = new(sqlCcnString))
+                {
+                    await connection.OpenAsync();
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                                                  SELECT [EmailAddress]
+                                                  FROM [dbo].[Credentials]
+                                                  WHERE [CustomerId] = @CustomerId;
+                                              ";
+
+                        command.Parameters.AddWithValue("@CustomerId", customerId);
+
+                        object result = await command.ExecuteScalarAsync();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            emailAddress = result.ToString();
+                        }
+                        return emailAddress;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // errrrorrrrrrrrr
+                return string.Empty;
+                throw;
+            }
         }
     }
 }
