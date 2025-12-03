@@ -69,7 +69,7 @@ namespace Ciclilavarizia
                     {
                         policy.AllowAnyOrigin()
                         //policy.WithOrigins("http://localhost:4200") // this is the SPA made with angular
-                        .AllowAnyHeader()
+                        //.AllowAnyHeader()
                         .AllowAnyMethod();
                     });
                 });
