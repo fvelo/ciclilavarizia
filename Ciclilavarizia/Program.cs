@@ -1,3 +1,4 @@
+using ChatLib;
 using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
@@ -58,6 +59,11 @@ namespace Ciclilavarizia
             //builder.Services.AddDbSecure(
             //builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab") ?? string.Empty);
 
+            // SIGNALR
+            builder.Services.AddSingleton<MessageService>();
+            builder.Services.AddSignalR();
+
+
             // CORS
             var AnyOrigin = "_anyOrigin";
             var LiveServerOrigin = "_liveServerOrigin";
@@ -101,6 +107,9 @@ namespace Ciclilavarizia
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Configure the ChatHub
+            app.MapHub<ChatHub>("/chathub");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
