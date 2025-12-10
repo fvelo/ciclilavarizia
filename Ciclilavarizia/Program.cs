@@ -16,12 +16,13 @@ namespace Ciclilavarizia
 
             // Add services to the container.
 
-            builder.Services.AddControllers(opt =>
+            builder.Services.AddControllers(/*opt =>
             {
                 opt.RespectBrowserAcceptHeader = true;
                 //opt.OutputFormatters.RemoveType<StringOutputFormatter>();
-            })
-                .AddXmlSerializerFormatters();
+            }*/)
+                //.AddXmlSerializerFormatters()
+            ; // this is removed for now, but it is needed to format request in other formats outside JSON, TODO: intorduce input/output formatters
 
             builder.Services.Configure<RouteOptions>((o) =>
             {
