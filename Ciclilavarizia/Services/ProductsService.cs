@@ -126,5 +126,24 @@ namespace Ciclilavarizia.Services
                 return Result<int>.Failure(ex.Message);
             }
         }
+
+        public async Task<bool> DoesProductExistsAsync(int productId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                bool exists = await _context.Products
+                    .AsNoTracking()
+                    .AnyAsync(p => p.ProductID == productId == false, cancellationToken);
+                return exists;
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

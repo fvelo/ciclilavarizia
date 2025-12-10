@@ -44,5 +44,13 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <param name="cancellationToken"></param>
         /// <returns>Returns ProductId of the created Product</returns>
         Task<Result<int>> CreateAsync(ProductDto product, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Tells if the product exists in the Db base on it Id
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Returns true if the Product exists, false otherwise</returns>
+        Task<bool> DoesProductExistsAsync(int productId, CancellationToken cancellationToken = default);
     }
 }

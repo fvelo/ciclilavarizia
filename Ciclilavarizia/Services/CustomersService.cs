@@ -259,10 +259,40 @@ namespace Ciclilavarizia.Services
                 return Result<int>.Failure("An error occurred while creating a customer.");
             }
         }
+
+
+        public async Task<bool> DoesCustomerExistsAsync(int customerId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                bool exists = await _db.Customers
+                    .AsNoTracking()
+                    .AnyAsync(c => c.CustomerID == customerId && c.IsDeleted == false, cancellationToken);
+                return exists;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("DoesCustomerExists was cancelled");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "DoesCustomerExists had a error");
+                return false;
+            }
+        }
+
+
+
+
+
+
         public async Task<Result<int>> UpdateAsync(int id, Customer incomingCustomer, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
+
+
 
     }
 }

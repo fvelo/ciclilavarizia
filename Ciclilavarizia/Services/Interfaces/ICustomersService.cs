@@ -54,6 +54,15 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <returns>An IEnumerable of CustomerSummaryDto</returns>
         Task<Result<IEnumerable<CustomerSummaryDto>>> GetCustomersSummaryAsync(CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Tells if the customer exists in the Db base on it Id
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Returns true if the Customer exists, false otherwise</returns>
+        Task<bool> DoesCustomerExistsAsync(int customerId, CancellationToken cancellationToken = default);
+
+
         // Add other methods: GetByIdAsync, CreateAsync, UpdateAsync, DeleteAsync etc.
     }
 }

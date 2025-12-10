@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Ciclilavarizia.Services.ServicesExtentions
 {
-    public static class AuthenticationServicesOptionsConfiguration
+    public static class ActionFiltersExtentionn
     {
         public static IServiceCollection AddAuthenticationOptions(this IServiceCollection services)
         {

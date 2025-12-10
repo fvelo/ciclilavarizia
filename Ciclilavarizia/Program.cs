@@ -88,6 +88,7 @@ namespace Ciclilavarizia
             builder.Services.AddCustomersService();
             builder.Services.AddProductsService();
             builder.Services.AddLoginService();
+            builder.Services.AddCustomActionFilters(); //needs to be after AddCustomersService because it depends on it
 
             //
             // End Custom Services Extentions

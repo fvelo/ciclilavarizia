@@ -1,4 +1,5 @@
 ﻿using Ciclilavarizia.Data;
+using Ciclilavarizia.Filters;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
@@ -50,9 +51,10 @@ namespace Ciclilavarizia.Controllers
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int id, CancellationToken cancellationToken = default)
+        [EnsureCustomerExists(IdParameterName = "customerId")]
+        public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int customerId, CancellationToken cancellationToken = default)
         {
-            var result = await _customersService.GetCustomerByIdAsync(id, cancellationToken);
+            var result = await _customersService.GetCustomerByIdAsync(customerId, cancellationToken);
 
             if (!result.IsSuccess)
             {

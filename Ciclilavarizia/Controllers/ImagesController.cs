@@ -17,8 +17,8 @@ namespace Ciclilavarizia.Controllers
             _context = context;
         }
 
-        [EnsureProductExists]
         [HttpGet("product/{id}")]
+        [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> GetProductThumbnail(int id, CancellationToken cancellationToken)
         {
             var product = await _context.Products

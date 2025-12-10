@@ -61,8 +61,8 @@ namespace Ciclilavarizia.Controllers
             }
         }
 
-        [EnsureProductExists]
         [HttpGet("{id}")]
+        [EnsureProductExistsAttribute(IdParameterName = "id")]
         public async Task<ActionResult<ProductDetailDto>> GetProductByIdAsycn(int id, CancellationToken cancellationToken)
         {
             try
@@ -229,6 +229,7 @@ namespace Ciclilavarizia.Controllers
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
             if (id != product.ProductID)
@@ -277,6 +278,7 @@ namespace Ciclilavarizia.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
+        [EnsureProductExistsAttribute(IdParameterName = "id")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             try
