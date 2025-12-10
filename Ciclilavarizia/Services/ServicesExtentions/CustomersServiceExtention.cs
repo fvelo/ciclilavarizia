@@ -1,4 +1,5 @@
-﻿using Ciclilavarizia.Services.Interfaces;
+﻿using ChatLib;
+using Ciclilavarizia.Services.Interfaces;
 
 namespace Ciclilavarizia.Services.ServicesExtentions
 {

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Text;
 
-namespace SellinBE.Hubs
+namespace Ciclilavarizia.Hubs
 {
     public class ChatHub : Hub
     {

@@ -1,11 +1,10 @@
-using ChatLib;
 using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
 using Ciclilavarizia.Services.ServicesExtentions;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
-
+using ChatLib;
 
 namespace Ciclilavarizia
 {
@@ -55,13 +54,12 @@ namespace Ciclilavarizia
                 //    builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"));
             }
 
+            //include chatbot & signalR
+            builder.Services.AddSignalR();
+            builder.Services.AddMessageService();
 
             //builder.Services.AddDbSecure(
             //builder.Configuration.GetConnectionString("AdventureWorksSecureDbHomelab") ?? string.Empty);
-
-            // SIGNALR
-            builder.Services.AddSingleton<MessageService>();
-            builder.Services.AddSignalR();
 
 
             // CORS
@@ -94,6 +92,7 @@ namespace Ciclilavarizia
             builder.Services.AddCustomersService();
             builder.Services.AddProductsService();
             builder.Services.AddLoginService();
+            //builder.Services.AddMessageService();
 
             //
             // End Custom Services Extentions
@@ -109,7 +108,7 @@ namespace Ciclilavarizia
             }
 
             // Configure the ChatHub
-            app.MapHub<ChatHub>("/chathub");
+            //app.MapHub<ChatHub>("/chathub");
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

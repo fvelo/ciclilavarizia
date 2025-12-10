@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Desktop\ChatLib\ChatLib.csproj" />
     <ProjectReference Include="..\CommonCiclilavarizia\CommonCiclilavarizia.csproj" />
     <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
   </ItemGroup>
