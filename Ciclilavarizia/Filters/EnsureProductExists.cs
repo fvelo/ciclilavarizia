@@ -49,8 +49,6 @@ namespace Ciclilavarizia.Filters
 
     public class EnsureProductExistsFilter : IAsyncActionFilter
     {
-        // TODO: use proper Dependency Injection and not this anti-pattern, how to do it on youtube brotherrrrr susu froza
-
         private readonly string _idParameterName;
         private readonly IProductsService _service;
         private readonly ILogger<EnsureProductExistsFilter> _logger;
@@ -67,14 +65,13 @@ namespace Ciclilavarizia.Filters
         {
             if (!context.ActionArguments.ContainsKey(_idParameterName))
             {
-                _logger.LogError("The _idParameterName for EnsureProductExistsFilter must be provided.");
+                _logger.LogError($"The _idParameterName contain the value: \"{_idParameterName}\", such value does not exixts in context.ActionArguments.");
                 throw new ArgumentException(_idParameterName, nameof(context));
             }
 
             if (!context.ActionArguments.TryGetValue(_idParameterName, out object idValue) || idValue == null)
             {
                 context.Result = new BadRequestObjectResult($"The Id must be provided.");
-                //await next();
                 return;
             }
 

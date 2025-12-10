@@ -50,7 +50,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         // GET: api/Customers/5
-        [HttpGet("{id}")]
+        [HttpGet("{customerId}")]
         [EnsureCustomerExists(IdParameterName = "customerId")]
         public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int customerId, CancellationToken cancellationToken = default)
         {

@@ -260,7 +260,6 @@ namespace Ciclilavarizia.Services
             }
         }
 
-
         public async Task<bool> DoesCustomerExistsAsync(int customerId, CancellationToken cancellationToken = default)
         {
             try
@@ -272,27 +271,19 @@ namespace Ciclilavarizia.Services
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation("DoesCustomerExists was cancelled");
+                _logger.LogInformation("DoesCustomerExistsAsync was cancelled");
                 return false;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "DoesCustomerExists had a error");
+                _logger.LogError(ex, "DoesCustomerExistsAsync had a error");
                 return false;
             }
         }
-
-
-
-
-
-
+        
         public async Task<Result<int>> UpdateAsync(int id, Customer incomingCustomer, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
-
-
-
     }
 }

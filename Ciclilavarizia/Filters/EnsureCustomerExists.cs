@@ -23,11 +23,6 @@ namespace Ciclilavarizia.Filters
             if (!context.ActionArguments.ContainsKey(_idParameterName))
             {
                 _logger.LogError($"The _idParameterName contain the value: \"{_idParameterName}\", such value does not exixts in context.ActionArguments.");
-                foreach (var arg in context.ActionArguments)
-                {
-                    Console.WriteLine($"ket: {arg.Key}, value: {arg.Value}");
-                }
-
                 throw new ArgumentException(_idParameterName, nameof(context));
             }
 
@@ -41,7 +36,6 @@ namespace Ciclilavarizia.Filters
             if (!await _service.DoesCustomerExistsAsync((int)id, context.HttpContext.RequestAborted))
             {
                 context.Result = new NotFoundResult();
-                Console.WriteLine("Not found returned from EnsureCustomerExistsFilter!!!");
                 return;
             }
 
