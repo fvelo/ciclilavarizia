@@ -1,4 +1,5 @@
 using Ciclilavarizia.Data;
+using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
 using Ciclilavarizia.Services.ServicesExtentions;
@@ -88,6 +89,11 @@ namespace Ciclilavarizia
             builder.Services.AddCustomersService();
             builder.Services.AddProductsService();
             builder.Services.AddLoginService();
+
+
+            // mongoDb service
+            builder.Services.Configure<MDBConfig>(
+                builder.Configuration.GetSection("MDBConnection"));
 
             //
             // End Custom Services Extentions
