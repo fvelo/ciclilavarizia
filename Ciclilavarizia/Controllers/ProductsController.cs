@@ -61,9 +61,8 @@ namespace Ciclilavarizia.Controllers
             }
         }
 
-        [PrintModelStateVariables]
         [HttpGet("{id}")]
-        [EnsureProductExistsAttribute(IdParameterName = "id")]
+        [EnsureProductExists(IdParameterName = "id")]
         public async Task<ActionResult<ProductDetailDto>> GetProductByIdAsycn(int id, CancellationToken cancellationToken)
         {
             try

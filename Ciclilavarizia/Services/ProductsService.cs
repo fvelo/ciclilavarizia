@@ -140,7 +140,7 @@ namespace Ciclilavarizia.Services
             {
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
