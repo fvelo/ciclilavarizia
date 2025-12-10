@@ -92,6 +92,7 @@ namespace Ciclilavarizia.Controllers
         // PUT: api/Customers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> PutCustomer(int id, Customer customer)
         {
             if (id != customer.CustomerID)
@@ -140,6 +141,7 @@ namespace Ciclilavarizia.Controllers
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
+        [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteCustomer(int id, CancellationToken cancellationToken)
         {
             var result = await _customersService.DeleteAsync(id, cancellationToken);

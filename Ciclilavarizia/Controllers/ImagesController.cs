@@ -29,7 +29,7 @@ namespace Ciclilavarizia.Controllers
 
             if (product?.ThumbNailPhoto == null) return NotFound();
 
-            // Declaring magic string mime type TODO: understand if from extention
+            // Declaring magic string mime type TODO: determin the type of the image from extention
             var contentType = "image/jpeg";
             return File(product.ThumbNailPhoto, contentType);
         }

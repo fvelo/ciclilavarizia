@@ -278,7 +278,7 @@ namespace Ciclilavarizia.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        [EnsureProductExistsAttribute(IdParameterName = "id")]
+        [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             try
