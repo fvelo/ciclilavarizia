@@ -1,4 +1,4 @@
-﻿namespace Ciclilavarizia.Models
+﻿namespace Ciclilavarizia.Models.Settings
 {
     public class MDBConfig
     {

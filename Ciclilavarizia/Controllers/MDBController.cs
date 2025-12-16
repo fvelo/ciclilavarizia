@@ -1,4 +1,6 @@
 ﻿using Ciclilavarizia.Models;
+using Ciclilavarizia.Models.Dtos;
+using Ciclilavarizia.Models.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -9,11 +11,9 @@ namespace Ciclilavarizia.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class MDBController : ControllerBase
     {
-        //the configuration can be done in antoher file
-        //and then injected into this class
         private IMongoCollection<MDBOrders> _collection;
         public MDBController(IOptions<MDBConfig> mDBConfig)
         {
@@ -23,13 +23,13 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpGet("/api/Cart/all")]
-        public async Task<IActionResult> GetBnBs()
+        public async Task<IActionResult> GetAllCarts()
         {
-            var bnbs = await _collection.Find(new BsonDocument()).ToListAsync();
+            var carts = await _collection.Find(new BsonDocument()).ToListAsync();
             var mdbJson = new List<object>();
-            foreach (var item in bnbs)
+            foreach (var prods in carts)
             {
-                mdbJson.Add(item.ToJson());
+                mdbJson.Add(prods.ToJson());
             }
 
             return Ok(new { data = mdbJson });
@@ -43,21 +43,15 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpPost("api/Cart/newMyCart")]
-        public async Task<IActionResult> CreateOrder([FromBody] MBDOrderDto order)
+        public async Task<IActionResult> CreateOrder([FromBody] MDBOrderDto order)
         {
-            try
+            await _collection.InsertOneAsync(new MDBOrders
             {
-                await _collection.InsertOneAsync(new MDBOrders
-                {
-                    ClientID = order.ClientID,
-                    Products = order.Products,
-                });
-                return CreatedAtAction("GetOrders", new { id = order.ClientID, order });
-            }
-            catch (Exception e) 
-            {
-                return BadRequest(e.Message);
-            }
+                ClientID = order.ClientID,
+                Products = order.Products,
+            });
+            return CreatedAtAction("GetOrders", new {id = order.ClientID,order});
+            
         }
 
         [HttpPut("api/Cart/modifyTot")]

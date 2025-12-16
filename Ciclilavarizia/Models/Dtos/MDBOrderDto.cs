@@ -1,8 +1,8 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace Ciclilavarizia.Models
+namespace Ciclilavarizia.Models.Dtos
 {
-    public class MBDOrderDto
+    public class MDBOrderDto
     {
         public int ClientID { get; set; } = 0;
 
