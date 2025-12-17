@@ -44,7 +44,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <param name="incomingCustomer"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Returns the CustomerId. If customer not foud -1.</returns>
-        Task<Result<int>> UpdateAsync(int id, Customer incomingCustomer, CancellationToken cancellationToken = default);
+        Task<Result<int>> UpdateAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken = default);
 
 
         /// <summary>

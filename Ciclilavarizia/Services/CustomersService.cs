@@ -302,144 +302,120 @@ namespace Ciclilavarizia.Services
 
                 //Console.WriteLine($"Old Customer: {existingCustomer}");
 
+                bool isChanged = false;
 
                 if (!string.IsNullOrEmpty(incomingCustomer.Title) && !string.IsNullOrWhiteSpace(incomingCustomer.Title))
                 {
                     existingCustomer.Title = incomingCustomer.Title;
+                    isChanged = true;
                 }
                 if (!string.IsNullOrEmpty(incomingCustomer.FirstName) && !string.IsNullOrWhiteSpace(incomingCustomer.FirstName))
                 {
                     existingCustomer.FirstName = incomingCustomer.FirstName;
+                    isChanged = true;
                 }
                 if (!string.IsNullOrEmpty(incomingCustomer.MiddleName) && !string.IsNullOrWhiteSpace(incomingCustomer.MiddleName))
                 {
                     existingCustomer.MiddleName = incomingCustomer.MiddleName;
+                    isChanged = true;
                 }
                 if (!string.IsNullOrEmpty(incomingCustomer.LastName) && !string.IsNullOrWhiteSpace(incomingCustomer.LastName))
                 {
                     existingCustomer.LastName = incomingCustomer.LastName;
+                    isChanged = true;
                 }
                 if (!string.IsNullOrEmpty(incomingCustomer.Suffix) && !string.IsNullOrWhiteSpace(incomingCustomer.Suffix))
                 {
                     existingCustomer.Suffix = incomingCustomer.Suffix;
+                    isChanged = true;
                 }
                 if (!string.IsNullOrEmpty(incomingCustomer.CompanyName) && !string.IsNullOrWhiteSpace(incomingCustomer.CompanyName))
                 {
                     existingCustomer.CompanyName = incomingCustomer.CompanyName;
+                    isChanged = true;
                 }
                 if (!string.IsNullOrEmpty(incomingCustomer.SalesPerson) && !string.IsNullOrWhiteSpace(incomingCustomer.SalesPerson))
                 {
                     existingCustomer.SalesPerson = incomingCustomer.SalesPerson;
+                    isChanged = true;
                 }
+                if (isChanged) existingCustomer.ModifiedDate = DateTime.UtcNow;
 
                 // assume _customer already resolved and 'customer' is the incoming DTO
                 // handle addresses:
-                var incomingAddresses = incomingCustomer.CustomerAddresses ?? new List<CustomerAddressDto>();
-                var existingAddresses = existingCustomer.CustomerAddresses ?? new List<CustomerAddress>();
+                UpdateCustomerAddresses(existingCustomer, incomingCustomer.CustomerAddresses);
 
-                // fast lookup with dictionary of existing addresses by id
-                var existingById = existingAddresses.ToDictionary(a => a.AddressID);
+                await _db.SaveChangesAsync(cancellationToken);
+                return Result<int>.Success(existingCustomer.CustomerID);
+            }
+            catch (Exception ex)
+            {
+                return Result<int>.Failure($"An error occurred: {ex.Message}");
+            }
+        }
 
+        private void UpdateCustomerAddresses(Customer existingCustomer, List<CustomerAddressDto> incomingAddressesDto)
+        {
+            incomingAddressesDto ??= new List<CustomerAddressDto>();
 
-                if (!incomingAddresses.Any()) // If incoming is empty allora clear all existing addresses
+            // addresses in DB that are NOT in the incoming DTO list
+            var incomingIds = incomingAddressesDto
+                .Where(a => a.AddressId > 0)
+                .Select(a => a.AddressId)
+                .ToHashSet();
+
+            var addressesToDelete = existingCustomer.CustomerAddresses
+                .Where(ca => !incomingIds.Contains(ca.AddressID))
+                .ToList();
+
+            foreach (var addressToRemove in addressesToDelete)
+            {
+                existingCustomer.CustomerAddresses.Remove(addressToRemove);
+            }
+
+            foreach (var incomingAddrDto in incomingAddressesDto)
+            {
+                // Is this an existing address?
+                // The new addresses will have 0 as their ID
+                var existingAddrEntity = existingCustomer.CustomerAddresses
+                    .FirstOrDefault(ca => ca.AddressID == incomingAddrDto.AddressId && incomingAddrDto.AddressId != 0);
+
+                if (existingAddrEntity != null)
                 {
-                    existingCustomer.CustomerAddresses.Clear();
+                    existingAddrEntity.AddressType = incomingAddrDto.AddressType;
+
+                    if (existingAddrEntity.Address != null && incomingAddrDto.Address != null)
+                    {
+                        existingAddrEntity.Address.AddressLine1 = incomingAddrDto.Address.AddressLine1;
+                        existingAddrEntity.Address.City = incomingAddrDto.Address.City;
+                        existingAddrEntity.Address.StateProvince = incomingAddrDto.Address.StateProvince;
+                        existingAddrEntity.Address.CountryRegion = incomingAddrDto.Address.CountryRegion;
+                        existingAddrEntity.Address.PostalCode = incomingAddrDto.Address.PostalCode;
+                        existingAddrEntity.Address.ModifiedDate = DateTime.UtcNow;
+                    }
                 }
                 else
                 {
-                    // Track which existing ids are present in the incoming payload
-                    var incomingIds = new HashSet<int>();// this is a Dictionary<Tgaved,bool> do not accept duplicates
-
-                    foreach (var incomingAddr in incomingAddresses)
+                    // --- ADD NEW ---
+                    var newAddressEntity = new CustomerAddress
                     {
-                        // if AddressId is present and matches an existing address -> update fields
-                        if (incomingAddr.AddressId != 0 && existingById.TryGetValue(incomingAddr.AddressId, out var existAddr)) //make sure to send new addresses with the id set to zero,
-                                                                                                                                // this way they will be recognized as new
+                        AddressType = incomingAddrDto.AddressType,
+                        ModifiedDate = DateTime.UtcNow,
+                        rowguid = Guid.NewGuid(),
+                        Address = new Address
                         {
-                            incomingIds.Add(incomingAddr.AddressId);
-
-                            // update AddressType
-                            if (!string.IsNullOrWhiteSpace(incomingAddr.AddressType))
-                                existAddr.AddressType = incomingAddr.AddressType;
-
-                            // ensure nested AddressDto exists
-                            if (existAddr.Address == null)
-                                existAddr.Address = new Address();
-
-                            if (incomingAddr.Address != null)
-                            {
-                                // update nested fields only when provided
-                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.AddressLine1) && !string.IsNullOrEmpty(incomingAddr.Address.AddressLine1))
-                                {
-                                    existAddr.Address.AddressLine1 = incomingAddr.Address.AddressLine1;
-                                }
-                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.City) && !string.IsNullOrEmpty(incomingAddr.Address.City))
-                                {
-                                    existAddr.Address.City = incomingAddr.Address.City;
-                                }
-                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.StateProvince) && !string.IsNullOrEmpty(incomingAddr.Address.StateProvince))
-                                {
-                                    existAddr.Address.StateProvince = incomingAddr.Address.StateProvince;
-                                }
-                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.CountryRegion) && !string.IsNullOrEmpty(incomingAddr.Address.CountryRegion))
-                                {
-                                    existAddr.Address.CountryRegion = incomingAddr.Address.CountryRegion;
-                                }
-                                if (!string.IsNullOrWhiteSpace(incomingAddr.Address.PostalCode) && !string.IsNullOrEmpty(incomingAddr.Address.PostalCode))
-                                {
-                                    existAddr.Address.PostalCode = incomingAddr.Address.PostalCode;
-                                }
-                            }
+                            AddressLine1 = incomingAddrDto.Address?.AddressLine1 ?? string.Empty,
+                            City = incomingAddrDto.Address?.City ?? string.Empty,
+                            StateProvince = incomingAddrDto.Address?.StateProvince ?? string.Empty,
+                            CountryRegion = incomingAddrDto.Address?.CountryRegion ?? string.Empty,
+                            PostalCode = incomingAddrDto.Address?.PostalCode ?? string.Empty,
+                            ModifiedDate = DateTime.UtcNow,
+                            rowguid = Guid.NewGuid()
                         }
-                        else // address is new
-                        {
-                            // New address (no id or id not found) -> validate minimal fields then add
-                            int newId = (existingAddresses.Any() ? existingAddresses.Max(a => a.AddressID) : 0) + 1; // se esiste un address nel customer then I add 1,
-                                                                                                                     // if not 0 WORKS ONLY BECAUSE ARE LIST AND NOT DB
+                    };
 
-                            var addrToAdd = new CustomerAddressDto
-                            {
-                                AddressId = newId,
-                                AddressType = incomingAddr.AddressType ?? string.Empty,
-                                Address = new AddressDto
-                                {
-                                    AddressLine1 = incomingAddr.Address?.AddressLine1 ?? string.Empty,
-                                    City = incomingAddr.Address?.City ?? string.Empty,
-                                    StateProvince = incomingAddr.Address?.StateProvince ?? string.Empty,
-                                    CountryRegion = incomingAddr.Address?.CountryRegion ?? string.Empty,
-                                    PostalCode = incomingAddr.Address?.PostalCode ?? string.Empty
-                                }
-                            };
-
-                            existingAddresses.Add(addrToAdd); // also updates the existing list reference inside existingCustomer
-                            existingById[addrToAdd.AddressId] = addrToAdd;
-                            incomingIds.Add(addrToAdd.AddressId);
-                        }
-                    }
-
-                    // Here I create the actual removing and inserting of the addresses,
-                    // more redeable because outside for and it does not impact
-                    // Time Complexity, this is still O(n) n= new addresses number
-                    var toRemove = existingAddresses.Where(a => !incomingIds.Contains(a.AddressId)).ToList();
-                    foreach (var r in toRemove)
-                        existingAddresses.Remove(r);
-
-                    // assign back in case existingCustomer.CustomerAddresses was empty
-                    existingCustomer.CustomerAddresses = existingAddresses;
+                    existingCustomer.CustomerAddresses.Add(newAddressEntity);
                 }
-
-                var entity = _db.Customers.ExecuteUpdateAsync(existingCustomer, cancellationToken);
-                await _db.SaveChangesAsync();
-                var values = entity.Result;
-                var idCreatedCustumer = values.GetValue<int>("CustomerID");
-                return Result<int>.Success(idCreatedCustumer);
-
-                //Console.WriteLine($"New Customer: {existingCustomer}");
-                //return Result<int>.Failure("");
-            }
-            catch (Exception)
-            {
-                return Result<int>.Failure("");
             }
         }
     }

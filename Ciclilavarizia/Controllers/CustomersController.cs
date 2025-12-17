@@ -67,60 +67,6 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
-
-        //[HttpGet("CustomerStream/")]
-        //public async IAsyncEnumerable<ActionResult<CustomerDto>> GetCustomersDtoStream(CancellationToken cancellationToken)
-        //{
-        //    var result = await _customersService.GetAsync(cancellationToken);
-
-        //    if (!result.IsSuccess)
-        //    {
-        //        _logger.LogWarning($"GetCustomers failed: {result.ErrorMessage}");
-        //        yield return Problem(detail: result.ErrorMessage);
-        //    }
-
-        //    if (result.Value == null)
-        //        yield return NotFound();
-
-        //    List<CustomerDto> customers = result.Value.ToList();
-        //    await foreach (var customer in customers)
-        //    {
-        //        yield return Ok(customer);
-        //    }
-        //}
-
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        [EnsureCustomerExists(IdParameterName = "id")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
-        {
-            if (id != customer.CustomerID)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(customer).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Customers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -159,10 +105,22 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
-        private bool CustomerExists(int id)
+        [HttpPut("{id}")]
+        [EnsureCustomerExists(IdParameterName ="id")]
+        public async Task<IActionResult> UpdateCustomerAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken)
         {
-            return _context.Customers.Any(e => e.CustomerID == id);
+            var result = await _customersService.UpdateAsync(id, incomingCustomer, cancellationToken);
+
+            if (!result.IsSuccess)
+            {
+                _logger.LogWarning($"UpdateCustomerAsync failed: {result.ErrorMessage}");
+                return Problem(result.ErrorMessage);
+            }
+
+            return Ok(result.Value);
         }
+
+
 
         //
         // For activity of 29/10/2025
@@ -279,93 +237,7 @@ namespace Ciclilavarizia.Controllers
             }
             return NoContent();
         }
-        // V0
-        //[HttpPut("listActions/{customerId}")]
-        //public IResult UpdateCustomer(int customerId, [FromBody] CustomerDto customer, CAndPStore store)
-        //{
-        //    try
-        //    {
-        //        if (customer.CustomerId != customerId) return Results.BadRequest(); // questa sembra essere una best practrice di controllo
 
-        //        CustomerDto? _customer = store._customers
-        //            .Where(c => c.CustomerId == customerId)
-        //            .FirstOrDefault();
-        //        if (_customer == null) return Results.BadRequest();
-        //        if (customer == null) return Results.BadRequest();
-        //        Console.WriteLine($"Old Customer: {_customer}");
-
-
-        //        if (!customer.Title.IsNullOrEmpty())
-        //        {
-        //            _customer.Title = customer.Title;
-        //        }
-        //        if (!customer.FirstName.IsNullOrEmpty())
-        //        {
-        //            _customer.FirstName = customer.FirstName;
-        //        }
-        //        if (!customer.MiddleName.IsNullOrEmpty())
-        //        {
-        //            _customer.MiddleName = customer.MiddleName;
-        //        }
-        //        if (!customer.LastName.IsNullOrEmpty())
-        //        {
-        //            _customer.LastName = customer.LastName;
-        //        }
-        //        if (!customer.Suffix.IsNullOrEmpty())
-        //        {
-        //            _customer.Suffix = customer.Suffix;
-        //        }
-        //        if (!customer.CompanyName.IsNullOrEmpty())
-        //        {
-        //            _customer.CompanyName = customer.CompanyName;
-        //        }
-        //        if (!customer.SalesPerson.IsNullOrEmpty())
-        //        {
-        //            _customer.SalesPerson = customer.SalesPerson;
-        //        }
-        //        for (int i = 0; i < _customer.CustomerAddresses.Count(); i++)
-        //        {
-        //            if (customer.CustomerAddresses.ElementAt(i) == null) continue;
-        //            var customerAddress = customer.CustomerAddresses.ElementAt(i);
-
-        //            var _customerAddress = _customer.CustomerAddresses.ElementAt(i);
-
-        //            if (!customerAddress.AddressType.IsNullOrEmpty())
-        //            {
-        //                _customerAddress.AddressType = customerAddress.AddressType;
-        //            }
-
-        //            if (!customerAddress.Address.AddressLine1.IsNullOrEmpty())
-        //            {
-        //                _customerAddress.Address.AddressLine1 = customerAddress.Address.AddressLine1;
-        //            }
-        //            if (!customerAddress.Address.City.IsNullOrEmpty())
-        //            {
-        //                _customerAddress.Address.City = customerAddress.Address.City;
-        //            }
-        //            if (!customerAddress.Address.StateProvince.IsNullOrEmpty())
-        //            {
-        //                _customerAddress.Address.StateProvince = customerAddress.Address.StateProvince;
-        //            }
-        //            if (!customerAddress.Address.CountryRegion.IsNullOrEmpty())
-        //            {
-        //                _customerAddress.Address.CountryRegion = customerAddress.Address.CountryRegion;
-        //            }
-        //            if (!customerAddress.Address.PostalCode.IsNullOrEmpty())
-        //            {
-        //                _customerAddress.Address.PostalCode = customerAddress.Address.PostalCode;
-        //            }
-        //        }
-        //        Console.WriteLine($"New Customer: {_customer}");
-
-
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return Results.Problem();
-        //    }
-        //    return Results.NoContent();
-        //}
         [HttpPut("listActions/{customerId}")]
         public ActionResult UpdateCustomer(int customerId, [FromBody] CustomerDetailDto customer, CAndPStore store)
         {
