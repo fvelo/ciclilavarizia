@@ -15,7 +15,7 @@ namespace Ciclilavarizia.Models.Dtos
 
         // account number
         public int CustomerID { get; set; }
-        // the 2 address presi tramite sql
+        // the 2 address are fk, not changable from here
         public string ShipMethod { get; set; } = null!;
         public decimal SubTotal { get; set; }
         public decimal TaxAmt { get; set; }

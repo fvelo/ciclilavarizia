@@ -25,49 +25,76 @@ namespace Ciclilavarizia.Controllers
         [HttpGet("/api/Cart/all")]
         public async Task<IActionResult> GetAllCarts()
         {
-            var carts = await _collection.Find(new BsonDocument()).ToListAsync();
-            var mdbJson = new List<object>();
-            foreach (var prods in carts)
+            try
             {
-                mdbJson.Add(prods.ToJson());
-            }
+                var carts = await _collection.Find(new BsonDocument()).ToListAsync();
+                var mdbJson = new List<object>();
+                foreach (var prods in carts)
+                {
+                    mdbJson.Add(prods.ToJson());
+                }
 
-            return Ok(new { data = mdbJson });
+                return Ok(new { data = mdbJson });
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet("/api/Cart/myCart")]
-        public async Task<List<MDBOrders>> GetOrders(int clientId)
+        public async Task<ActionResult<List<MDBOrders>>> GetOrders(int clientId)
         {
-            FilterDefinition<MDBOrders> filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
-            return await _collection.Find(filter).ToListAsync();
+            try
+            {
+                FilterDefinition<MDBOrders> filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
+                return await _collection.Find(filter).ToListAsync();
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost("api/Cart/newMyCart")]
         public async Task<IActionResult> CreateOrder([FromBody] MDBOrderDto order)
         {
-            await _collection.InsertOneAsync(new MDBOrders
+            try
             {
-                ClientID = order.ClientID,
-                Products = order.Products,
-            });
-            return CreatedAtAction("GetOrders", new {id = order.ClientID,order});
-            
+                await _collection.InsertOneAsync(new MDBOrders
+                {
+                    ClientID = order.ClientID,
+                    Products = order.Products,
+                });
+                return CreatedAtAction("GetOrders", new { id = order.ClientID, order });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPut("api/Cart/modifyTot")]
         public async Task<IActionResult> AddProducts(int clientId, int product, int quantity)
         {
-            FilterDefinition<MDBOrders> filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
+            try
+            {
+                FilterDefinition<MDBOrders> filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
 
-            if (quantity != 0)
-            {
-                UpdateDefinition<MDBOrders> update = Builders<MDBOrders>.Update.Set($"Products.{product.ToString()}", quantity);
-                await _collection.UpdateOneAsync(filter, update);
+                if (quantity != 0)
+                {
+                    UpdateDefinition<MDBOrders> update = Builders<MDBOrders>.Update.Set($"Products.{product.ToString()}", quantity);
+                    await _collection.UpdateOneAsync(filter, update);
+                }
+                else
+                {
+                    UpdateDefinition<MDBOrders> removal = Builders<MDBOrders>.Update.Unset($"Products.{product.ToString()}");
+                    await _collection.UpdateOneAsync(filter, removal);
+                }
             }
-            else
+            catch (Exception e)
             {
-                UpdateDefinition<MDBOrders> removal = Builders<MDBOrders>.Update.Unset($"Products.{product.ToString()}");
-                await _collection.UpdateOneAsync(filter, removal);
+                return BadRequest(e.Message);
             }
             return NoContent();
         }
@@ -75,8 +102,15 @@ namespace Ciclilavarizia.Controllers
         [HttpDelete("api/Cart/deleteCart")]
         public async Task<IActionResult> DeleteOrder(int clientId)
         {
-            FilterDefinition<MDBOrders> filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
-            await _collection.DeleteOneAsync(filter);
+            try
+            {
+                FilterDefinition<MDBOrders> filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
+                await _collection.DeleteOneAsync(filter);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
             return NoContent();
         }
 
