@@ -2,6 +2,7 @@ using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
 using Ciclilavarizia.Services.ServicesExtentions;
+using CommonCiclilavarizia;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 
@@ -90,6 +91,8 @@ namespace Ciclilavarizia
             builder.Services.AddProductsService();
             builder.Services.AddLoginService();
             builder.Services.AddCustomActionFilters(); //needs to be after AddCustomersService because it depends on it
+            builder.Services.AddCustomEncryptionService();
+
 
             //
             // End Custom Services Extentions

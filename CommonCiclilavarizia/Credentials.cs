@@ -15,6 +15,8 @@ namespace CommonCiclilavarizia
         public string PasswordHash { get; set; }
         [Required]
         public string PasswordSalt { get; set; }
+        [Required]
+        public string Role { get; set; }
 
         public Credentials() { }
 

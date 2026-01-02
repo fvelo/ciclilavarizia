@@ -36,7 +36,7 @@ namespace Ciclilavarizia.Controllers
 
             email = email ?? string.Empty;
             email = email.ToLower().Replace(" ", "");
-            bool isThereAUSer = await _secureDb.FindUserByEmail(email);
+            bool isThereAUSer = await _secureDb.DoesCredentialExistsByEmail(email);
             if (!isThereAUSer) return NotFound();
             var role = "admin";
 

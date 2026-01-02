@@ -35,7 +35,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <param name="incomingCustomer"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Returns the CustomerId of the Customer created.</returns>
-        Task<Result<int>> CreateCustomerAsync(Customer incomingCustomer, CancellationToken cancellationToken = default);
+        Task<Result<int>> CreateCustomerAsync(PostCustomerDto incomingCustomer, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update the Customer in the Db using the data provided.

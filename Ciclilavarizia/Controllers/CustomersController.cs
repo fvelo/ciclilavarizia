@@ -70,14 +70,22 @@ namespace Ciclilavarizia.Controllers
         // POST: api/Customers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
+        public async Task<ActionResult<int>> PostCustomer(PostCustomerDto customer, CancellationToken cancellationToken)
         {
             try
             {
-                _context.Customers.Add(customer);
-                await _context.SaveChangesAsync();
-                return Ok(CreatedAtAction("GetCustomer", new { id = customer.CustomerID }, customer));
-
+                var result = await _customersService.CreateCustomerAsync(customer, cancellationToken);
+                if (!result.IsSuccess)
+                {
+                    return Problem(result.ErrorMessage);
+                }
+                //return Ok("Girgio");
+                return Ok(result.Value);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning($"PostCustomer cancelation token");
+                return Problem();
             }
             catch (Exception)
             {

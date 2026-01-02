@@ -1,8 +1,18 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CommonCiclilavarizia
 {
+    public static class EncryptionServiceExtension
+    {
+        public static IServiceCollection AddCustomEncryptionService(this IServiceCollection services)
+        {
+            services.AddScoped<Encryption>();
+            return services;
+        }
+    }
+
     public class EncryptionHandler
     {
         public string Sha256Encrypt(string input)
@@ -31,14 +41,14 @@ namespace CommonCiclilavarizia
     public class Encryption
     {
         private readonly byte[] _pepperBytes;
-        private const int DefaultSaltSize = 8; // bytes
+        private const int DefaultSaltSize = 6; // bytes
         private const int DefaultIterations = 100_000; // tune to taste & CPU (higher == slower) because more cicli
 
         /// <summary>
         /// Create an Encryption instance with a pepper.
         /// </summary>
         /// <param name="pepper">Secret application pepper (string). Not stored in the DB.</param>
-        public Encryption(string pepper) // The pepper MUST be kept secret(environment variable, secret manager, or HSM).
+        public Encryption(string pepper = "Test") // The pepper MUST be kept secret(environment variable, secret manager, or HSM).
         {
             if (string.IsNullOrEmpty(pepper))
                 throw new ArgumentException("Pepper must be provided and non-empty.", nameof(pepper));
@@ -50,7 +60,7 @@ namespace CommonCiclilavarizia
         /// Generate a cryptographically secure random salt (Base64-encoded).
         /// Store this salt with the user's record.
         /// </summary>
-        public static string GenerateSalt(int size = DefaultSaltSize)
+        public string GenerateSalt(int size = DefaultSaltSize)
         {
             if (size <= 0) throw new ArgumentOutOfRangeException(nameof(size));
             var salt = new byte[size];
@@ -139,7 +149,7 @@ namespace CommonCiclilavarizia
         }
 
         // Helper: concat two byte arrays
-        private static byte[] Concat(byte[] a, byte[] b)
+        private byte[] Concat(byte[] a, byte[] b)
         {
             var outb = new byte[a.Length + b.Length];
             Buffer.BlockCopy(a, 0, outb, 0, a.Length);

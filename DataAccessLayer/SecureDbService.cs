@@ -1,6 +1,7 @@
 ﻿using CommonCiclilavarizia;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net.Mail;
 
 namespace DataAccessLayer
 {
@@ -97,7 +98,7 @@ namespace DataAccessLayer
             return result;
         }
 
-        public async Task<bool> FindUserByEmail(string email)
+        public async Task<bool> DoesCredentialExistsByEmail(string email)
         {
             bool result = false;
             Credentials credentials = new();
@@ -123,20 +124,6 @@ namespace DataAccessLayer
                         {
                             while (reader.Read())
                             {
-                                // this be necessaty in the real version of the login, so I already started with it.
-                                //long credentialId = -1, customerIdRead = -1;
-                                //string emailAddress = "vuoto", passwordHash = "vuoto", passwordSalt = "vuoto";
-                                //if (reader["CredentialId"] is not DBNull) credentialId = Convert.ToInt64(reader["CredentialId"]);
-                                //if (reader["CustomerId"] is not DBNull) customerIdRead = Convert.ToInt64(reader["CustomerId"]);
-                                //if (reader["EmailAddress"] is not DBNull) emailAddress = reader["EmailAddress"].ToString()!;
-                                //if (reader["PasswordHash"] is not DBNull) passwordHash = reader["PasswordHash"].ToString()!;
-                                //if (reader["PasswordSalt"] is not DBNull) passwordSalt = reader["PasswordSalt"].ToString()!;
-
-                                //credentials.CredentialId = credentialId;
-                                //credentials.CustomerId = customerIdRead;
-                                //credentials.EmailAddress = emailAddress;
-                                //credentials.PasswordHash = passwordHash;
-                                //credentials.PasswordSalt = passwordSalt;
                                 result = true; // I mean if it enter here there is a result, am I wrong??
                             }
                         }
@@ -187,6 +174,60 @@ namespace DataAccessLayer
             {
                 // errrrorrrrrrrrr
                 return string.Empty;
+                throw;
+            }
+        }
+
+        public async Task<int> CreateCredentialAsync(Credentials incomingCredentials)
+        {
+            try
+            {
+                if (await DoesCredentialExistsByEmail(incomingCredentials.EmailAddress))
+                {
+                    return -1;
+                }
+
+                using (SqlConnection connection = new(sqlCcnString))
+                {
+                    await connection.OpenAsync();
+
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        // 2. Add "SELECT SCOPE_IDENTITY();" to get the new ID back
+                        command.CommandText = @"
+                                                INSERT INTO [dbo].[Credentials]
+                                                           ([CustomerId]
+                                                           ,[EmailAddress]
+                                                           ,[PasswordHash]
+                                                           ,[PasswordSalt]
+                                                           ,[Role])
+                                                     VALUES
+                                                           (@CustomerId
+                                                           ,@EmailAddress
+                                                           ,@PasswordHash
+                                                           ,@PasswordSalt
+                                                           ,@Role);
+                                                SELECT SCOPE_IDENTITY();
+                                            ";
+
+                        command.Parameters.AddWithValue("@CustomerId", incomingCredentials.CustomerId);
+                        command.Parameters.AddWithValue("@EmailAddress", incomingCredentials.EmailAddress);
+                        command.Parameters.AddWithValue("@PasswordHash", incomingCredentials.PasswordHash);
+                        command.Parameters.AddWithValue("@PasswordSalt", incomingCredentials.PasswordSalt);
+                        command.Parameters.AddWithValue("@Role", incomingCredentials.Role);
+
+                        var result = await command.ExecuteScalarAsync();
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            return Convert.ToInt32(result);
+                        }
+                        return -1;
+                    }
+                }
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }

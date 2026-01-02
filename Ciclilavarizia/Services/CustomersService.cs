@@ -2,8 +2,10 @@
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services.Interfaces;
+using CommonCiclilavarizia;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Ciclilavarizia.Services
 {
@@ -14,13 +16,15 @@ namespace Ciclilavarizia.Services
         private readonly CiclilavariziaDevContext _db;
         private readonly ILogger<CustomersService> _logger;
         private readonly SecureDbService _secureDb;
+        private readonly Encryption _encryptionHandler;
 
 
-        public CustomersService(CiclilavariziaDevContext db, ILogger<CustomersService> logger, SecureDbService secureDb)
+        public CustomersService(CiclilavariziaDevContext db, ILogger<CustomersService> logger, SecureDbService secureDb, Encryption encryptionHandler)
         {
             _db = db;
             _logger = logger;
             _secureDb = secureDb;
+            _encryptionHandler = encryptionHandler;
         }
 
         public async Task<Result<IEnumerable<CustomerSummaryDto>>> GetCustomersSummaryAsync(CancellationToken cancellationToken = default)
@@ -205,67 +209,89 @@ namespace Ciclilavarizia.Services
             }
         }
 
-        public async Task<Result<int>> CreateCustomerAsync(Customer incomingCustomer, CancellationToken cancellationToken = default)
+
+        //PostCustomrDto 
+        //Email address
+        //FirstName
+        //LastName
+        //Password
+
+        public async Task<Result<int>> CreateCustomerAsync(PostCustomerDto incomingCustomer, CancellationToken cancellationToken = default)
         {
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                /*
-                NameStyle: 0 di default
-                Title: Null
-                FisrtName: obbligatorio
-                MiddleName: null
-                LastName: obbligatorio
-                Suffix: null
-                CompanyName: null
-                SalesPerson: null
-                EmailAddress: null, qui, ma diventerà obbligatorio perché serve come autenticaione univoca su Secure
-                Phone: null
-                PasswordHash: obbligatorio, ma passerà solo su Secure
-                PasswordSalt: obbligatorio
-                rowguid: obbligatorio, non so come generarlo? boh
-                ModifiedDate: obbligatorio, si mette default a now e poi si traduce in stringa
-                 */
+                // 1. PRE-CHECK: Ensure the email doesn't already exist in the Secure DB
+                // This avoids creating a "ghost" customer in the main DB that has no credentials.
+                if (await _secureDb.DoesCredentialExistsByEmail(incomingCustomer.EmailAddress))
+                {
+                    return Result<int>.Failure("The email address is already registered.");
+                }
+
+                // 2. PREPARE MAIN CUSTOMER ENTITY
                 Customer customerToAdd = new Customer
                 {
-                    CustomerID = default, // the Db will assign it
                     NameStyle = false,
-                    Title = null,
                     FirstName = incomingCustomer.FirstName,
-                    MiddleName = null,
                     LastName = incomingCustomer.LastName,
+                    // 'rowguid' is a unique identifier required by AdventureWorks. 
+                    // We generate it using Guid.NewGuid()
+                    rowguid = default,
+                    ModifiedDate = DateTime.Now,
+                    // Set other defaults or nulls as per your business rules
+                    Title = null,
+                    MiddleName = null,
                     Suffix = null,
                     CompanyName = null,
-                    //EmailAddress = incomingCustomer.EmailAddress, // può essere null, ma diventerà obbligatoria da aggiungere al Secure. anche se in tanto lo faccio qui
-                    Phone = null,
-                    //PasswordHash = "1234567890", // when the encription is ready implement it
-                    //PasswordSalt = "1234567890", // when the encription is ready implement it
-                    rowguid = default,
-                    ModifiedDate = DateTime.Now
+                    SalesPerson = null,
+                    Phone = null
                 };
-                var entity = _db.Customers.Add(customerToAdd);
-                _db.SaveChanges();
-                var values = entity.CurrentValues;
-                var idCreatedCustumer = values.GetValue<int>("CustomerID");
-                return Result<int>.Success(idCreatedCustumer);
+
+                await _db.Customers.AddAsync(customerToAdd, cancellationToken);
+                await _db.SaveChangesAsync(cancellationToken);
+
+                var createdCustomerId = customerToAdd.CustomerID;
+
+                var salt = _encryptionHandler.GenerateSalt();
+                Credentials credentials = new Credentials
+                {
+                    CustomerId = createdCustomerId,
+                    EmailAddress = incomingCustomer.EmailAddress,
+                    PasswordHash = _encryptionHandler.HashPassword(incomingCustomer.PlainPassword, salt),
+                    PasswordSalt = salt,
+                    Role = incomingCustomer.Role ?? "User"
+                };
+
+                var createdCredentialId = await _secureDb.CreateCredentialAsync(credentials);
+
+                if (createdCredentialId == -1)
+                {
+                    _db.Customers.Remove(customerToAdd);
+                    await _db.SaveChangesAsync(CancellationToken.None);
+
+                    return Result<int>.Failure("Account security setup failed. The process was rolled back.");
+                }
+
+                return Result<int>.Success(createdCustomerId);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation("CreateAsync was cancelled");
+                _logger.LogInformation("CreateCustomerAsync was cancelled.");
                 return Result<int>.Failure("Operation cancelled.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while creating a customer");
-                return Result<int>.Failure("An error occurred while creating a customer.");
+                _logger.LogError(ex, "Unexpected error during customer creation.");
+                return Result<int>.Failure("An internal error occurred. Please try again later.");
             }
         }
-
         public async Task<bool> DoesCustomerExistsAsync(int customerId, CancellationToken cancellationToken = default)
         {
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 bool exists = await _db.Customers
                     .AsNoTracking()
                     .AnyAsync(c => c.CustomerID == customerId && c.IsDeleted == false, cancellationToken);
@@ -347,6 +373,11 @@ namespace Ciclilavarizia.Services
 
                 await _db.SaveChangesAsync(cancellationToken);
                 return Result<int>.Success(existingCustomer.CustomerID);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("UpdateCustomerByIdAsync was cancelled");
+                return Result<int>.Failure("Operation cancelled.");
             }
             catch (Exception ex)
             {
