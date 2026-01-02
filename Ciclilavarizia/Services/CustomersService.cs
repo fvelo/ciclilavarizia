@@ -74,7 +74,7 @@ namespace Ciclilavarizia.Services
             }
         }
 
-        public async Task<Result<IEnumerable<CustomerDetailDto>>> GetAsync(CancellationToken cancellationToken = default)
+        public async Task<Result<IEnumerable<CustomerDetailDto>>> GetCustomersAsync(CancellationToken cancellationToken = default)
         {
             try
             {

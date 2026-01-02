@@ -10,7 +10,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns>IEnumerable of CustomerDto.</returns>
-        Task<Result<IEnumerable<CustomerDetailDto>>> GetAsync(CancellationToken cancellationToken = default);
+        Task<Result<IEnumerable<CustomerDetailDto>>> GetCustomersAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get a customer present in the db by it's id.
