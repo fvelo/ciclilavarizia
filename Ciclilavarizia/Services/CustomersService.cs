@@ -177,7 +177,7 @@ namespace Ciclilavarizia.Services
             }
         }
 
-        public async Task<Result<int>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<int>> DeleteCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -205,7 +205,7 @@ namespace Ciclilavarizia.Services
             }
         }
 
-        public async Task<Result<int>> CreateAsync(Customer incomingCustomer, CancellationToken cancellationToken = default)
+        public async Task<Result<int>> CreateCustomerAsync(Customer incomingCustomer, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -284,7 +284,7 @@ namespace Ciclilavarizia.Services
         }
 
         // TODO: finish implementing it
-        public async Task<Result<int>> UpdateAsync(int customerId, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken = default)
+        public async Task<Result<int>> UpdateCustomerByIdAsync(int customerId, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken = default)
         {
             try
             {

@@ -90,7 +90,7 @@ namespace Ciclilavarizia.Controllers
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteCustomer(int id, CancellationToken cancellationToken)
         {
-            var result = await _customersService.DeleteAsync(id, cancellationToken);
+            var result = await _customersService.DeleteCustomerByIdAsync(id, cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -109,7 +109,7 @@ namespace Ciclilavarizia.Controllers
         [EnsureCustomerExists(IdParameterName ="id")]
         public async Task<IActionResult> UpdateCustomerAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken)
         {
-            var result = await _customersService.UpdateAsync(id, incomingCustomer, cancellationToken);
+            var result = await _customersService.UpdateCustomerByIdAsync(id, incomingCustomer, cancellationToken);
 
             if (!result.IsSuccess)
             {

@@ -27,7 +27,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Returns the CustomerId of the deleted Customer. If -1 Customer not found.</returns>
-        Task<Result<int>> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<Result<int>> DeleteCustomerByIdAsync(int id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Create a Customer in thr Db based on the data provided.
@@ -35,7 +35,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <param name="incomingCustomer"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Returns the CustomerId of the Customer created.</returns>
-        Task<Result<int>> CreateAsync(Customer incomingCustomer, CancellationToken cancellationToken = default);
+        Task<Result<int>> CreateCustomerAsync(Customer incomingCustomer, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update the Customer in the Db using the data provided.
@@ -44,7 +44,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <param name="incomingCustomer"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Returns the CustomerId. If customer not foud -1.</returns>
-        Task<Result<int>> UpdateAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken = default);
+        Task<Result<int>> UpdateCustomerByIdAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken = default);
 
 
         /// <summary>
