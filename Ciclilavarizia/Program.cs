@@ -5,7 +5,8 @@ using Ciclilavarizia.Services.ServicesExtentions;
 using CommonCiclilavarizia;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
-
+using Serilog;
+using Serilog.Events;
 
 namespace Ciclilavarizia
 {
@@ -14,6 +15,37 @@ namespace Ciclilavarizia
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            // 
+            // Define the base path for logs
+            string logPath = Path.Combine(AppContext.BaseDirectory, "Logs", DateTime.Now.ToString("yyyy-MM"));
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .Enrich.FromLogContext()
+                
+                // SQL SERVER SINK (All Warnings and Errors)
+                .WriteTo.MSSqlServer(
+                    connectionString: builder.Configuration.GetConnectionString("CiclilavariziaDev"),
+                    sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
+                    restrictedToMinimumLevel: LogEventLevel.Warning)
+
+                // DEBUG FILE (Only Debug)
+                .WriteTo.Logger(lc => lc
+                    .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug)
+                    .WriteTo.File(Path.Combine(logPath, "debug-.txt"), rollingInterval: RollingInterval.Month))
+                
+                // INFO FILE (Only Information)
+                .WriteTo.Logger(lc => lc
+                    .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information || e.Level == LogEventLevel.Warning)
+                    .WriteTo.File(Path.Combine(logPath, "info-.txt"), rollingInterval: RollingInterval.Month))
+
+                // ERROR/REMAINING FILE (Warning, Error, Fatal)
+                .WriteTo.Logger(lc => lc
+                    .Filter.ByExcluding(e => e.Level == LogEventLevel.Information || e.Level == LogEventLevel.Debug)
+                    .WriteTo.File(Path.Combine(logPath, "exeptions-.txt"), rollingInterval: RollingInterval.Month))
+                .CreateLogger();
+
+            builder.Host.UseSerilog();
 
             // Add services to the container.
 
@@ -32,7 +64,6 @@ namespace Ciclilavarizia
                 o.AppendTrailingSlash = true;
             });
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -92,6 +123,7 @@ namespace Ciclilavarizia
             builder.Services.AddLoginService();
             builder.Services.AddCustomActionFilters(); //needs to be after AddCustomersService because it depends on it
             builder.Services.AddCustomEncryptionService();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 
             //
@@ -115,6 +147,8 @@ namespace Ciclilavarizia
             {
                 app.UseCors(LiveServerOrigin);
             }
+            // MUST be after security middleware and before MapControllers
+            app.UseExceptionHandler();
 
             app.MapControllers();
             app.Run();
