@@ -15,14 +15,18 @@ namespace Ciclilavarizia
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            // 
             // Define the base path for logs
             string logPath = Path.Combine(AppContext.BaseDirectory, "Logs", DateTime.Now.ToString("yyyy-MM"));
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
+                // This allows the "Microsoft.AspNetCore" logs to pass through to the console
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                
+
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+                     theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
+
                 // SQL SERVER SINK (All Warnings and Errors)
                 .WriteTo.MSSqlServer(
                     connectionString: builder.Configuration.GetConnectionString("CiclilavariziaDev"),
@@ -123,6 +127,7 @@ namespace Ciclilavarizia
             builder.Services.AddLoginService();
             builder.Services.AddCustomActionFilters(); //needs to be after AddCustomersService because it depends on it
             builder.Services.AddCustomEncryptionService();
+            builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 
