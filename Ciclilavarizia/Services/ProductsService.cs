@@ -29,7 +29,7 @@ namespace Ciclilavarizia.Services
             return await _context.Products.AsNoTracking().AnyAsync(p => p.ProductID == productId, cancellationToken);
         }
 
-        public async Task<Result<List<ProductSummaryDto>>> GetProductsDetailsAsync(CancellationToken ct)
+        public async Task<Result<List<ProductSummaryDto>>> GetProductsDetailsAsync(CancellationToken cancellationToken)
         {
             var items = await AvailableProducts
                 .Select(p => new ProductSummaryDto
@@ -42,7 +42,7 @@ namespace Ciclilavarizia.Services
                     ListPrice = p.ListPrice,
                     Color = p.Color ?? "N/A"
                 })
-                .ToListAsync(ct);
+                .ToListAsync(cancellationToken);
 
             return Result<List<ProductSummaryDto>>.Success(items);
         }

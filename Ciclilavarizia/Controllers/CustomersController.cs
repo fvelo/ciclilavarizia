@@ -79,7 +79,6 @@ namespace Ciclilavarizia.Controllers
                 {
                     return Problem(result.ErrorMessage);
                 }
-                //return Ok("Girgio");
                 return Ok(result.Value);
             }
             catch (OperationCanceledException)

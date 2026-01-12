@@ -6,36 +6,26 @@ using CommonCiclilavarizia;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Ciclilavarizia.Services
 {
     public class CustomersService : ICustomersService
     {
-        // TODO: Create an actual error handling
-
         private readonly CiclilavariziaDevContext _db;
-        private readonly ILogger<CustomersService> _logger;
         private readonly SecureDbService _secureDb;
         private readonly Encryption _encryptionHandler;
 
-
-        public CustomersService(CiclilavariziaDevContext db, ILogger<CustomersService> logger, SecureDbService secureDb, Encryption encryptionHandler)
+        public CustomersService(CiclilavariziaDevContext db, SecureDbService secureDb, Encryption encryptionHandler)
         {
             _db = db;
-            _logger = logger;
             _secureDb = secureDb;
             _encryptionHandler = encryptionHandler;
         }
 
         public async Task<Result<IEnumerable<CustomerSummaryDto>>> GetCustomersSummaryAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var customers = await _db.Customers
+            var customers = await _db.Customers
                 .AsNoTracking()
-                .Where(c => c.IsDeleted == false)
+                .Where(c => !c.IsDeleted)
                 .Select(c => new CustomerSummaryDto
                 {
                     CustomerId = c.CustomerID,
@@ -44,100 +34,27 @@ namespace Ciclilavarizia.Services
                 })
                 .ToListAsync(cancellationToken);
 
-                if (!customers.Any())
-                {
-                    return Result<IEnumerable<CustomerSummaryDto>>
-                        .Success(Enumerable.Empty<CustomerSummaryDto>());
-                }
-
-                var customerSummaryTasks = customers.Select(async c =>
-                {
-                    string emailAddress = await _secureDb.GetEmailAddressByCustomerIdAsync(c.CustomerId);
-
-                    return new CustomerSummaryDto
-                    {
-                        CustomerId = c.CustomerId,
-                        FirstName = c.FirstName,
-                        LastName = c.LastName,
-                        EmailAddress = emailAddress
-                    };
-                }).ToList();
-
-                var customerSummaries = await Task.WhenAll(customerSummaryTasks); // Execute the list of Tasks passed
-
-                return Result<IEnumerable<CustomerSummaryDto>>.Success(customerSummaries);
-            }
-            catch (OperationCanceledException)
+            if (!customers.Any())
             {
-                return Result<IEnumerable<CustomerSummaryDto>>.Failure($"Request Cancelled.");
+                return Result<IEnumerable<CustomerSummaryDto>>.Success(Enumerable.Empty<CustomerSummaryDto>());
             }
-            catch (Exception)
+
+            var customerSummaryTasks = customers.Select(async c =>
             {
-                return Result<IEnumerable<CustomerSummaryDto>>.Failure($"Unexpected error.");
-                throw;
-            }
+                c.EmailAddress = await _secureDb.GetEmailAddressByCustomerIdAsync(c.CustomerId);
+                return c;
+            });
+
+            var customerSummaries = await Task.WhenAll(customerSummaryTasks);
+            return Result<IEnumerable<CustomerSummaryDto>>.Success(customerSummaries);
         }
 
         public async Task<Result<IEnumerable<CustomerDetailDto>>> GetCustomersAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var customers = await _db.Customers
-                    .AsNoTracking()
-                    .Include(c => c.CustomerAddresses)
-                        .ThenInclude(ca => ca.Address)
-                    .Select(c => new CustomerDetailDto
-                    {
-                        CustomerId = c.CustomerID,
-                        Title = c.Title,
-                        FirstName = c.FirstName,
-                        MiddleName = c.MiddleName,
-                        LastName = c.LastName,
-                        Suffix = c.Suffix,
-                        CompanyName = c.CompanyName,
-                        SalesPerson = c.SalesPerson,
-                        CustomerAddresses = c.CustomerAddresses
-                            .Select(ca => new CustomerAddressDto
-                            {
-                                AddressId = ca.AddressID,
-                                AddressType = ca.AddressType,
-                                Address = new AddressDto
-                                {
-                                    AddressLine1 = ca.Address.AddressLine1,
-                                    City = ca.Address.City,
-                                    StateProvince = ca.Address.StateProvince,
-                                    CountryRegion = ca.Address.CountryRegion,
-                                    PostalCode = ca.Address.PostalCode
-                                }
-                            })
-                            .ToList()
-                    })
-                    .ToListAsync(cancellationToken);
-
-                return Result<IEnumerable<CustomerDetailDto>>.Success(customers);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("GetAsync was cancelled");
-                return Result<IEnumerable<CustomerDetailDto>>.Failure("Operation cancelled.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while getting customers");
-                return Result<IEnumerable<CustomerDetailDto>>.Failure("An error occurred while retrieving customers.");
-            }
-        }
-
-        public async Task<Result<CustomerDetailDto>> GetCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var customer = await _db.Customers
+            var customers = await _db.Customers
                 .AsNoTracking()
+                .Include(c => c.CustomerAddresses)
+                    .ThenInclude(ca => ca.Address)
                 .Select(c => new CustomerDetailDto
                 {
                     CustomerId = c.CustomerID,
@@ -161,235 +78,151 @@ namespace Ciclilavarizia.Services
                                 CountryRegion = ca.Address.CountryRegion,
                                 PostalCode = ca.Address.PostalCode
                             }
-                        })
-                        .ToList()
+                        }).ToList()
                 })
-                .Where(c => c.CustomerId == id)
+                .ToListAsync(cancellationToken);
+
+            return Result<IEnumerable<CustomerDetailDto>>.Success(customers);
+        }
+
+        public async Task<Result<CustomerDetailDto>> GetCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var customer = await _db.Customers
+                .AsNoTracking()
+                .Where(c => c.CustomerID == id && !c.IsDeleted)
+                .Select(c => new CustomerDetailDto
+                {
+                    CustomerId = c.CustomerID,
+                    Title = c.Title,
+                    FirstName = c.FirstName,
+                    MiddleName = c.MiddleName,
+                    LastName = c.LastName,
+                    Suffix = c.Suffix,
+                    CompanyName = c.CompanyName,
+                    SalesPerson = c.SalesPerson,
+                    CustomerAddresses = c.CustomerAddresses
+                        .Select(ca => new CustomerAddressDto
+                        {
+                            AddressId = ca.AddressID,
+                            AddressType = ca.AddressType,
+                            Address = new AddressDto
+                            {
+                                AddressLine1 = ca.Address.AddressLine1,
+                                City = ca.Address.City,
+                                StateProvince = ca.Address.StateProvince,
+                                CountryRegion = ca.Address.CountryRegion,
+                                PostalCode = ca.Address.PostalCode
+                            }
+                        }).ToList()
+                })
                 .SingleOrDefaultAsync(cancellationToken);
 
-                return Result<CustomerDetailDto>.Success(customer);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("GetByIdAsync was cancelled");
-                return Result<CustomerDetailDto>.Failure("Operation cancelled.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while getting customer");
-                return Result<CustomerDetailDto>.Failure("An error occurred while retrieving a customer.");
-            }
+            return customer != null
+                ? Result<CustomerDetailDto>.Success(customer)
+                : Result<CustomerDetailDto>.Failure("Customer not found.");
         }
 
         public async Task<Result<int>> DeleteCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+            var customer = await _db.Customers.FindAsync(new object[] { id }, cancellationToken);
 
-                var customer = await _db.Customers.FindAsync(id, cancellationToken);
-                if (customer == null)
-                {
-                    return Result<int>.Success(-1);
-                }
+            if (customer == null) return Result<int>.Success(-1);
 
-                _db.Customers.Remove(customer);
-                await _db.SaveChangesAsync();
-                return Result<int>.Success(id);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("DeleteAsync was cancelled");
-                return Result<int>.Failure("Operation cancelled.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while deleting customer");
-                return Result<int>.Failure("An error occurred while deleting a customer.");
-            }
+            _db.Customers.Remove(customer);
+            await _db.SaveChangesAsync(cancellationToken);
+            return Result<int>.Success(id);
         }
-
-
-        //PostCustomrDto 
-        //Email address
-        //FirstName
-        //LastName
-        //Password
 
         public async Task<Result<int>> CreateCustomerAsync(PostCustomerDto incomingCustomer, CancellationToken cancellationToken = default)
         {
-            try
+            if (await _secureDb.DoesCredentialExistsByEmail(incomingCustomer.EmailAddress))
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // 1. PRE-CHECK: Ensure the email doesn't already exist in the Secure DB
-                // This avoids creating a "ghost" customer in the main DB that has no credentials.
-                if (await _secureDb.DoesCredentialExistsByEmail(incomingCustomer.EmailAddress))
-                {
-                    return Result<int>.Failure("The email address is already registered.");
-                }
-
-                // 2. PREPARE MAIN CUSTOMER ENTITY
-                Customer customerToAdd = new Customer
-                {
-                    NameStyle = false,
-                    FirstName = incomingCustomer.FirstName,
-                    LastName = incomingCustomer.LastName,
-                    // 'rowguid' is a unique identifier required by AdventureWorks. 
-                    // We generate it using Guid.NewGuid()
-                    rowguid = default,
-                    ModifiedDate = DateTime.Now,
-                    // Set other defaults or nulls as per your business rules
-                    Title = null,
-                    MiddleName = null,
-                    Suffix = null,
-                    CompanyName = null,
-                    SalesPerson = null,
-                    Phone = null
-                };
-
-                await _db.Customers.AddAsync(customerToAdd, cancellationToken);
-                await _db.SaveChangesAsync(cancellationToken);
-
-                var createdCustomerId = customerToAdd.CustomerID;
-
-                var salt = _encryptionHandler.GenerateSalt();
-                Credentials credentials = new Credentials
-                {
-                    CustomerId = createdCustomerId,
-                    EmailAddress = incomingCustomer.EmailAddress,
-                    PasswordHash = _encryptionHandler.HashPassword(incomingCustomer.PlainPassword, salt),
-                    PasswordSalt = salt,
-                    Role = incomingCustomer.Role ?? "User"
-                };
-
-                var createdCredentialId = await _secureDb.CreateCredentialAsync(credentials);
-
-                if (createdCredentialId == -1)
-                {
-                    _db.Customers.Remove(customerToAdd);
-                    await _db.SaveChangesAsync(CancellationToken.None);
-
-                    return Result<int>.Failure("Account security setup failed. The process was rolled back.");
-                }
-
-                return Result<int>.Success(createdCustomerId);
+                return Result<int>.Failure("The email address is already registered.");
             }
-            catch (OperationCanceledException)
+
+            // The problem here is that we work with two db, the main and the secure. The secure is managed through ado.net
+            // this makes it more "secure" and less abstact but it is littearally another db to manage and there is no
+            // comunication between the two. If the process of creating the customer for some reason have problems after creatin the 
+            // Customer in the main db, this does not have any Credentials and this is a big problem. For this reason I will use a transaction
+
+
+            // Start a Transaction on the Main DB
+            using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
+
+            Customer customerToAdd = new Customer
             {
-                _logger.LogInformation("CreateCustomerAsync was cancelled.");
-                return Result<int>.Failure("Operation cancelled.");
-            }
-            catch (Exception ex)
+                NameStyle = false,
+                FirstName = incomingCustomer.FirstName,
+                LastName = incomingCustomer.LastName,
+                rowguid = Guid.NewGuid(),
+                ModifiedDate = DateTime.Now
+            };
+
+            await _db.Customers.AddAsync(customerToAdd, cancellationToken);
+            await _db.SaveChangesAsync(cancellationToken); // Customer gets an ID here, but is NOT fully committed yet
+
+            var salt = _encryptionHandler.GenerateSalt();
+            Credentials credentials = new Credentials
             {
-                _logger.LogError(ex, "Unexpected error during customer creation.");
-                return Result<int>.Failure("An internal error occurred. Please try again later.");
+                CustomerId = customerToAdd.CustomerID,
+                EmailAddress = incomingCustomer.EmailAddress,
+                PasswordHash = _encryptionHandler.HashPassword(incomingCustomer.PlainPassword, salt),
+                PasswordSalt = salt,
+                Role = incomingCustomer.Role ?? "User"
+            };
+
+            // Attempt to save to Secure DB
+            var createdCredentialId = await _secureDb.CreateCredentialAsync(credentials);
+
+            if (createdCredentialId == -1)
+            {
+                return Result<int>.Failure("Account security setup failed. Process rolled back.");
             }
+
+            // If it reached here, both DB operations are ready.
+            await transaction.CommitAsync(cancellationToken);
+
+            return Result<int>.Success(customerToAdd.CustomerID);
         }
+
         public async Task<bool> DoesCustomerExistsAsync(int customerId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                bool exists = await _db.Customers
-                    .AsNoTracking()
-                    .AnyAsync(c => c.CustomerID == customerId && c.IsDeleted == false, cancellationToken);
-                return exists;
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("DoesCustomerExistsAsync was cancelled");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "DoesCustomerExistsAsync had a error");
-                return false;
-            }
+            return await _db.Customers
+                .AsNoTracking()
+                .AnyAsync(c => c.CustomerID == customerId && !c.IsDeleted, cancellationToken);
         }
 
-        // TODO: finish implementing it
         public async Task<Result<int>> UpdateCustomerByIdAsync(int customerId, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
+            if (incomingCustomer == null) return Result<int>.Failure("The customer provided is null.");
+            if (incomingCustomer.CustomerId != customerId) return Result<int>.Failure("ID mismatch.");
 
-                if (incomingCustomer == null) return Result<int>.Failure("The customer provided is null.");
-                if (incomingCustomer.CustomerId != customerId) return Result<int>.Failure("The id of the customer provided and the id must be the same."); // questa sembra essere una best practrice di controllo
-
-                var existingCustomer = await _db.Customers
+            var existingCustomer = await _db.Customers
                 .Include(c => c.CustomerAddresses)
                     .ThenInclude(ca => ca.Address)
                 .FirstOrDefaultAsync(c => c.CustomerID == customerId, cancellationToken);
 
-                if (existingCustomer == null) return Result<int>.Failure("There is not a customer with this Id in the Db.");
+            if (existingCustomer == null) return Result<int>.Failure("Customer not found.");
 
-                //Console.WriteLine($"Old Customer: {existingCustomer}");
+            existingCustomer.Title = incomingCustomer.Title ?? existingCustomer.Title;
+            existingCustomer.FirstName = incomingCustomer.FirstName ?? existingCustomer.FirstName;
+            existingCustomer.MiddleName = incomingCustomer.MiddleName ?? existingCustomer.MiddleName;
+            existingCustomer.LastName = incomingCustomer.LastName ?? existingCustomer.LastName;
+            existingCustomer.Suffix = incomingCustomer.Suffix ?? existingCustomer.Suffix;
+            existingCustomer.CompanyName = incomingCustomer.CompanyName ?? existingCustomer.CompanyName;
+            existingCustomer.SalesPerson = incomingCustomer.SalesPerson ?? existingCustomer.SalesPerson;
+            existingCustomer.ModifiedDate = DateTime.UtcNow;
 
-                bool isChanged = false;
+            UpdateCustomerAddresses(existingCustomer, incomingCustomer.CustomerAddresses);
 
-                if (!string.IsNullOrEmpty(incomingCustomer.Title) && !string.IsNullOrWhiteSpace(incomingCustomer.Title))
-                {
-                    existingCustomer.Title = incomingCustomer.Title;
-                    isChanged = true;
-                }
-                if (!string.IsNullOrEmpty(incomingCustomer.FirstName) && !string.IsNullOrWhiteSpace(incomingCustomer.FirstName))
-                {
-                    existingCustomer.FirstName = incomingCustomer.FirstName;
-                    isChanged = true;
-                }
-                if (!string.IsNullOrEmpty(incomingCustomer.MiddleName) && !string.IsNullOrWhiteSpace(incomingCustomer.MiddleName))
-                {
-                    existingCustomer.MiddleName = incomingCustomer.MiddleName;
-                    isChanged = true;
-                }
-                if (!string.IsNullOrEmpty(incomingCustomer.LastName) && !string.IsNullOrWhiteSpace(incomingCustomer.LastName))
-                {
-                    existingCustomer.LastName = incomingCustomer.LastName;
-                    isChanged = true;
-                }
-                if (!string.IsNullOrEmpty(incomingCustomer.Suffix) && !string.IsNullOrWhiteSpace(incomingCustomer.Suffix))
-                {
-                    existingCustomer.Suffix = incomingCustomer.Suffix;
-                    isChanged = true;
-                }
-                if (!string.IsNullOrEmpty(incomingCustomer.CompanyName) && !string.IsNullOrWhiteSpace(incomingCustomer.CompanyName))
-                {
-                    existingCustomer.CompanyName = incomingCustomer.CompanyName;
-                    isChanged = true;
-                }
-                if (!string.IsNullOrEmpty(incomingCustomer.SalesPerson) && !string.IsNullOrWhiteSpace(incomingCustomer.SalesPerson))
-                {
-                    existingCustomer.SalesPerson = incomingCustomer.SalesPerson;
-                    isChanged = true;
-                }
-                if (isChanged) existingCustomer.ModifiedDate = DateTime.UtcNow;
-
-                // assume _customer already resolved and 'customer' is the incoming DTO
-                // handle addresses:
-                UpdateCustomerAddresses(existingCustomer, incomingCustomer.CustomerAddresses);
-
-                await _db.SaveChangesAsync(cancellationToken);
-                return Result<int>.Success(existingCustomer.CustomerID);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("UpdateCustomerByIdAsync was cancelled");
-                return Result<int>.Failure("Operation cancelled.");
-            }
-            catch (Exception ex)
-            {
-                return Result<int>.Failure($"An error occurred: {ex.Message}");
-            }
+            await _db.SaveChangesAsync(cancellationToken);
+            return Result<int>.Success(existingCustomer.CustomerID);
         }
 
         private void UpdateCustomerAddresses(Customer existingCustomer, List<CustomerAddressDto> incomingAddressesDto)
         {
             incomingAddressesDto ??= new List<CustomerAddressDto>();
 
-            // addresses in DB that are NOT in the incoming DTO list
             var incomingIds = incomingAddressesDto
                 .Where(a => a.AddressId > 0)
                 .Select(a => a.AddressId)
@@ -400,21 +233,16 @@ namespace Ciclilavarizia.Services
                 .ToList();
 
             foreach (var addressToRemove in addressesToDelete)
-            {
                 existingCustomer.CustomerAddresses.Remove(addressToRemove);
-            }
 
             foreach (var incomingAddrDto in incomingAddressesDto)
             {
-                // Is this an existing address?
-                // The new addresses will have 0 as their ID
                 var existingAddrEntity = existingCustomer.CustomerAddresses
                     .FirstOrDefault(ca => ca.AddressID == incomingAddrDto.AddressId && incomingAddrDto.AddressId != 0);
 
                 if (existingAddrEntity != null)
                 {
                     existingAddrEntity.AddressType = incomingAddrDto.AddressType;
-
                     if (existingAddrEntity.Address != null && incomingAddrDto.Address != null)
                     {
                         existingAddrEntity.Address.AddressLine1 = incomingAddrDto.Address.AddressLine1;
@@ -427,8 +255,7 @@ namespace Ciclilavarizia.Services
                 }
                 else
                 {
-                    // --- ADD NEW ---
-                    var newAddressEntity = new CustomerAddress
+                    existingCustomer.CustomerAddresses.Add(new CustomerAddress
                     {
                         AddressType = incomingAddrDto.AddressType,
                         ModifiedDate = DateTime.UtcNow,
@@ -443,9 +270,7 @@ namespace Ciclilavarizia.Services
                             ModifiedDate = DateTime.UtcNow,
                             rowguid = Guid.NewGuid()
                         }
-                    };
-
-                    existingCustomer.CustomerAddresses.Add(newAddressEntity);
+                    });
                 }
             }
         }
