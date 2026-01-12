@@ -17,7 +17,7 @@ namespace Ciclilavarizia
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.AddSerilogConfiguration();
+            builder.AddSerilogConfiguration("CiclilavariziaSecureDev");
 
             // 
             // Add services to the container.

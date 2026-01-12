@@ -6,7 +6,7 @@ namespace Ciclilavarizia.BuilderExtensions
 {
     public static class SerilogExtensions
     {
-        public static void AddSerilogConfiguration(this WebApplicationBuilder builder)
+        public static void AddSerilogConfiguration(this WebApplicationBuilder builder, string connectionString)
         {
             // Define the base path for logs
             string logPath = Path.Combine(AppContext.BaseDirectory, "Logs", DateTime.Now.ToString("yyyy-MM"));
@@ -30,7 +30,7 @@ namespace Ciclilavarizia.BuilderExtensions
 
                 // SQL SERVER SINK (All Warnings and Errors)
                 .WriteTo.MSSqlServer(
-                    connectionString: builder.Configuration.GetConnectionString("CiclilavariziaSecureDev"),
+                    connectionString: builder.Configuration.GetConnectionString(connectionString),
                     sinkOptions: sinkOptions,
                     restrictedToMinimumLevel: LogEventLevel.Warning)
 
