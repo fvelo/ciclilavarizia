@@ -12,13 +12,12 @@ namespace Ciclilavarizia.Services
         private readonly ILogger<ProductsService> _logger;
         private const string ImageBaseUrl = "/api/images/product/";
 
-        public ProductsService(CiclilavariziaDevContext ctx, ILogger<ProductsService> logger)
+        public ProductsService(CiclilavariziaDevContext context, ILogger<ProductsService> logger)
         {
-            _context = ctx;
+            _context = context;
             _logger = logger;
         }
 
-        // Helper to centralize Availability Logic (DRY principle)
         private IQueryable<Product> AvailableProducts => _context.Products
             .AsNoTracking()
             .Where(p => p.DiscontinuedDate == null
@@ -103,7 +102,6 @@ namespace Ciclilavarizia.Services
 
         public async Task<Result<bool>> DeleteProductAsync(int productId, CancellationToken cancellationToken = default)
         {
-            // Performance trick: ExecuteDeleteAsync sends one SQL command without loading entity
             int rowsAffected = await _context.Products
                 .Where(p => p.ProductID == productId)
                 .ExecuteDeleteAsync(cancellationToken);
