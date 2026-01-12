@@ -1,3 +1,4 @@
+using Ciclilavarizia.BuilderExtensions;
 using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
@@ -5,7 +6,8 @@ using Ciclilavarizia.Services.ServicesExtentions;
 using CommonCiclilavarizia;
 using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
-
+using Serilog;
+using Serilog.Events;
 
 namespace Ciclilavarizia
 {
@@ -15,8 +17,12 @@ namespace Ciclilavarizia
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.AddSerilogConfiguration("CiclilavariziaSecureDev");
 
+            // 
+            // Add services to the container.
+            // 
+            
             builder.Services.AddControllers(/*opt =>
             {
                 opt.RespectBrowserAcceptHeader = true;
@@ -32,7 +38,6 @@ namespace Ciclilavarizia
                 o.AppendTrailingSlash = true;
             });
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -92,6 +97,8 @@ namespace Ciclilavarizia
             builder.Services.AddLoginService();
             builder.Services.AddCustomActionFilters(); //needs to be after AddCustomersService because it depends on it
             builder.Services.AddCustomEncryptionService();
+            builder.Services.AddProblemDetails();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 
             //
@@ -115,6 +122,8 @@ namespace Ciclilavarizia
             {
                 app.UseCors(LiveServerOrigin);
             }
+            // MUST be after security middleware and before MapControllers
+            app.UseExceptionHandler();
 
             app.MapControllers();
             app.Run();
