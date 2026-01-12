@@ -1,3 +1,4 @@
+using Ciclilavarizia.BuilderExtensions;
 using Ciclilavarizia.Data;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
@@ -15,44 +16,13 @@ namespace Ciclilavarizia
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            // Define the base path for logs
-            string logPath = Path.Combine(AppContext.BaseDirectory, "Logs", DateTime.Now.ToString("yyyy-MM"));
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                // This allows the "Microsoft.AspNetCore" logs to pass through to the console
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
+            builder.AddSerilogConfiguration();
 
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
-                     theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
-
-                // SQL SERVER SINK (All Warnings and Errors)
-                .WriteTo.MSSqlServer(
-                    connectionString: builder.Configuration.GetConnectionString("CiclilavariziaDev"),
-                    sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true },
-                    restrictedToMinimumLevel: LogEventLevel.Warning)
-
-                // DEBUG FILE (Only Debug)
-                .WriteTo.Logger(lc => lc
-                    .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Debug)
-                    .WriteTo.File(Path.Combine(logPath, "debug-.txt"), rollingInterval: RollingInterval.Month))
-                
-                // INFO FILE (Only Information)
-                .WriteTo.Logger(lc => lc
-                    .Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information || e.Level == LogEventLevel.Warning)
-                    .WriteTo.File(Path.Combine(logPath, "info-.txt"), rollingInterval: RollingInterval.Month))
-
-                // ERROR/REMAINING FILE (Warning, Error, Fatal)
-                .WriteTo.Logger(lc => lc
-                    .Filter.ByExcluding(e => e.Level == LogEventLevel.Information || e.Level == LogEventLevel.Debug)
-                    .WriteTo.File(Path.Combine(logPath, "exeptions-.txt"), rollingInterval: RollingInterval.Month))
-                .CreateLogger();
-
-            builder.Host.UseSerilog();
-
+            // 
             // Add services to the container.
-
+            // 
+            
             builder.Services.AddControllers(/*opt =>
             {
                 opt.RespectBrowserAcceptHeader = true;
