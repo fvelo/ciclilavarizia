@@ -1,211 +1,137 @@
-﻿using Ciclilavarizia.Controllers;
-using Ciclilavarizia.Data;
+﻿using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using NuGet.Protocol;
-using System.Threading;
 
 namespace Ciclilavarizia.Services
 {
     public class ProductsService : IProductsService
     {
-        // TODO: Add an actual error logging for Problem() response in every ActionMethod
-
         private readonly CiclilavariziaDevContext _context;
         private readonly ILogger<ProductsService> _logger;
+        private const string ImageBaseUrl = "/api/images/product/";
 
-        public ProductsService(CiclilavariziaDevContext ctx, ILogger<ProductsService> logger) 
+        public ProductsService(CiclilavariziaDevContext ctx, ILogger<ProductsService> logger)
         {
             _context = ctx;
             _logger = logger;
         }
-        private IQueryable<ProductDto> GetAllProducts() =>
-            _context.Products.AsNoTracking().Include(p => p.ProductModel)
-                .Select(p => new ProductDto
+
+        // Helper to centralize Availability Logic (DRY principle)
+        private IQueryable<Product> AvailableProducts => _context.Products
+            .AsNoTracking()
+            .Where(p => p.DiscontinuedDate == null
+                        && (p.SellEndDate == null || p.SellEndDate > DateTime.UtcNow)
+                        && p.SellStartDate <= DateTime.UtcNow);
+
+        public async Task<bool> DoesProductExistsAsync(int productId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Products.AsNoTracking().AnyAsync(p => p.ProductID == productId, cancellationToken);
+        }
+
+        public async Task<Result<List<ProductSummaryDto>>> GetProductsDetailsAsync(CancellationToken ct)
+        {
+            var items = await AvailableProducts
+                .Select(p => new ProductSummaryDto
+                {
+                    ProductId = p.ProductID,
+                    Name = p.Name,
+                    ThumbnailUrl = $"{ImageBaseUrl}{p.ProductID}",
+                    ProductCategory = p.ProductCategory != null ? p.ProductCategory.Name : "N/A",
+                    ProductModel = p.ProductModel != null ? p.ProductModel.Name : "N/A",
+                    ListPrice = p.ListPrice,
+                    Color = p.Color ?? "N/A"
+                })
+                .ToListAsync(ct);
+
+            return Result<List<ProductSummaryDto>>.Success(items);
+        }
+
+        public async Task<Result<ProductDetailDto>> GetProductByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var product = await AvailableProducts
+                .Where(p => p.ProductID == id)
+                .Select(p => new ProductDetailDto
                 {
                     ProductId = p.ProductID,
                     Name = p.Name,
                     ProductNumber = p.ProductNumber,
                     Color = p.Color,
-                    StandardCost = p.StandardCost,
-                    ListPrice = p.ListPrice,
-                    Size = p.Size,
-                    Weight = p.Weight,
-                    ProductModel = new ProductModelDto
-                    {
-                        Name = p.ProductModel.Name,
-                        CatalogDescription = p.ProductModel.CatalogDescription,
-                        ProductModelId = p.ProductModel.ProductModelID
-                    }
-                });
-
-        public async Task<bool> DoesProductExistsAsync(int productId, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                bool exists = await _context.Products
-                    .AsNoTracking()
-                    .AnyAsync(p => p.ProductID == productId == false, cancellationToken);
-                return exists;
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<Result<List<ProductSummaryDto>>> GetProductsDetailsAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // disconnected logic to better copy/paste :)
-                var query = _context.Products
-                .AsNoTracking()
-                .Where(p => !p.DiscontinuedDate.HasValue);
-
-                var items = await query
-                .Select(p => new ProductSummaryDto
-                {
-                    ProductId = p.ProductID,
-                    Name = p.Name,
-                    // TODO: build string through a way that will change if the endpoit get modified
-                    ThumbnailUrl = "/api/images/product/" + p.ProductID,
-                    ProductCategory = p.ProductCategory != null ? p.ProductCategory.Name : "",
-                    ProductModel = p.ProductModel != null ? p.ProductModel.Name : "",
-                    ListPrice = p.ListPrice,
-                    Color = p.Color ?? ""
+                    ListPrice = (int)Math.Round(p.ListPrice, 0),
+                    Size = p.Size ?? "Undefined",
+                    Weight = (int?)Math.Round(p.Weight ?? 0, 0) ?? 0,
+                    SellStartDate = p.SellStartDate,
+                    CatalogDescription = p.ProductModel != null ? p.ProductModel.CatalogDescription : null,
+                    Culture = p.ProductModel.ProductModelProductDescriptions
+                                 .OrderBy(pm => pm.Culture)
+                                 .Select(pm => pm.Culture)
+                                 .FirstOrDefault() ?? string.Empty,
+                    Description = p.ProductModel.ProductModelProductDescriptions
+                                    .OrderBy(pm => pm.Culture)
+                                    .Select(pm => pm.ProductDescription.Description)
+                                    .FirstOrDefault() ?? string.Empty,
+                    ProductCategory = p.ProductCategory != null ? p.ProductCategory.Name : "N/A",
+                    ProductModel = p.ProductModel != null ? p.ProductModel.Name : "N/A",
+                    ThumbnailUrl = $"{ImageBaseUrl}{p.ProductID}"
                 })
-                .ToListAsync(cancellationToken);
-                return Result<List<ProductSummaryDto>>.Success(items);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("GetProductsDetailsAsync was cancelled");
-                return Result<List<ProductSummaryDto>>.Failure("GetProductsDetailsAsync was cancelled");
-            }
-            catch (Exception)
-            {
-                return Result<List<ProductSummaryDto>>.Failure("GetProductsDetailsAsync has failed.");
-            }
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return product == null
+                ? Result<ProductDetailDto>.Failure("Product not found or unavailable.")
+                : Result<ProductDetailDto>.Success(product);
         }
 
-        public async Task<Result<ProductDetailDto>> GetProductByIdAsycn(int id, CancellationToken cancellationToken)
+        public async Task<Result<int>> UpdateProductAsync(int productId, ProductDto dto, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var now = DateTime.UtcNow;
+            var entity = await _context.Products.FirstOrDefaultAsync(p => p.ProductID == productId, cancellationToken);
 
-                cancellationToken.ThrowIfCancellationRequested();
+            if (entity == null) return Result<int>.Failure("Product not found.");
 
-                var product = await _context.Products
-                    .AsNoTracking()
-                    // Filter by id and availability rules:
-                    .Where(p => p.ProductID == id
-                                && p.DiscontinuedDate == null // exclude discontinued
-                                && (p.SellEndDate == null || p.SellEndDate > now) // exclude sell ended
-                                && p.SellStartDate <= now) // Items with future releast date
-                    .Select(p => new ProductDetailDto
-                    {
-                        ProductId = p.ProductID,
-                        Name = p.Name,
-                        ProductNumber = p.ProductNumber,
-                        Color = p.Color,
-                        //StandardCost = (int)Math.Round(p.StandardCost, 0),
-                        ListPrice = (int)Math.Round(p.ListPrice, 0),
-                        Size = p.Size ?? "Undefined",
-                        Weight = (int?)Math.Round(p.Weight.Value, 0) ?? 0,
-                        SellStartDate = p.SellStartDate,
-                        // I intentionally do not include DiscontinuedDate in the DTO
-                        CatalogDescription = p.ProductModel != null ? p.ProductModel.CatalogDescription : null,
-                        Culture = p.ProductModel.ProductModelProductDescriptions
-                                     .OrderBy(pm => pm.Culture)
-                                     .Select(pm => pm.Culture)
-                                     .FirstOrDefault() ?? string.Empty,
-                        Description = p.ProductModel.ProductModelProductDescriptions
-                                        .OrderBy(pm => pm.Culture)
-                                        .Select(pm => pm.ProductDescription.Description)
-                                        .FirstOrDefault() ?? string.Empty,
-                        ProductCategory = p.ProductCategory.Name,
-                        ProductModel = p.ProductModel.Name,
-                        ThumbnailUrl = "/api/images/product/" + p.ProductID
-                    })
-                    .FirstOrDefaultAsync(cancellationToken);
+            entity.Name = dto.Name ?? entity.Name;
+            entity.ProductNumber = dto.ProductNumber ?? entity.ProductNumber;
+            entity.Color = dto.Color ?? entity.Color;
+            entity.StandardCost = dto.StandardCost == null ? entity.StandardCost : dto.StandardCost;
+            entity.ListPrice = dto.ListPrice == null ? entity.ListPrice : dto.ListPrice;
+            entity.Size = dto.Size ?? entity.Size;
+            entity.Weight = dto.Weight ?? entity.Weight;
+            entity.ModifiedDate = DateTime.UtcNow;
 
-                // this will be done in the controller
-
-                //if (product == default) // discontinued, selldate ended or sell in future
-                //{
-                //    return Result<ProductDetailDto>.Success(product);
-                //}
-                return Result<ProductDetailDto>.Success(product);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation("GetProductByIdAsycn was cancelled");
-                return Result<ProductDetailDto>.Failure("GetProductByIdAsycn was cancelled");
-            }
-            catch (Exception)
-            {
-                return Result<ProductDetailDto>.Failure("GetProductByIdAsycn had an unexpected problem.");
-            }
+            await _context.SaveChangesAsync(cancellationToken);
+            return Result<int>.Success(entity.ProductID);
         }
 
-        public async Task<Result<int>> UpdateProductAsync(int productId, ProductDto product, CancellationToken cancellationToken = default)
+        public async Task<Result<bool>> DeleteProductAsync(int productId, CancellationToken cancellationToken = default)
         {
-            try
+            // Performance trick: ExecuteDeleteAsync sends one SQL command without loading entity
+            int rowsAffected = await _context.Products
+                .Where(p => p.ProductID == productId)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return rowsAffected > 0
+                ? Result<bool>.Success(true)
+                : Result<bool>.Failure("Product not found.");
+        }
+
+        public async Task<Result<int>> AddProductAsync(ProductDto dto, CancellationToken cancellationToken = default)
+        {
+            var newProduct = new Product
             {
-                if (product == null) throw new ArgumentNullException();
+                Name = dto.Name,
+                ProductNumber = dto.ProductNumber,
+                Color = dto.Color,
+                StandardCost = dto.StandardCost == null ? 0 : dto.StandardCost,
+                ListPrice = dto.ListPrice == null ? 0 : dto.ListPrice,
+                Size = dto.Size,
+                Weight = dto.Weight,
+                SellStartDate = DateTime.UtcNow,
+                ModifiedDate = DateTime.UtcNow
+            };
 
-                var _product = await _context.Products
-                    .Where(p => p.ProductID == productId)
-                    .FirstOrDefaultAsync(cancellationToken);
-                if (_product == default) return Result<int>.Failure("Failure");
+            await _context.Products.AddAsync(newProduct, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
-                if (!product.Name.IsNullOrEmpty()) //this is very puzzolente e brutto, but the "foreach" way to do is much harder and confusing, I will keep it for the v2
-                {
-                    _product.Name = product.Name;
-                }
-                if (!product.ProductNumber.IsNullOrEmpty())
-                {
-                    _product.ProductNumber = product.ProductNumber;
-                }
-                if (!product.Color.IsNullOrEmpty())
-                {
-                    _product.Color = product.Color;
-                }
-                if (product.StandardCost != null)
-                {
-                    _product.StandardCost = product.StandardCost;
-                }
-                if (product.ListPrice != null)
-                {
-                    _product.ListPrice = product.ListPrice;
-                }
-                if (!product.Size.IsNullOrEmpty())
-                {
-                    _product.Size = product.Size;
-                }
-                if (product.Weight != null)
-                {
-                    _product.Weight = product.Weight;
-                }
-                return Result<int>.Success(_product.ProductID);
-
-            }
-            catch (Exception)
-            {
-                return Result<int>.Failure("Exeption unhandeld");
-            }
+            return Result<int>.Success(newProduct.ProductID);
         }
     }
 }
