@@ -87,6 +87,10 @@ namespace Ciclilavarizia.Services
 
             if (entity == null) return Result<int>.Failure("Product not found.");
 
+            if (dto.Weight == 0) return Result<int>.Failure("The Weight must be more than 0.");
+            if (await _context.Products.AnyAsync(p => p.Name == dto.Name)) return Result<int>.Failure("The Name of the product must be unique.");
+
+
             entity.Name = dto.Name ?? entity.Name;
             entity.ProductNumber = dto.ProductNumber ?? entity.ProductNumber;
             entity.Color = dto.Color ?? entity.Color;
@@ -113,6 +117,9 @@ namespace Ciclilavarizia.Services
 
         public async Task<Result<int>> AddProductAsync(ProductDto dto, CancellationToken cancellationToken = default)
         {
+            if (dto.Weight == 0) return Result<int>.Failure("The Weight must be more than 0.");
+            if(await _context.Products.AnyAsync(p => p.Name == dto.Name)) return Result<int>.Failure("The Name of the product must be unique.");
+
             var newProduct = new Product
             {
                 Name = dto.Name,

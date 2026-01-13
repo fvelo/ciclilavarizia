@@ -1,6 +1,8 @@
 ﻿using Ciclilavarizia.Filters;
+using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services.Interfaces;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ciclilavarizia.Controllers
@@ -43,20 +45,21 @@ namespace Ciclilavarizia.Controllers
 
         // POST: api/Products
         [HttpPost]
-        public async Task<ActionResult<int>> CreateProduct([FromBody] ProductDto productDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<int>> CreateProduct(ProductDto productDto, CancellationToken cancellationToken)
         {
             var result = await _productsService.AddProductAsync(productDto, cancellationToken);
 
             if (!result.IsSuccess)
                 return BadRequest(result.ErrorMessage);
 
-            return CreatedAtAction(nameof(GetProductById), new { id = result.Value }, result.Value);
+            return Created("", result.Value);
+            //return CreatedAtAction(nameof(GetProductById), new { id = result.Value }, result.Value);
         }
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
         [EnsureProductExists(IdParameterName = "id")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto, CancellationToken cancellationToken)
         {
             var result = await _productsService.UpdateProductAsync(id, productDto, cancellationToken);
 
