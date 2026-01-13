@@ -93,7 +93,7 @@ namespace Ciclilavarizia
             // mongoDb service
             builder.Services.Configure<MDBConfig>(
                 builder.Configuration.GetSection("MDBConnection"));
-
+            
             //
             // End Custom Services Extentions
             //
