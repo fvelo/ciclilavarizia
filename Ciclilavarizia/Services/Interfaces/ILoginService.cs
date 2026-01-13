@@ -9,7 +9,11 @@ namespace Ciclilavarizia.Services.Interfaces
         /// </summary>
         /// <param name="credentials"></param>
         /// <param name="role"></param>
+        /// <param name="customerId"></param>
         /// <returns></returns>
-        Task<string> GenerateJwtTokenAsync(CredentialDto credentials, string role);
+        string GenerateJwtTokenAsync(string email, string role, int customerId);
+
+        Task<UserLoginResultDto?> ValidateUserAsync(CredentialDto credentials);
+
     }
 }

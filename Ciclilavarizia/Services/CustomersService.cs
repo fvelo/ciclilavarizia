@@ -122,20 +122,64 @@ namespace Ciclilavarizia.Services
                 : Result<CustomerDetailDto>.Failure("Customer not found.");
         }
 
+        //public async Task<Result<int>> DeleteCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
+        //{
+        //    var customer = await _db.Customers.FindAsync(new object[] { id }, cancellationToken);
+
+        //    if (customer == null) return Result<int>.Success(-1);
+
+        //    //var existingCustomer = await _db.Customers
+        //    //    .FirstOrDefaultAsync(c => c.CustomerID == id, cancellationToken);
+
+        //    //if (existingCustomer == null) return Result<int>.Failure("Customer not found.");
+
+        //    //existingCustomer.IsDeleted = true;
+
+
+        //    _db.Customers.Remove(customer);
+        //    await _db.SaveChangesAsync(cancellationToken);
+        //    return Result<int>.Success(id);
+        //}
+
         public async Task<Result<int>> DeleteCustomerByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var customer = await _db.Customers.FindAsync(new object[] { id }, cancellationToken);
+            // We include relations to ensure delete in the db
+            var customer = await _db.Customers
+                .Include(c => c.CustomerAddresses)
+                .SingleOrDefaultAsync(c => c.CustomerID == id, cancellationToken);
 
-            if (customer == null) return Result<int>.Success(-1);
+            if (customer == null)
+            {
+                return Result<int>.Success(-1);
+            }
+
+            using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
+
+            // This prevents Foreign Key constraints from blocking the delete
+            if (customer.CustomerAddresses != null && customer.CustomerAddresses.Any()) // you do need to implement every possibile connection with the fk in the db
+            {
+                _db.CustomerAddresses.RemoveRange(customer.CustomerAddresses);
+            }
 
             _db.Customers.Remove(customer);
+
             await _db.SaveChangesAsync(cancellationToken);
+
+            bool secureDbDeleted = await _secureDb.DeleteCredentialByCustomerIdAsync(id);
+
+            if (!secureDbDeleted)
+            {
+                return Result<int>.Failure("Failed to delete security credentials. Operation rolled back.");
+            }
+
+            await transaction.CommitAsync(cancellationToken);
+
             return Result<int>.Success(id);
         }
 
         public async Task<Result<int>> CreateCustomerAsync(PostCustomerDto incomingCustomer, CancellationToken cancellationToken = default)
         {
-            if (await _secureDb.DoesCredentialExistsByEmail(incomingCustomer.EmailAddress))
+            if (await _secureDb.DoesCredentialExistsByEmailAsync(incomingCustomer.EmailAddress))
             {
                 return Result<int>.Failure("The email address is already registered.");
             }
@@ -168,7 +212,7 @@ namespace Ciclilavarizia.Services
                 EmailAddress = incomingCustomer.EmailAddress,
                 PasswordHash = _encryptionHandler.HashPassword(incomingCustomer.PlainPassword, salt),
                 PasswordSalt = salt,
-                Role = incomingCustomer.Role ?? "User"
+                Role = /* incomingCustomer.Role ?? */ "User"
             };
 
             // Attempt to save to Secure DB
@@ -273,6 +317,48 @@ namespace Ciclilavarizia.Services
                     });
                 }
             }
+        }
+
+        public async Task<Result<bool>> UpdateCustomerPasswordAsync(int customerId, string newPlainPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newPlainPassword))
+                return Result<bool>.Failure("Password cannot be empty.");
+
+            var newSalt = _encryptionHandler.GenerateSalt();
+            var newHash = _encryptionHandler.HashPassword(newPlainPassword, newSalt);
+
+            bool isUpdated = await _secureDb.UpdatePasswordAsync(customerId, newHash, newSalt);
+
+            if (!isUpdated)
+            {
+                return Result<bool>.Failure("Failed to update password. Customer not found in Secure DB.");
+            }
+
+            return Result<bool>.Success(true);
+        }
+
+        public async Task<Result<bool>> UpdateCustomerEmailAsync(int customerId, string newEmail)
+        {
+            if (string.IsNullOrWhiteSpace(newEmail))
+                return Result<bool>.Failure("Email cannot be empty.");
+
+            string sanitizedEmail = newEmail.Trim().ToLower().Replace(" ", "");
+
+            int? existingOwnerId = await _secureDb.GetCustomerIdByEmailAddressAsync(sanitizedEmail);
+
+            if (existingOwnerId != null && existingOwnerId != customerId)
+            {
+                return Result<bool>.Failure("This email address is already in use by another account.");
+            }
+
+            bool isUpdated = await _secureDb.UpdateEmailAsync(customerId, sanitizedEmail);
+
+            if (!isUpdated)
+            {
+                return Result<bool>.Failure("Failed to update email. Customer not found in Secure DB.");
+            }
+
+            return Result<bool>.Success(true);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services.Interfaces;
+using CommonCiclilavarizia;
 using DataAccessLayer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -10,35 +11,51 @@ using System.Text;
 
 namespace Ciclilavarizia.Services
 {
-    public class LoginService: ILoginService
+    public class LoginService : ILoginService
     {
         public SecureDbService _secureDb { get; set; }
         private readonly IOptionsMonitor<JwtSettings> _jwtSettingsMonitor;
+        private readonly Encryption _encryptionHandler;
 
-        public LoginService(SecureDbService secureDb, IOptionsMonitor<JwtSettings> jwtSettingsMonitor)
+        public LoginService(SecureDbService secureDb, IOptionsMonitor<JwtSettings> jwtSettingsMonitor, Encryption encryptionHandler)
         {
             _secureDb = secureDb;
             _jwtSettingsMonitor = jwtSettingsMonitor;
+            _encryptionHandler = encryptionHandler;
         }
 
-        public async Task<string> GenerateJwtTokenAsync(CredentialDto credentials, string role)
+        public async Task<UserLoginResultDto?> ValidateUserAsync(CredentialDto credentials)
         {
+            var storedCreds = await _secureDb.GetCredentialsByEmailAsync(credentials.EmailAddress);
+
+            if (storedCreds == null) return null;
+
+            var enteredHash = _encryptionHandler.HashPassword(credentials.PlainPassword, storedCreds.PasswordSalt);
+
+            if (enteredHash != storedCreds.PasswordHash) return null;
+
+            return new UserLoginResultDto
+            {
+                CustomerId = (int)storedCreds.CustomerId,
+                Role = storedCreds.Role,
+                Email = storedCreds.EmailAddress
+            };
+        }
+
+        public string GenerateJwtTokenAsync(string email, string role, int customerId)
+        {
+
             var jwtSettings = _jwtSettingsMonitor.CurrentValue;
             var secretKey = jwtSettings.SecretKey;
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
-            role = role.ToLower();
 
             var tokenDescrition = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity([
-                    new Claim(ClaimTypes.Name, credentials.EmailAddress),
-                    new Claim(ClaimTypes.Role, role),
-                    
-                    //new Claim(ClaimTypes.Role, "Admin"),
-                    //new Claim(ClaimTypes.Role, "Customer"),
-                    //new Claim(ClaimTypes.Role, "MagazineManager"),
-
+                    new Claim(ClaimTypes.Name, email),
+                    new Claim(ClaimTypes.Role, role.ToLower()),
+                    new Claim("CustomerId", $"{customerId}"),
                     ]),
                 Expires = DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationMinutes),
                 Issuer = jwtSettings.Issuer,
@@ -50,7 +67,6 @@ namespace Ciclilavarizia.Services
             var token = tokenHandler.CreateToken(tokenDescrition);
             var tokenString = tokenHandler.WriteToken(token);
             return tokenString;
-            //return tokenHandler.CreateToken(tokenDescrition);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using CommonCiclilavarizia;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Mail;
 
 namespace DataAccessLayer
 {
@@ -17,8 +16,6 @@ namespace DataAccessLayer
 
     public class SecureDbService
     {
-        // TODO: Implement an actual logger of errors and problems
-
         private readonly SqlConnection _connection = new();
         private readonly SqlCommand _command = new();
         public bool IsDbOnline = false;
@@ -71,60 +68,7 @@ namespace DataAccessLayer
                         {
                             while (reader.Read())
                             {
-                                // this be necessaty in the real version of the login, so I already started with it.
-                                //long credentialId = -1, customerIdRead = -1;
-                                //string emailAddress = "vuoto", passwordHash = "vuoto", passwordSalt = "vuoto";
-                                //if (reader["CredentialId"] is not DBNull) credentialId = Convert.ToInt64(reader["CredentialId"]);
-                                //if (reader["CustomerId"] is not DBNull) customerIdRead = Convert.ToInt64(reader["CustomerId"]);
-                                //if (reader["EmailAddress"] is not DBNull) emailAddress = reader["EmailAddress"].ToString()!;
-                                //if (reader["PasswordHash"] is not DBNull) passwordHash = reader["PasswordHash"].ToString()!;
-                                //if (reader["PasswordSalt"] is not DBNull) passwordSalt = reader["PasswordSalt"].ToString()!;
-
-                                //credentials.CredentialId = credentialId;
-                                //credentials.CustomerId = customerIdRead;
-                                //credentials.EmailAddress = emailAddress;
-                                //credentials.PasswordHash = passwordHash;
-                                //credentials.PasswordSalt = passwordSalt;
-                                result = true; // I mean if it enter here there is a result, am I wrong??
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return result;
-            }
-            return result;
-        }
-
-        public async Task<bool> DoesCredentialExistsByEmail(string email)
-        {
-            bool result = false;
-            Credentials credentials = new();
-            try
-            {
-                using (SqlConnection connection = new(sqlCcnString))
-                {
-                    connection.Open();
-                    using (SqlCommand command = connection.CreateCommand())
-                    {
-                        command.CommandText = @"
-                                                  SELECT *
-                                                  FROM [dbo].[Credentials]
-                                                  WHERE LOWER([EmailAddress]) LIKE @EmailAddress;
-                                              ";
-
-                        email = email.Trim().Replace(" ", "").ToLower();
-
-
-                        command.Parameters.AddWithValue("@EmailAddress", email);
-
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                        {
-                            while (reader.Read())
-                            {
-                                result = true; // I mean if it enter here there is a result, am I wrong??
+                                result = true;
                             }
                         }
                     }
@@ -138,6 +82,65 @@ namespace DataAccessLayer
         }
 
         /// <summary>
+        /// Checks if a credential record already exists for the specified email address.
+        /// Performs a case-insensitive check and handles string sanitization.
+        /// </summary>
+        /// <param name="email">The email address to verify.</param>
+        /// <returns>True if the email exists in the Credentials table; otherwise, false.</returns>
+        public async Task<bool> DoesCredentialExistsByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+
+            email = email.ToLower().Replace(" ", "");
+
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                                                  IF EXISTS (SELECT 1 FROM [dbo].[Credentials]
+                                                             WHERE LOWER([EmailAddress]) = @EmailAddress) 
+                                                  SELECT 1 ELSE SELECT 0
+                                              ";
+
+                    command.Parameters.AddWithValue("@EmailAddress", email);
+                    var result = await command.ExecuteScalarAsync();
+
+                    return (int)(result ?? 0) == 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the internal CustomerId associated with a specific email address from the Secure database.
+        /// </summary>
+        /// <param name="email">The email address to search for.</param>
+        /// <returns>The CustomerId if found; otherwise, null.</returns>
+        public async Task<int?> GetCustomerIdByEmailAddressAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return null;
+
+            email = email.ToLower().Replace(" ", "");
+
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"SELECT [CustomerId] FROM [dbo].[Credentials] WHERE LOWER([EmailAddress]) = @EmailAddress";
+                    command.Parameters.AddWithValue("@EmailAddress", email);
+
+                    var result = await command.ExecuteScalarAsync();
+
+                    return result != DBNull.Value && result != null
+                        ? Convert.ToInt32(result)
+                        : null;
+                }
+            }
+        }
+
+        /// <summary>
         /// Search in SecureDb for the email by customerId.
         /// </summary>
         /// <param name="customerId"></param>
@@ -145,56 +148,45 @@ namespace DataAccessLayer
         public async Task<string> GetEmailAddressByCustomerIdAsync(int customerId)
         {
             string emailAddress = string.Empty;
-            try
+            using (SqlConnection connection = new(sqlCcnString))
             {
-                using (SqlConnection connection = new(sqlCcnString))
+                await connection.OpenAsync();
+                using (SqlCommand command = connection.CreateCommand())
                 {
-                    await connection.OpenAsync();
-                    using (SqlCommand command = connection.CreateCommand())
-                    {
-                        command.CommandText = @"
+                    command.CommandText = @"
                                                   SELECT [EmailAddress]
                                                   FROM [dbo].[Credentials]
                                                   WHERE [CustomerId] = @CustomerId;
                                               ";
 
-                        command.Parameters.AddWithValue("@CustomerId", customerId);
+                    command.Parameters.AddWithValue("@CustomerId", customerId);
 
-                        object result = await command.ExecuteScalarAsync();
+                    object result = await command.ExecuteScalarAsync();
 
-                        if (result != null && result != DBNull.Value)
-                        {
-                            emailAddress = result.ToString();
-                        }
-                        return emailAddress;
+                    if (result != null && result != DBNull.Value)
+                    {
+                        emailAddress = result.ToString();
                     }
+                    return emailAddress;
                 }
             }
-            catch (Exception ex)
-            {
-                // errrrorrrrrrrrr
-                return string.Empty;
-                throw;
-            }
+
         }
 
         public async Task<int> CreateCredentialAsync(Credentials incomingCredentials)
         {
-            try
+            if (await DoesCredentialExistsByEmailAsync(incomingCredentials.EmailAddress))
             {
-                if (await DoesCredentialExistsByEmail(incomingCredentials.EmailAddress))
-                {
-                    return -1;
-                }
+                return -1;
+            }
 
-                using (SqlConnection connection = new(sqlCcnString))
-                {
-                    await connection.OpenAsync();
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                await connection.OpenAsync();
 
-                    using (SqlCommand command = connection.CreateCommand())
-                    {
-                        // 2. Add "SELECT SCOPE_IDENTITY();" to get the new ID back
-                        command.CommandText = @"
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
                                                 INSERT INTO [dbo].[Credentials]
                                                            ([CustomerId]
                                                            ,[EmailAddress]
@@ -210,25 +202,163 @@ namespace DataAccessLayer
                                                 SELECT SCOPE_IDENTITY();
                                             ";
 
-                        command.Parameters.AddWithValue("@CustomerId", incomingCredentials.CustomerId);
-                        command.Parameters.AddWithValue("@EmailAddress", incomingCredentials.EmailAddress);
-                        command.Parameters.AddWithValue("@PasswordHash", incomingCredentials.PasswordHash);
-                        command.Parameters.AddWithValue("@PasswordSalt", incomingCredentials.PasswordSalt);
-                        command.Parameters.AddWithValue("@Role", incomingCredentials.Role);
+                    command.Parameters.AddWithValue("@CustomerId", incomingCredentials.CustomerId);
+                    command.Parameters.AddWithValue("@EmailAddress", incomingCredentials.EmailAddress);
+                    command.Parameters.AddWithValue("@PasswordHash", incomingCredentials.PasswordHash);
+                    command.Parameters.AddWithValue("@PasswordSalt", incomingCredentials.PasswordSalt);
+                    command.Parameters.AddWithValue("@Role", incomingCredentials.Role);
 
-                        var result = await command.ExecuteScalarAsync();
+                    var result = await command.ExecuteScalarAsync();
 
-                        if (result != null && result != DBNull.Value)
+                    if (result != null && result != DBNull.Value)
+                    {
+                        return Convert.ToInt32(result);
+                    }
+                    return -1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the full credentials (including Hash and Salt) for a given email address.
+        /// This is used during the login process to verify the password.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <returns>A Credentials object if found; otherwise, null.</returns>
+        public async Task<Credentials?> GetCredentialsByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return null;
+
+            // Sanitize input
+            email = email.Trim().ToLower();
+
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                                               SELECT [CustomerId], [EmailAddress], [PasswordHash], [PasswordSalt], [Role]
+                                               FROM [dbo].[Credentials]
+                                               WHERE LOWER([EmailAddress]) = @EmailAddress;
+                                          ";
+                    command.Parameters.AddWithValue("@EmailAddress", email);
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
                         {
-                            return Convert.ToInt32(result);
+                            return new Credentials
+                            {
+                                CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId")),
+                                EmailAddress = reader.GetString(reader.GetOrdinal("EmailAddress")),
+                                PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                                PasswordSalt = reader.GetString(reader.GetOrdinal("PasswordSalt")),
+                                Role = reader.GetString(reader.GetOrdinal("Role"))
+                            };
                         }
-                        return -1;
                     }
                 }
             }
-            catch (Exception)
+            return null; // No user found
+        }
+
+        /// <summary>
+        /// Permanently removes a credential record from the Secure DB.
+        /// </summary>
+        /// <param name="customerId">The ID of the customer to remove.</param>
+        /// <returns>True if the operation completed successfully; otherwise, false.</returns>
+        public async Task<bool> DeleteCredentialByCustomerIdAsync(int customerId)
+        {
+            try
             {
-                throw;
+                using (SqlConnection connection = new(sqlCcnString))
+                {
+                    // Simple DELETE statement
+                    string query = "";
+
+                    using (SqlCommand command = new(query, connection))
+                    {
+
+
+                        // If no exception occurred, we assume success. 
+                        // Even if 0 rows were affected (user didn't exist in secure DB), 
+                        // it is considered "cleaned".
+                    }
+
+                    await connection.OpenAsync();
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.CommandText = @"
+                                               DELETE FROM [dbo].[Credentials] WHERE [CustomerId] = @CustomerId
+                                            ";
+
+                        command.Parameters.AddWithValue("@CustomerId", customerId);
+
+                        await command.ExecuteNonQueryAsync();
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Secure DB Delete Error: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Updates the email address for a specific customer.
+        /// Does not perform validation; expects a valid email string.
+        /// </summary>
+        public async Task<bool> UpdateEmailAsync(int customerId, string newEmail)
+        {
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                const string query = @"
+                                        UPDATE [dbo].[Credentials]
+                                        SET [EmailAddress] = @Email
+                                        WHERE [CustomerId] = @CustomerId
+                                     ";
+
+                using (SqlCommand command = new(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Email", newEmail);
+                    command.Parameters.AddWithValue("@CustomerId", customerId);
+
+                    await connection.OpenAsync();
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the password hash and salt for a specific customer. 
+        /// Does not perform encryption; expects already hashed values.
+        /// </summary>
+        public async Task<bool> UpdatePasswordAsync(int customerId, string passwordHash, string passwordSalt)
+        {
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                const string query = @"
+                                        UPDATE [dbo].[Credentials]
+                                        SET [PasswordHash] = @Hash, 
+                                            [PasswordSalt] = @Salt
+                                        WHERE [CustomerId] = @CustomerId
+                                    ";
+
+                using (SqlCommand command = new(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Hash", passwordHash);
+                    command.Parameters.AddWithValue("@Salt", passwordSalt);
+                    command.Parameters.AddWithValue("@CustomerId", customerId);
+
+                    await connection.OpenAsync();
+                    int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                    return rowsAffected > 0;
+                }
             }
         }
     }

@@ -62,7 +62,8 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <returns>Returns true if the Customer exists, false otherwise</returns>
         Task<bool> DoesCustomerExistsAsync(int customerId, CancellationToken cancellationToken = default);
 
+        Task<Result<bool>> UpdateCustomerPasswordAsync(int customerId, string newPlainPassword);
 
-        // Add other methods: GetByIdAsync, CreateAsync, UpdateAsync, DeleteAsync etc.
+        Task<Result<bool>> UpdateCustomerEmailAsync(int customerId, string newEmail);
     }
 }

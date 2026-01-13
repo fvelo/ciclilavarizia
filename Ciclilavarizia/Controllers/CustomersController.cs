@@ -43,15 +43,12 @@ namespace Ciclilavarizia.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> PostCustomer(PostCustomerDto customer, CancellationToken cancellationToken)
         {
-            if(await _customersService.DoesCustomerExistsAsync(customer.CustomerId, cancellationToken)) return BadRequest();
-
             var result = await _customersService.CreateCustomerAsync(customer, cancellationToken);
 
             if (!result.IsSuccess)
                 return Problem(detail: result.ErrorMessage);
 
-            // Best practice: return 201, quindi accrocchio
-            return CreatedAtAction(nameof(GetCustomerAsync), new { customerId = result.Value }, result.Value);
+            return Created("", result.Value);
         }
 
         [HttpDelete("{id}")]
@@ -75,12 +72,36 @@ namespace Ciclilavarizia.Controllers
         {
             if(id != incomingCustomer.CustomerId) return BadRequest();
 
-            if (await _customersService.DoesCustomerExistsAsync(id, cancellationToken)) return BadRequest();
+            if (!await _customersService.DoesCustomerExistsAsync(id, cancellationToken)) return BadRequest();
 
             var result = await _customersService.UpdateCustomerByIdAsync(id, incomingCustomer, cancellationToken);
 
             if (!result.IsSuccess)
-                return Problem(detail: result.ErrorMessage);
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Value);
+        }
+
+        [HttpPut("password/{id}")]
+        [EnsureCustomerExists(IdParameterName = "id")]
+        public async Task<IActionResult> UpdateCustomerPasswordAsync(int id, string newPlainPassword, CancellationToken cancellationToken)
+        {
+            var result = await _customersService.UpdateCustomerPasswordAsync(id, newPlainPassword);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Value);
+        }
+
+        [HttpPut("email/{id}")]
+        [EnsureCustomerExists(IdParameterName = "id")]
+        public async Task<IActionResult> UpdateCustomerEmailAsync(int id, string newEmail, CancellationToken cancellationToken)
+        {
+            var result = await _customersService.UpdateCustomerEmailAsync(id, newEmail);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
 
             return Ok(result.Value);
         }
