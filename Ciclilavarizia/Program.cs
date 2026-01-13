@@ -88,12 +88,14 @@ namespace Ciclilavarizia
             builder.Services.AddCustomersService();
             builder.Services.AddProductsService();
             builder.Services.AddLoginService();
-
+            
+            builder.Services.AddScoped<SalesOrderService>();
 
             // mongoDb service
             builder.Services.Configure<MDBConfig>(
                 builder.Configuration.GetSection("MDBConnection"));
-            
+            builder.Services.AddSingleton<MDBService>();
+
             //
             // End Custom Services Extentions
             //

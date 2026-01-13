@@ -1,35 +1,28 @@
 ﻿using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
 
-namespace Ciclilavarizia.Controllers
+
+namespace Ciclilavarizia.Services
 {
-    
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class SalesOrderController : ControllerBase
+    public class SalesOrderService
     {
         private readonly CiclilavariziaDevContext _context;
-        public SalesOrderController(CiclilavariziaDevContext context)
+        public SalesOrderService(CiclilavariziaDevContext context)
         {
             _context = context;
         }
 
-        [HttpGet("Headers")]
-        public async Task<ActionResult<List<SalesOrderHeader>>> OnlyHeaders()
-        { 
+        //headers services
+        public async Task<List<SalesOrderHeader>> AllHeaders()
+        {
             var headers = await _context.SalesOrderHeaders
                 .ToListAsync();
             return headers;
         }
 
-        [HttpGet("Headers/{CustomerID}")]
-        public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetMyHeader(int CustomerID)
+        public async Task<List<SalesOrderHeaderDto>> GetMyHeader(int CustomerID)
         {
 
             var header = await _context.SalesOrderHeaders
@@ -62,56 +55,18 @@ namespace Ciclilavarizia.Controllers
                 })
                 .Where(c => c.CustomerID == CustomerID)
                 .ToListAsync();
-            if (header.Count == 0)
-            {
-                return BadRequest("no header found for this customer ID");
-            }
+            
             return header;
-
-
         }
 
-        [HttpGet("Details")]
-        public async Task<ActionResult<List<SalesOrderDetail>>> AllDetails()
-        {
-
-            var details = await _context.SalesOrderDetails.ToListAsync();
-
-            return details;
-        }
-
-        [HttpGet("Details/{SalesOrderID}")]
-        public async Task<ActionResult<List<SalesOrderDetailDto>>> GetMyDetails(int SalesOrderID)
-        {
-
-            var details = await _context.SalesOrderDetails
-                .Where(c => c.SalesOrderID == SalesOrderID)
-                .Select(a => new SalesOrderDetailDto
-                {
-                    SalesOrderId = a.SalesOrderID,
-                    ProductID = a.ProductID,
-                    OrderQty = a.OrderQty,
-                    UnitPrice = a.UnitPrice,
-                    UnitPriceDiscount = a.UnitPriceDiscount,
-                })
-                .ToListAsync();
-            if (details.Count == 0)
-            {
-                return BadRequest("no detail found with this ID");
-            }
-
-            return details;
-        }
-
-        [HttpPost("Header")]
-        public async Task<ActionResult<SalesOrderHeader>> AddSalesHeader([FromBody] SalesOrderHeaderDto sales)
+        public async Task<bool> AddSalesHeader(SalesOrderHeaderDto sales)
         {
 
             var address = await _context.CustomerAddresses
             .FirstOrDefaultAsync(a => a.CustomerID == sales.CustomerID);
             if (address == null)
             {
-                return BadRequest("No address found");
+                return false;
             }
 
 
@@ -152,29 +107,10 @@ namespace Ciclilavarizia.Controllers
             _context.SalesOrderHeaders.Add(header);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return true;
         }
 
-        [HttpPost("Details/{SalesOrderHeaderID}")]
-        public async Task<ActionResult<SalesOrderDetail>> AddSalesDetails([FromBody] SalesOrderDetailDto sales, int SalesOrderHeaderID)
-        {
-
-            _context.SalesOrderDetails.Add(new SalesOrderDetail
-            {
-                SalesOrderID = SalesOrderHeaderID,
-                OrderQty = sales.OrderQty,
-                ProductID = sales.ProductID,
-                UnitPrice = sales.UnitPrice,
-                UnitPriceDiscount = sales.UnitPriceDiscount
-
-            });
-            await _context.SaveChangesAsync();
-
-            return Ok(sales);
-        }
-
-        [HttpPut("Header{SalesOrderID}")]
-        public async Task<ActionResult<SalesOrderHeader>> ModifySalesHeader([FromBody] SalesOrderHeaderDto header, int SalesOrderID)
+        public async Task<bool> ModifySalesHeader(SalesOrderHeaderDto header, int SalesOrderID)
         {
 
             var headered = _context.SalesOrderHeaders
@@ -182,9 +118,9 @@ namespace Ciclilavarizia.Controllers
 
             if (headered == null)
             {
-                return BadRequest("no header found");
+                return false;
             }
-            if (header.Status != 0)
+            if (header.Status > header.Status)
             {
                 headered.Status = header.Status;
             }
@@ -226,18 +162,81 @@ namespace Ciclilavarizia.Controllers
 
             _context.Entry(headered).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return Ok(header);
+            return true;
         }
 
-        [HttpPut("Details{SalesOrderDetailID}")]
-        public async Task<ActionResult<SalesOrderDetail>> ModifySalesDetails([FromBody] SalesOrderDetailDto detail, int SalesOrderDetailID)
+        public async Task<bool> DeleteSalesHeader(int SalesOrderID)
+        {
+
+            var header = _context.SalesOrderHeaders
+                        .FirstOrDefault(p => p.SalesOrderID == SalesOrderID);
+            var details = _context.SalesOrderDetails.FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
+
+            if (header == null || details == null)
+                return false;
+
+            _context.Remove(details);
+            _context.Remove(header);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+
+        // details services
+        public async Task<List<SalesOrderDetail>> AllDetails()
+        {
+
+            var details = await _context.SalesOrderDetails.ToListAsync();
+
+            return details;
+        }
+
+
+        public async Task<List<SalesOrderDetailDto>> GetMyDetails(int SalesOrderID)
+        {
+
+            var details = await _context.SalesOrderDetails
+                .Where(c => c.SalesOrderID == SalesOrderID)
+                .Select(a => new SalesOrderDetailDto
+                {
+                    SalesOrderId = a.SalesOrderID,
+                    ProductID = a.ProductID,
+                    OrderQty = a.OrderQty,
+                    UnitPrice = a.UnitPrice,
+                    UnitPriceDiscount = a.UnitPriceDiscount,
+                })
+                .ToListAsync();
+
+            return details;
+        }
+        public async Task<bool> AddSalesDetails(SalesOrderDetailDto sales, int SalesOrderHeaderID)
+        {
+            var head = _context.SalesOrderHeaders.FirstOrDefault(c => c.SalesOrderID == SalesOrderHeaderID);
+            if(head == null)
+                return false;
+
+            _context.SalesOrderDetails.Add(new SalesOrderDetail
+            {
+                SalesOrderID = SalesOrderHeaderID,
+                OrderQty = sales.OrderQty,
+                ProductID = sales.ProductID,
+                UnitPrice = sales.UnitPrice,
+                UnitPriceDiscount = sales.UnitPriceDiscount
+
+            });
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        public async Task<bool> ModifySalesDetails(SalesOrderDetailDto detail, int SalesOrderDetailID)
         {
 
             var detailed = _context.SalesOrderDetails
                             .FirstOrDefault(c => c.SalesOrderDetailID == SalesOrderDetailID);
 
             if (detailed == null)
-                return BadRequest("0 results for this details id");
+                return false;
 
             if (detail.ProductID != 0)
             {
@@ -262,29 +261,10 @@ namespace Ciclilavarizia.Controllers
             _context.Entry(detailed).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(detail);
+            return true;
         }
 
-        [HttpDelete("Headers/{SalesOrderID}")]
-        public async Task<ActionResult> DeleteSalesHeader(int SalesOrderID)
-        {
-
-            var header = _context.SalesOrderHeaders
-                        .FirstOrDefault(p => p.SalesOrderID == SalesOrderID);
-            var details = _context.SalesOrderDetails.FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
-
-            if (header == null || details == null)
-                return BadRequest(" no records found ");
-
-            _context.Remove(details);
-            _context.Remove(header);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        [HttpDelete("Details/{SalesOrderDetailsID}")]
-        public async Task<ActionResult> DeleteSalesDetails(int SalesOrderDetailsID)
+        public async Task<bool> DeleteSalesDetails(int SalesOrderDetailsID)
         {
 
             var details = _context.SalesOrderDetails
@@ -292,15 +272,13 @@ namespace Ciclilavarizia.Controllers
 
             if (details == null)
             {
-                return BadRequest(" no match found");
+                return false;
             }
 
             _context.Remove(details);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return true;
         }
-
     }
 }
-
