@@ -82,11 +82,12 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
+
         [HttpPut("password/{id}")]
         [EnsureCustomerExists(IdParameterName = "id")]
-        public async Task<IActionResult> UpdateCustomerPasswordAsync(int id, string newPlainPassword, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateCustomerPasswordAsync(int id, [FromBody] PutPasswordDto newPlainPassword, CancellationToken cancellationToken)
         {
-            var result = await _customersService.UpdateCustomerPasswordAsync(id, newPlainPassword);
+            var result = await _customersService.UpdateCustomerPasswordAsync(id, newPlainPassword.PlainPassword);
 
             if (!result.IsSuccess)
                 return BadRequest(result.ErrorMessage);
@@ -94,7 +95,7 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
-        [HttpPut("email/{id}")]
+        [HttpPut("email/{id}/{newEmail}")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerEmailAsync(int id, string newEmail, CancellationToken cancellationToken)
         {
