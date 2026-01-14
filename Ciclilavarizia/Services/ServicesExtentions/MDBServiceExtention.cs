@@ -1,6 +1,11 @@
 ﻿namespace Ciclilavarizia.Services.ServicesExtentions
 {
-    public class MDBServiceExtention
+    public static class MDBServiceExtention
     {
+        public static IServiceCollection AddMDBService(this IServiceCollection services)
+        {
+            services.AddScoped<MDBService>();
+            return services;
+        }
     }
 }

@@ -21,38 +21,56 @@ namespace Ciclilavarizia.Controllers
         {
             var mdbJson = await _mdbService.GetAllCarts();
 
-            return Ok(new { data = mdbJson });
+            if(!mdbJson.IsSuccess)
+            {
+                return Problem(detail: mdbJson.ErrorMessage);
+            }
+
+            return Ok(mdbJson.Value);
         }
 
-        [HttpGet("{clientId}")]
-        public async Task<List<MDBOrders>> GetOrders(int clientId)
+        [HttpGet("{customerId}")]
+        public async Task<ActionResult<List<MDBOrders>>> GetOrders(int customerId)
         {
-            return await _mdbService.GetOrder(clientId);
+            var orders = await _mdbService.GetOrder(customerId);
+            if(!orders.IsSuccess)
+            {
+                return Problem(detail: orders.ErrorMessage);
+            }
+
+            return Ok(orders.Value);
         }
 
         [HttpPost()]
         public async Task<IActionResult> CreateOrder([FromBody] MDBOrderDto order)
         {
 
-            await _mdbService.CreateOrder(order);
-            return Ok(order.ClientID);
+            var orders = await _mdbService.CreateOrder(order);
+            if(!orders.IsSuccess)
+            {
+                return Problem(detail: orders.ErrorMessage);
+            }
+            return Ok(orders.Value);
         }
 
-        [HttpPut("{clientId}")]
-        public async Task<IActionResult> AddProducts(int clientId, int product, int quantity)
+        [HttpPut("{customerId}")]
+        public async Task<IActionResult> AddProducts(int customerId, int product, int quantity)
         {
 
-            await _mdbService.AddProducts(clientId, product, quantity);
+            var orders = await _mdbService.AddProducts(customerId, product, quantity);
+            if(!orders.IsSuccess)
+            {
+                return Problem(detail: orders.ErrorMessage);
+            }
 
-
-            return NoContent();
+            return Ok(orders.Value);
         }
 
         [HttpDelete()]
-        public async Task<IActionResult> DeleteOrder(int clientId)
+        public async Task<IActionResult> DeleteOrder(int customerId)
         {
 
-            await _mdbService.DeleteOrder(clientId);
+            await _mdbService.DeleteOrder(customerId);
 
             return NoContent();
         }

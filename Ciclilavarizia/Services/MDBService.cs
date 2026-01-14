@@ -17,7 +17,7 @@ namespace Ciclilavarizia.Services
             _collection = database.GetCollection<MDBOrders>(mDBConfig.Value.CollectionName);
         }
 
-        public async Task<List<object>> GetAllCarts()
+        public async Task<Result<object>> GetAllCarts()
         {
 
             var carts = await _collection.Find(new BsonDocument()).ToListAsync();
@@ -27,31 +27,46 @@ namespace Ciclilavarizia.Services
                 mdbJson.Add(prods.ToJson());
             }
 
-            return mdbJson;
+            return mdbJson != null
+                ? Result<object>.Success(mdbJson)
+                : Result<object>.Failure("no carts found");
         }
 
 
 
-        public async Task<List<MDBOrders>> GetOrder(int clientId)
+        public async Task<Result<List<MDBOrders>>> GetOrder(int clientId)
         {
 
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
-            return await _collection.Find(filter).ToListAsync();
+            
+            if (filter.Equals(null))
+            {
+                return Result<List<MDBOrders>>.Failure("Client has 0 orders");
+            }
+
+            var orders = await _collection.Find(filter).ToListAsync();
+
+            return orders != null && orders.Count > 0
+                ? Result<List<MDBOrders>>.Success(orders)
+                : Result<List<MDBOrders>>.Failure("Order not found");
         }
 
-        public async Task CreateOrder(MDBOrderDto order)
+        public async Task<Result<int>> CreateOrder(MDBOrderDto order)
         {
-
+            if(order == null)
+            {
+                return Result<int>.Failure("Order data is null");
+            }
             await _collection.InsertOneAsync(new MDBOrders
             {
                 ClientID = order.ClientID,
                 Products = order.Products,
             });
-            return;
+            return Result<int>.Success(order.ClientID);
         }
 
 
-        public async Task AddProducts(int clientId, int product, int quantity)
+        public async Task<Result<int>> AddProducts(int clientId, int product, int quantity)
         {
 
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
@@ -61,22 +76,28 @@ namespace Ciclilavarizia.Services
                 var update = Builders<MDBOrders>.Update.Set($"Products.{product.ToString()}", quantity);
                 await _collection.UpdateOneAsync(filter, update);
             }
-            else
+            else if(quantity == 0)
             {
                 var removal = Builders<MDBOrders>.Update.Unset($"Products.{product.ToString()}");
                 await _collection.UpdateOneAsync(filter, removal);
             }
+            else
+            {
+                return Result<int>.Failure("Quantity cannot be negative");
+            }
 
-            return;
+            return Result<int>.Success(clientId);
         }
 
-        public async Task DeleteOrder(int clientId)
+        public async Task<Result<bool>> DeleteOrder(int clientId)
         {
 
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
-            await _collection.DeleteOneAsync(filter);
+            var deleted = await _collection.DeleteOneAsync(filter);
 
-            return;
+            return deleted.DeletedCount > 0
+                ? Result<bool>.Success(true)
+                : Result<bool>.Failure("No order found to delete");
         }
 
     }

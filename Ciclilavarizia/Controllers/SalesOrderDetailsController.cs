@@ -3,6 +3,7 @@ using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Ciclilavarizia.Controllers
 {
@@ -23,7 +24,10 @@ namespace Ciclilavarizia.Controllers
         [HttpGet()]
         public async Task<ActionResult<List<SalesOrderDetail>>> AllDetails()
         {
-            return await _service.AllDetails();
+            var details = await _service.AllDetails();
+            return details.IsSuccess
+                ? Ok(details.Value)
+                : BadRequest(details.ErrorMessage);
         }
 
         [HttpGet("{SalesOrderID}")]
@@ -31,12 +35,12 @@ namespace Ciclilavarizia.Controllers
         {
 
             var details = await _service.GetMyDetails(SalesOrderID);
-            if (details.Count == 0)
+            if (!details.IsSuccess)
             {
-                return BadRequest("no detail found with this ID");
+                return BadRequest(details.ErrorMessage);
             }
 
-            return details;
+            return Ok(details.Value);
         }
 
         [HttpPost("{SalesOrderHeaderID}")]
@@ -44,12 +48,12 @@ namespace Ciclilavarizia.Controllers
         {
 
             var details = await _service.AddSalesDetails(sales, SalesOrderHeaderID);
-            if(!details)
+            if(!details.IsSuccess)
             {
-                return BadRequest(" no Header found");
+                return BadRequest(details.ErrorMessage);
             }
 
-            return Ok(sales);
+            return Created("",details.Value);
         }
 
         [HttpPut("{SalesOrderDetailID}")]
@@ -57,9 +61,9 @@ namespace Ciclilavarizia.Controllers
         {
 
             var detailed = await _service.ModifySalesDetails(detail, SalesOrderDetailID);
-            if(!detailed)
+            if(!detailed.IsSuccess)
             {
-                return BadRequest(" no match found");
+                return BadRequest(detailed.ErrorMessage);
             }
 
             return NoContent();
@@ -70,9 +74,9 @@ namespace Ciclilavarizia.Controllers
         {
 
             var details = await _service.DeleteSalesDetails(SalesOrderDetailsID);
-            if (!details)
+            if (!details.IsSuccess)
             {
-                return BadRequest(" no match found");
+                return BadRequest(details.ErrorMessage);
             }
 
             return NoContent();

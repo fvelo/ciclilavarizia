@@ -23,7 +23,11 @@ namespace Ciclilavarizia.Controllers
         [HttpGet()]
         public async Task<ActionResult<List<SalesOrderHeader>>> AllHeaders()
         {
-            return await _service.AllHeaders();
+            var headers = await _service.AllHeaders();
+            if(!headers.IsSuccess)
+                return BadRequest(headers.ErrorMessage);
+            
+            return Ok(headers.Value);
         }
 
         [HttpGet("{CustomerID}")]
@@ -31,11 +35,11 @@ namespace Ciclilavarizia.Controllers
         {
 
             var header = await _service.GetMyHeader(CustomerID);
-            if (header.Count == 0)
+            if (!header.IsSuccess)
             {
-                return BadRequest("no header found for this customer ID");
+                return BadRequest(header.ErrorMessage);
             }
-            return header;
+            return Ok(header.Value);
 
 
         }
@@ -44,13 +48,13 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<SalesOrderHeader>> AddSalesHeader([FromBody] SalesOrderHeaderDto sales)
         {
 
-            var address = await _service.AddSalesHeader(sales);
-            if (!address )
+            var header = await _service.AddSalesHeader(sales);
+            if (!header.IsSuccess)
             {
-                return BadRequest("No address found");
+                return BadRequest(header.ErrorMessage);
             }
             
-            return Ok();
+            return Created("",header.Value);
         }
 
         
@@ -60,12 +64,12 @@ namespace Ciclilavarizia.Controllers
 
             var headered = await _service.ModifySalesHeader(header, SalesOrderID);
 
-            if (!headered)
+            if (!headered.IsSuccess)
             {
-                return BadRequest("no header found");
+                return BadRequest(headered.ErrorMessage);
             }
             
-            return Ok(header);
+            return NoContent();
         }
 
         [HttpDelete("{SalesOrderID}")]
@@ -74,7 +78,7 @@ namespace Ciclilavarizia.Controllers
 
             var header = await _service.DeleteSalesHeader(SalesOrderID);
             
-            if (!header)
+            if (!header.IsSuccess)
                 return BadRequest(" no records found ");
 
             return NoContent();

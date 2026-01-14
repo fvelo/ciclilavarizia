@@ -1,7 +1,9 @@
 ﻿using Ciclilavarizia.Data;
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 
 namespace Ciclilavarizia.Services
@@ -15,14 +17,18 @@ namespace Ciclilavarizia.Services
         }
 
         //headers services
-        public async Task<List<SalesOrderHeader>> AllHeaders()
+        public async Task<Result<List<SalesOrderHeader>>> AllHeaders()
         {
             var headers = await _context.SalesOrderHeaders
                 .ToListAsync();
-            return headers;
+            if(headers == null || headers.Count == 0)
+            {
+                return Result<List<SalesOrderHeader>>.Failure("No headers found");
+            }
+            return Result<List<SalesOrderHeader>>.Success(headers);
         }
 
-        public async Task<List<SalesOrderHeaderDto>> GetMyHeader(int CustomerID)
+        public async Task<Result<List<SalesOrderHeaderDto>>> GetMyHeader(int CustomerID)
         {
 
             var header = await _context.SalesOrderHeaders
@@ -55,20 +61,27 @@ namespace Ciclilavarizia.Services
                 })
                 .Where(c => c.CustomerID == CustomerID)
                 .ToListAsync();
-            
-            return header;
+            if(header == null || header.Count == 0)
+            {
+                return Result<List<SalesOrderHeaderDto>>.Failure("No headers found for this customer");
+            }
+
+                return Result<List<SalesOrderHeaderDto>>.Success(header);
         }
 
-        public async Task<bool> AddSalesHeader(SalesOrderHeaderDto sales)
+        public async Task<Result<int>> AddSalesHeader(SalesOrderHeaderDto sales)
         {
 
             var address = await _context.CustomerAddresses
             .FirstOrDefaultAsync(a => a.CustomerID == sales.CustomerID);
             if (address == null)
-            {
-                return false;
-            }
+                return Result<int>.Failure("the address id does not match the customer");
+            
 
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.CustomerID == sales.CustomerID);
+            if (customer == null)
+                return Result<int>.Failure("no customer with this id");
 
             var header = new SalesOrderHeader
             {
@@ -78,7 +91,7 @@ namespace Ciclilavarizia.Services
                 Status = 1,
                 OnlineOrderFlag = true,
                 PurchaseOrderNumber = (sales.PurchaseOrderNumber) ?? null,
-                CustomerID = sales.CustomerID,
+                CustomerID = customer.CustomerID,
                 ShipToAddressID = address.AddressID,
                 BillToAddressID = address.AddressID,
                 ShipMethod = sales.ShipMethod,
@@ -107,19 +120,27 @@ namespace Ciclilavarizia.Services
             _context.SalesOrderHeaders.Add(header);
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<int>.Success(header.SalesOrderID);
         }
 
-        public async Task<bool> ModifySalesHeader(SalesOrderHeaderDto header, int SalesOrderID)
+        public async Task<Result<int>> ModifySalesHeader(SalesOrderHeaderDto header, int SalesOrderID)
         {
 
             var headered = _context.SalesOrderHeaders
                 .FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
-
             if (headered == null)
+                return Result<int>.Failure("no header with this id");
+            
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.CustomerID == header.CustomerID);
+            if (customer == null)
+                return Result<int>.Failure("no customer with this id");
+
+            if(header == null)
             {
-                return false;
+                return Result<int>.Failure("no data to update");
             }
+
             if (header.Status > header.Status)
             {
                 headered.Status = header.Status;
@@ -162,38 +183,42 @@ namespace Ciclilavarizia.Services
 
             _context.Entry(headered).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return true;
+            return Result<int>.Success(header.SalesOrderID);
         }
 
-        public async Task<bool> DeleteSalesHeader(int SalesOrderID)
+        public async Task<Result<bool>> DeleteSalesHeader(int SalesOrderID)
         {
 
             var header = _context.SalesOrderHeaders
                         .FirstOrDefault(p => p.SalesOrderID == SalesOrderID);
             var details = _context.SalesOrderDetails.FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
 
-            if (header == null || details == null)
-                return false;
+            if (header == null)
+                return Result<bool>.Failure("no header found");
 
-            _context.Remove(details);
+            if (details != null)
+            {
+                _context.Remove(details);
+            }
+
             _context.Remove(header);
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<bool>.Success(true);
         }
 
 
         // details services
-        public async Task<List<SalesOrderDetail>> AllDetails()
+        public async Task<Result<List<SalesOrderDetail>>> AllDetails()
         {
 
             var details = await _context.SalesOrderDetails.ToListAsync();
 
-            return details;
+            return Result<List<SalesOrderDetail>>.Success(details);
         }
 
 
-        public async Task<List<SalesOrderDetailDto>> GetMyDetails(int SalesOrderID)
+        public async Task<Result<List<SalesOrderDetailDto>>> GetMyDetails(int SalesOrderID)
         {
 
             var details = await _context.SalesOrderDetails
@@ -208,52 +233,66 @@ namespace Ciclilavarizia.Services
                 })
                 .ToListAsync();
 
-            return details;
+            return details == null || details.Count == 0
+                ? Result<List<SalesOrderDetailDto>>.Failure("Details not found")
+                : Result<List<SalesOrderDetailDto>>.Success(details);
         }
-        public async Task<bool> AddSalesDetails(SalesOrderDetailDto sales, int SalesOrderHeaderID)
+        public async Task<Result<int>> AddSalesDetails(SalesOrderDetailDto sales, int SalesOrderHeaderID)
         {
             var head = _context.SalesOrderHeaders.FirstOrDefault(c => c.SalesOrderID == SalesOrderHeaderID);
             if(head == null)
-                return false;
+                return Result<int>.Failure("no header with this id");
+            else if (sales == null)
+                return Result<int>.Failure("no data to add");
 
-            _context.SalesOrderDetails.Add(new SalesOrderDetail
-            {
-                SalesOrderID = SalesOrderHeaderID,
-                OrderQty = sales.OrderQty,
-                ProductID = sales.ProductID,
-                UnitPrice = sales.UnitPrice,
-                UnitPriceDiscount = sales.UnitPriceDiscount
+            var product = _context.Products.FirstOrDefault(p => p.ProductID == sales.ProductID);
+            if (product == null)
+                return Result<int>.Failure("no product with this id");
 
-            });
+
+            var details = new SalesOrderDetail
+                {
+                    SalesOrderID = SalesOrderHeaderID,
+                    OrderQty = sales.OrderQty,
+                    ProductID = sales.ProductID,
+                    UnitPrice = product.ListPrice,
+                    UnitPriceDiscount = sales.UnitPriceDiscount
+
+                };
+            _context.SalesOrderDetails.Add(details);
+
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<int>.Success(details.SalesOrderDetailID);
         }
-        public async Task<bool> ModifySalesDetails(SalesOrderDetailDto detail, int SalesOrderDetailID)
+        public async Task<Result<int>> ModifySalesDetails(SalesOrderDetailDto detail, int SalesOrderDetailID)
         {
 
             var detailed = _context.SalesOrderDetails
                             .FirstOrDefault(c => c.SalesOrderDetailID == SalesOrderDetailID);
 
             if (detailed == null)
-                return false;
+                return Result<int>.Failure("no detail with this id");
+            if (detail == null)
+                return Result<int>.Failure("no data to update");
 
-            if (detail.ProductID != 0)
+            if (detail.ProductID > 0)
             {
+                var product = _context.Products.FirstOrDefault(p => p.ProductID == detail.ProductID);
+                if (product == null)
+                return Result<int>.Failure("no product with this id");
+
+            
                 detailed.ProductID = detail.ProductID;
+                detailed.UnitPrice = product.ListPrice;
             }
 
-            if (detail.UnitPrice != 0)
-            {
-                detailed.UnitPrice = detail.UnitPrice;
-            }
-
-            if (detail.OrderQty != 0)
+            if (detail.OrderQty > 0)
             {
                 detailed.OrderQty = detail.OrderQty;
             }
 
-            if (detail.UnitPriceDiscount != 0)
+            if (detail.UnitPriceDiscount > 0)
             {
                 detailed.UnitPriceDiscount = detail.UnitPriceDiscount;
             }
@@ -261,10 +300,10 @@ namespace Ciclilavarizia.Services
             _context.Entry(detailed).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<int>.Success(detailed.SalesOrderDetailID);
         }
 
-        public async Task<bool> DeleteSalesDetails(int SalesOrderDetailsID)
+        public async Task<Result<bool>> DeleteSalesDetails(int SalesOrderDetailsID)
         {
 
             var details = _context.SalesOrderDetails
@@ -272,13 +311,13 @@ namespace Ciclilavarizia.Services
 
             if (details == null)
             {
-                return false;
+                return Result<bool>.Failure("no detail found");
             }
 
             _context.Remove(details);
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<bool>.Success(true);
         }
     }
 }

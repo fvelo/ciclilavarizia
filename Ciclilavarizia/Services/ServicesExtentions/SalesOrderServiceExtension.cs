@@ -1,6 +1,13 @@
-﻿namespace Ciclilavarizia.Services.ServicesExtentions
+﻿using Ciclilavarizia.Models.Settings;
+
+namespace Ciclilavarizia.Services.ServicesExtentions
 {
-    public class SalesOrderServiceExtension
+    public static class SalesOrderServiceExtension
     {
+        public static IServiceCollection AddSalesOrderExtension(this IServiceCollection services)
+        {
+            services.AddScoped<SalesOrderService>();
+            return services;
+        }
     }
 }
