@@ -52,12 +52,28 @@ namespace Ciclilavarizia.Services
             {
                 return Result<int>.Failure("Order data is null");
             }
+
+            foreach (var orderID in order.Products)
+            {
+                if (!int.TryParse(orderID.Key, out int keyNumber) || keyNumber < 0)
+                {
+                    return Result<int>.Failure("ProductId is not a positive number.");
+                }
+
+                if (orderID.Value < 0)
+                {
+                    return Result<int>.Failure("ProductId cannot be negative");
+                }
+
+            }
+
             await _collection.InsertOneAsync(new MDBOrders
             {
                 ClientID = order.ClientID,
                 Products = order.Products,
             });
             return Result<int>.Success(order.ClientID);
+            
         }
 
 
