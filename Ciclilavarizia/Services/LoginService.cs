@@ -53,8 +53,8 @@ namespace Ciclilavarizia.Services
             var tokenDescrition = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity([
-                    new Claim(ClaimTypes.Name, email),
-                    new Claim(ClaimTypes.Role, role.ToLower()),
+                    new Claim(ClaimTypes.Name, email.Trim()),
+                    new Claim(ClaimTypes.Role, role.ToLower().Trim()),
                     new Claim("CustomerId", $"{customerId}"),
                     ]),
                 Expires = DateTime.UtcNow.AddMinutes(jwtSettings.ExpirationMinutes),
