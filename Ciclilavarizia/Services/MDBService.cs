@@ -17,7 +17,7 @@ namespace Ciclilavarizia.Services
             _collection = database.GetCollection<MDBOrders>(mDBConfig.Value.CollectionName);
         }
 
-        public async Task<Result<object>> GetAllCarts()
+        public async Task<Result<object>> GetAllOrders()
         {
 
             var carts = await _collection.Find(new BsonDocument()).ToListAsync();
@@ -29,7 +29,7 @@ namespace Ciclilavarizia.Services
 
             return mdbJson != null
                 ? Result<object>.Success(mdbJson)
-                : Result<object>.Failure("no carts found");
+                : Result<object>.Success(0);
         }
 
 
@@ -38,17 +38,12 @@ namespace Ciclilavarizia.Services
         {
 
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
-            
-            if (filter.Equals(null))
-            {
-                return Result<List<MDBOrders>>.Failure("Client has 0 orders");
-            }
 
             var orders = await _collection.Find(filter).ToListAsync();
 
             return orders != null && orders.Count > 0
                 ? Result<List<MDBOrders>>.Success(orders)
-                : Result<List<MDBOrders>>.Failure("Order not found");
+                : Result<List<MDBOrders>>.Success(new List<MDBOrders>());
         }
 
         public async Task<Result<int>> CreateOrder(MDBOrderDto order)
@@ -97,7 +92,7 @@ namespace Ciclilavarizia.Services
 
             return deleted.DeletedCount > 0
                 ? Result<bool>.Success(true)
-                : Result<bool>.Failure("No order found to delete");
+                : Result<bool>.Success(false);
         }
 
     }

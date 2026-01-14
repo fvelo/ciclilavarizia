@@ -2,6 +2,7 @@
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Composition;
 
 namespace Ciclilavarizia.Controllers
 {
@@ -17,25 +18,26 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllCarts()
+        public async Task<IActionResult> GetAllOrders()
         {
-            var mdbJson = await _mdbService.GetAllCarts();
+            var mdbJson = await _mdbService.GetAllOrders();
 
             if(!mdbJson.IsSuccess)
             {
-                return Problem(detail: mdbJson.ErrorMessage);
+                return NotFound(mdbJson.ErrorMessage);
             }
 
             return Ok(mdbJson.Value);
         }
 
         [HttpGet("{customerId}")]
-        public async Task<ActionResult<List<MDBOrders>>> GetOrders(int customerId)
+        public async Task<ActionResult<List<MDBOrders>>> GetOrder(int customerId)
         {
             var orders = await _mdbService.GetOrder(customerId);
-            if(!orders.IsSuccess)
+
+            if (orders.Value == null || orders.Value.Count <= 0)
             {
-                return Problem(detail: orders.ErrorMessage);
+                return NotFound();
             }
 
             return Ok(orders.Value);
@@ -46,21 +48,21 @@ namespace Ciclilavarizia.Controllers
         {
 
             var orders = await _mdbService.CreateOrder(order);
-            if(!orders.IsSuccess)
+            if(orders.Value == 0)
             {
-                return Problem(detail: orders.ErrorMessage);
+                return BadRequest(orders.ErrorMessage);
             }
             return Ok(orders.Value);
         }
 
-        [HttpPut("{customerId}")]
-        public async Task<IActionResult> AddProducts(int customerId, int product, int quantity)
+        [HttpPut()]
+        public async Task<IActionResult> AddProducts([FromBody]MDBSingleOrderDto cart)
         {
 
-            var orders = await _mdbService.AddProducts(customerId, product, quantity);
+            var orders = await _mdbService.AddProducts(cart.ClientID, cart.Products, cart.qty);
             if(!orders.IsSuccess)
             {
-                return Problem(detail: orders.ErrorMessage);
+                return BadRequest(orders.ErrorMessage);
             }
 
             return Ok(orders.Value);
@@ -70,7 +72,12 @@ namespace Ciclilavarizia.Controllers
         public async Task<IActionResult> DeleteOrder(int customerId)
         {
 
-            await _mdbService.DeleteOrder(customerId);
+            var orders = await _mdbService.DeleteOrder(customerId);
+
+            if(!orders.Value)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }

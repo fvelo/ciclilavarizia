@@ -81,7 +81,7 @@ namespace Ciclilavarizia.Services
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(c => c.CustomerID == sales.CustomerID);
             if (customer == null)
-                return Result<int>.Failure("no customer with this id");
+                return Result<int>.Success(0);
 
             var header = new SalesOrderHeader
             {
@@ -129,12 +129,12 @@ namespace Ciclilavarizia.Services
             var headered = _context.SalesOrderHeaders
                 .FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
             if (headered == null)
-                return Result<int>.Failure("no header with this id");
+                return Result<int>.Success(0);
             
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(c => c.CustomerID == header.CustomerID);
             if (customer == null)
-                return Result<int>.Failure("no customer with this id");
+                return Result<int>.Success(0);
 
             if(header == null)
             {
@@ -145,15 +145,15 @@ namespace Ciclilavarizia.Services
             {
                 headered.Status = header.Status;
             }
-            if (header.DueDate != DateTime.MinValue)
+            if (header.DueDate > DateTime.MinValue)
             {
                 headered.DueDate = header.DueDate;
             }
-            if (header.OrderDate != DateTime.MinValue)
+            if (header.OrderDate > DateTime.MinValue)
             {
                 headered.OrderDate = header.OrderDate;
             }
-            if (header.ShipDate != DateTime.MinValue)
+            if (header.ShipDate > DateTime.MinValue)
             {
                 headered.ShipDate = header.ShipDate;
             }
@@ -161,17 +161,17 @@ namespace Ciclilavarizia.Services
             {
                 headered.ShipMethod = header.ShipMethod;
             }
-            if (header.SubTotal != 0)
+            if (header.SubTotal > 0)
             {
                 headered.SubTotal = header.SubTotal;
             }
 
-            if (header.TaxAmt != 0)
+            if (header.TaxAmt > 0)
             {
                 headered.TaxAmt = header.TaxAmt;
             }
 
-            if (header.Freight != 0)
+            if (header.Freight > 0)
             {
                 headered.Freight = header.Freight;
             }
@@ -233,21 +233,19 @@ namespace Ciclilavarizia.Services
                 })
                 .ToListAsync();
 
-            return details == null || details.Count == 0
-                ? Result<List<SalesOrderDetailDto>>.Failure("Details not found")
-                : Result<List<SalesOrderDetailDto>>.Success(details);
+            return Result<List<SalesOrderDetailDto>>.Success(details);
         }
         public async Task<Result<int>> AddSalesDetails(SalesOrderDetailDto sales, int SalesOrderHeaderID)
         {
             var head = _context.SalesOrderHeaders.FirstOrDefault(c => c.SalesOrderID == SalesOrderHeaderID);
             if(head == null)
-                return Result<int>.Failure("no header with this id");
+                return Result<int>.Success(0);
             else if (sales == null)
                 return Result<int>.Failure("no data to add");
 
             var product = _context.Products.FirstOrDefault(p => p.ProductID == sales.ProductID);
             if (product == null)
-                return Result<int>.Failure("no product with this id");
+                return Result<int>.Success(0);
 
 
             var details = new SalesOrderDetail
@@ -272,7 +270,7 @@ namespace Ciclilavarizia.Services
                             .FirstOrDefault(c => c.SalesOrderDetailID == SalesOrderDetailID);
 
             if (detailed == null)
-                return Result<int>.Failure("no detail with this id");
+                return Result<int>.Success(0);
             if (detail == null)
                 return Result<int>.Failure("no data to update");
 
@@ -280,7 +278,7 @@ namespace Ciclilavarizia.Services
             {
                 var product = _context.Products.FirstOrDefault(p => p.ProductID == detail.ProductID);
                 if (product == null)
-                return Result<int>.Failure("no product with this id");
+                    return Result<int>.Success(0);
 
             
                 detailed.ProductID = detail.ProductID;
@@ -311,7 +309,7 @@ namespace Ciclilavarizia.Services
 
             if (details == null)
             {
-                return Result<bool>.Failure("no detail found");
+                return Result<bool>.Success(false);
             }
 
             _context.Remove(details);

@@ -3,6 +3,7 @@ using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using System.ComponentModel.DataAnnotations;
 
 namespace Ciclilavarizia.Controllers
@@ -13,11 +14,9 @@ namespace Ciclilavarizia.Controllers
     //[Authorize]
     public class SalesOrderDetailsController : ControllerBase
     {
-        private readonly CiclilavariziaDevContext _context;
         private readonly SalesOrderService _service;
-        public SalesOrderDetailsController(CiclilavariziaDevContext context, SalesOrderService salesOrderService)
-        {
-            _context = context;
+        public SalesOrderDetailsController(SalesOrderService salesOrderService)
+        {     
             _service = salesOrderService;
         }
 
@@ -25,9 +24,9 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<List<SalesOrderDetail>>> AllDetails()
         {
             var details = await _service.AllDetails();
-            return details.IsSuccess
+            return details.Value.Count > 0
                 ? Ok(details.Value)
-                : BadRequest(details.ErrorMessage);
+                : NotFound();
         }
 
         [HttpGet("{SalesOrderID}")]
@@ -35,9 +34,9 @@ namespace Ciclilavarizia.Controllers
         {
 
             var details = await _service.GetMyDetails(SalesOrderID);
-            if (!details.IsSuccess)
+            if (details.Value == null || details.Value.Count <= 0)
             {
-                return BadRequest(details.ErrorMessage);
+                return NotFound();
             }
 
             return Ok(details.Value);
@@ -52,8 +51,12 @@ namespace Ciclilavarizia.Controllers
             {
                 return BadRequest(details.ErrorMessage);
             }
+            else if(details.Value == 0)
+            {
+                return NotFound();
+            }
 
-            return Created("",details.Value);
+            return CreatedAtAction(nameof(GetMyDetails), new { id = details.Value });
         }
 
         [HttpPut("{SalesOrderDetailID}")]
@@ -65,6 +68,10 @@ namespace Ciclilavarizia.Controllers
             {
                 return BadRequest(detailed.ErrorMessage);
             }
+            else if (detailed.Value == 0)
+            {
+                return NotFound();
+            }
 
             return NoContent();
         }
@@ -74,9 +81,9 @@ namespace Ciclilavarizia.Controllers
         {
 
             var details = await _service.DeleteSalesDetails(SalesOrderDetailsID);
-            if (!details.IsSuccess)
+            if (!details.Value)
             {
-                return BadRequest(details.ErrorMessage);
+                return NotFound();
             }
 
             return NoContent();

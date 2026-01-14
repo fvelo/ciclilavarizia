@@ -25,7 +25,7 @@ namespace Ciclilavarizia.Controllers
         {
             var headers = await _service.AllHeaders();
             if(!headers.IsSuccess)
-                return BadRequest(headers.ErrorMessage);
+                return NotFound(headers.ErrorMessage);
             
             return Ok(headers.Value);
         }
@@ -37,7 +37,7 @@ namespace Ciclilavarizia.Controllers
             var header = await _service.GetMyHeader(CustomerID);
             if (!header.IsSuccess)
             {
-                return BadRequest(header.ErrorMessage);
+                return NotFound(header.ErrorMessage);
             }
             return Ok(header.Value);
 
@@ -53,8 +53,12 @@ namespace Ciclilavarizia.Controllers
             {
                 return BadRequest(header.ErrorMessage);
             }
-            
-            return Created("",header.Value);
+            else if(header.Value == 0)
+            {
+                return NotFound();
+            }
+
+            return CreatedAtAction("GetMyHeader", header.Value);
         }
 
         
@@ -68,7 +72,11 @@ namespace Ciclilavarizia.Controllers
             {
                 return BadRequest(headered.ErrorMessage);
             }
-            
+            else if (headered.Value == 0)
+            {
+                return NotFound();
+            }
+
             return NoContent();
         }
 
@@ -79,7 +87,7 @@ namespace Ciclilavarizia.Controllers
             var header = await _service.DeleteSalesHeader(SalesOrderID);
             
             if (!header.IsSuccess)
-                return BadRequest(" no records found ");
+                return NotFound();
 
             return NoContent();
         }
