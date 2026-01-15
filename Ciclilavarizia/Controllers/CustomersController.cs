@@ -19,7 +19,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpGet]
-        [Authorize("AdminPolicy")]
+        //[Authorize("AdminPolicy")]
         public async Task<ActionResult<IEnumerable<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken cancellationToken)
         {
             var result = await _customersService.GetCustomersSummaryAsync(cancellationToken);
@@ -31,7 +31,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpGet("{customerId}")]
-        [Authorize("UserPolicy")]
+        //[Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "customerId")]
         public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int customerId, CancellationToken cancellationToken)
         {
@@ -55,7 +55,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize("UserPolicy")]
+        //[Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteCustomer(int id, CancellationToken cancellationToken)
         {
@@ -71,7 +71,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize("UserPolicy")]
+        //[Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken)
         {
@@ -88,7 +88,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpPut("password/{id}")]
-        [Authorize("UserPolicy")]
+        //[Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerPasswordAsync(int id, [FromBody] PutPasswordDto newPlainPassword, CancellationToken cancellationToken)
         {
@@ -102,7 +102,7 @@ namespace Ciclilavarizia.Controllers
         }
 
         [HttpPut("email/{id}/{newEmail}")]
-        [Authorize("UserPolicy")]
+        //[Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerEmailAsync(int id, string newEmail, CancellationToken cancellationToken)
         {
