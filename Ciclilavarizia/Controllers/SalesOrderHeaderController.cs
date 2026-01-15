@@ -23,7 +23,7 @@ namespace Ciclilavarizia.Controllers
         [HttpGet()]
         public async Task<ActionResult<List<SalesOrderHeader>>> AllHeaders()
         {
-            var headers = await _service.AllHeaders();
+            var headers = await _service.GetHeadersAsync();
             if(!headers.IsSuccess)
                 return NotFound(headers.ErrorMessage);
             
@@ -34,7 +34,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetMyHeader(int CustomerID)
         {
 
-            var header = await _service.GetMyHeader(CustomerID);
+            var header = await _service.GetHeaderAsync(CustomerID);
             if (!header.IsSuccess)
             {
                 return NotFound(header.ErrorMessage);
@@ -48,7 +48,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<SalesOrderHeader>> AddSalesHeader([FromBody] SalesOrderHeaderDto sales)
         {
 
-            var header = await _service.AddSalesHeader(sales);
+            var header = await _service.AddSalesHeaderAsync(sales);
             if (!header.IsSuccess)
             {
                 return BadRequest(header.ErrorMessage);
@@ -66,7 +66,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<SalesOrderHeader>> ModifySalesHeader([FromBody] SalesOrderHeaderDto header, int SalesOrderID)
         {
 
-            var headered = await _service.ModifySalesHeader(header, SalesOrderID);
+            var headered = await _service.UpdateSalesHeaderAsync(header, SalesOrderID);
 
             if (!headered.IsSuccess)
             {
@@ -84,7 +84,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult> DeleteSalesHeader(int SalesOrderID)
         {
 
-            var header = await _service.DeleteSalesHeader(SalesOrderID);
+            var header = await _service.DeleteSalesHeaderAsync(SalesOrderID);
             
             if (!header.IsSuccess)
                 return NotFound();

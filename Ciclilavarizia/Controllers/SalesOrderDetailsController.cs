@@ -23,7 +23,7 @@ namespace Ciclilavarizia.Controllers
         [HttpGet()]
         public async Task<ActionResult<List<SalesOrderDetail>>> AllDetails()
         {
-            var details = await _service.AllDetails();
+            var details = await _service.GetDetailsAsync();
             return details.Value.Count > 0
                 ? Ok(details.Value)
                 : NotFound();
@@ -33,7 +33,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<List<SalesOrderDetailDto>>> GetMyDetails(int SalesOrderID)
         {
 
-            var details = await _service.GetMyDetails(SalesOrderID);
+            var details = await _service.GetDetailAsync(SalesOrderID);
             if (details.Value == null || details.Value.Count <= 0)
             {
                 return NotFound();
@@ -46,7 +46,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<SalesOrderDetail>> AddSalesDetails([FromBody] SalesOrderDetailDto sales, int SalesOrderHeaderID)
         {
 
-            var details = await _service.AddSalesDetails(sales, SalesOrderHeaderID);
+            var details = await _service.AddSalesDetailsAsync(sales, SalesOrderHeaderID);
             if(!details.IsSuccess)
             {
                 return BadRequest(details.ErrorMessage);
@@ -63,7 +63,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<SalesOrderDetail>> ModifySalesDetails([FromBody] SalesOrderDetailDto detail, int SalesOrderDetailID)
         {
 
-            var detailed = await _service.ModifySalesDetails(detail, SalesOrderDetailID);
+            var detailed = await _service.UpdateSalesDetailsAsync(detail, SalesOrderDetailID);
             if(!detailed.IsSuccess)
             {
                 return BadRequest(detailed.ErrorMessage);
@@ -80,7 +80,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult> DeleteSalesDetails(int SalesOrderDetailsID)
         {
 
-            var details = await _service.DeleteSalesDetails(SalesOrderDetailsID);
+            var details = await _service.DeleteSalesDetailsAsync(SalesOrderDetailsID);
             if (!details.Value)
             {
                 return NotFound();
