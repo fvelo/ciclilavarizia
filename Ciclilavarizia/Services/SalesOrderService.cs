@@ -188,23 +188,31 @@ namespace Ciclilavarizia.Services
 
         public async Task<Result<bool>> DeleteSalesHeader(int SalesOrderID)
         {
-
-            var header = _context.SalesOrderHeaders
-                        .FirstOrDefault(p => p.SalesOrderID == SalesOrderID);
-            var details = _context.SalesOrderDetails.FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
-
-            if (header == null)
-                return Result<bool>.Failure("no header found");
-
-            if (details != null)
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.Remove(details);
+                var header = _context.SalesOrderHeaders
+                            .FirstOrDefault(p => p.SalesOrderID == SalesOrderID);
+                var details = _context.SalesOrderDetails.FirstOrDefault(c => c.SalesOrderID == SalesOrderID);
+
+                if (header == null)
+                    return Result<bool>.Failure("no header found");
+
+                if (details != null)
+                {
+                    _context.Remove(details);
+                }
+
+                _context.Remove(header);
+                await _context.SaveChangesAsync();
+
+                return Result<bool>.Success(true);
             }
-
-            _context.Remove(header);
-            await _context.SaveChangesAsync();
-
-            return Result<bool>.Success(true);
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return Result<bool>.Success(false);
+            }
         }
 
 

@@ -88,6 +88,8 @@ namespace Ciclilavarizia.Controllers
             
             if (!header.IsSuccess)
                 return NotFound();
+            if(!header.Value)
+                return Problem();
 
             return NoContent();
         }
