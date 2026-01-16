@@ -31,7 +31,11 @@ namespace Ciclilavarizia.Controllers
             if (credentials == null || string.IsNullOrEmpty(credentials.EmailAddress))
                 return BadRequest("Credentials required.");
 
-            var user = await _loginService.ValidateUserAsync(credentials);
+            var userResult = await _loginService.ValidateUserAsync(credentials);
+
+            if(!userResult.IsSuccess) return BadRequest(userResult.ErrorMessage);
+
+            var user = userResult.Value;
 
             if (user == null)
             {

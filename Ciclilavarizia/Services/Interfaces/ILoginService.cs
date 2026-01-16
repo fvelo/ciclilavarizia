@@ -1,4 +1,5 @@
-﻿using Ciclilavarizia.Models.Dtos;
+﻿using Ciclilavarizia.Models;
+using Ciclilavarizia.Models.Dtos;
 
 namespace Ciclilavarizia.Services.Interfaces
 {
@@ -13,7 +14,7 @@ namespace Ciclilavarizia.Services.Interfaces
         /// <returns></returns>
         string GenerateJwtTokenAsync(string email, string role, int customerId);
 
-        Task<UserLoginResultDto?> ValidateUserAsync(CredentialDto credentials);
+        Task<Result<UserLoginResultDto?>> ValidateUserAsync(CredentialDto credentials);
 
     }
 }

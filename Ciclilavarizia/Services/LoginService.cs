@@ -1,4 +1,5 @@
-﻿using Ciclilavarizia.Models.Dtos;
+﻿using Ciclilavarizia.Models;
+using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services.Interfaces;
 using CommonCiclilavarizia;
@@ -24,22 +25,26 @@ namespace Ciclilavarizia.Services
             _encryptionHandler = encryptionHandler;
         }
 
-        public async Task<UserLoginResultDto?> ValidateUserAsync(CredentialDto credentials)
+        public async Task<Result<UserLoginResultDto?>> ValidateUserAsync(CredentialDto credentials)
         {
+            var areCredentialsExpired = await _secureDb.AreCredentialsExpiredAsync(credentials.EmailAddress);
+
+            if (areCredentialsExpired) return Result<UserLoginResultDto?>.Failure("Credentials expired, create new ones!");
+
             var storedCreds = await _secureDb.GetCredentialsByEmailAsync(credentials.EmailAddress);
 
-            if (storedCreds == null) return null;
+            if (storedCreds == null) return Result<UserLoginResultDto?>.Success(null);
 
             var enteredHash = _encryptionHandler.HashPassword(credentials.PlainPassword, storedCreds.PasswordSalt);
 
-            if (enteredHash != storedCreds.PasswordHash) return null;
+            if (enteredHash != storedCreds.PasswordHash) return Result<UserLoginResultDto?>.Success(null);
 
-            return new UserLoginResultDto
+            return Result<UserLoginResultDto?>.Success(new UserLoginResultDto
             {
                 CustomerId = (int)storedCreds.CustomerId,
                 Role = storedCreds.Role,
                 Email = storedCreds.EmailAddress
-            };
+            });
         }
 
         public string GenerateJwtTokenAsync(string email, string role, int customerId)

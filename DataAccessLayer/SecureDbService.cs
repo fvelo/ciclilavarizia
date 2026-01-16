@@ -91,7 +91,7 @@ namespace DataAccessLayer
         {
             if (string.IsNullOrWhiteSpace(email)) return false;
 
-            email = email.ToLower().Replace(" ", "");
+            email = email.ToLower().Trim();
 
             using (SqlConnection connection = new(sqlCcnString))
             {
@@ -121,7 +121,7 @@ namespace DataAccessLayer
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
 
-            email = email.ToLower().Replace(" ", "");
+            email = email.ToLower().Trim();
 
             using (SqlConnection connection = new(sqlCcnString))
             {
@@ -173,6 +173,44 @@ namespace DataAccessLayer
 
         }
 
+        public async Task<bool> AreCredentialsExpiredAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            email = email.ToLower().Trim();
+
+            using (SqlConnection connection = new(sqlCcnString))
+            {
+                await connection.OpenAsync();
+                using (SqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = @"
+                        SELECT [ModifiedAt] 
+                        FROM [dbo].[Credentials] 
+                        WHERE LOWER([EmailAddress]) = @EmailAddress";
+
+                    command.Parameters.AddWithValue("@EmailAddress", email);
+
+                    object result = await command.ExecuteScalarAsync();
+
+                    if (result == null || result == DBNull.Value)
+                    {
+                        // if we don't know when it was modified, assume it's expired 
+                        return false;
+                    }
+
+                    DateTime modifiedAt = Convert.ToDateTime(result);
+
+                    // Check if ModifiedAt is older than 6 months from now
+                    if (modifiedAt < DateTime.UtcNow.AddMonths(-6))
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+        }
+
         public async Task<int> CreateCredentialAsync(Credentials incomingCredentials)
         {
             if (await DoesCredentialExistsByEmailAsync(incomingCredentials.EmailAddress))
@@ -187,26 +225,29 @@ namespace DataAccessLayer
                 using (SqlCommand command = connection.CreateCommand())
                 {
                     command.CommandText = @"
-                                                INSERT INTO [dbo].[Credentials]
-                                                           ([CustomerId]
-                                                           ,[EmailAddress]
-                                                           ,[PasswordHash]
-                                                           ,[PasswordSalt]
-                                                           ,[Role])
-                                                     VALUES
-                                                           (@CustomerId
-                                                           ,@EmailAddress
-                                                           ,@PasswordHash
-                                                           ,@PasswordSalt
-                                                           ,@Role);
-                                                SELECT SCOPE_IDENTITY();
-                                            ";
+                        INSERT INTO [dbo].[Credentials]
+                                   ([CustomerId]
+                                   ,[EmailAddress]
+                                   ,[PasswordHash]
+                                   ,[PasswordSalt]
+                                   ,[Role]
+                                   ,[ModifiedAt])
+                             VALUES
+                                   (@CustomerId
+                                   ,@EmailAddress
+                                   ,@PasswordHash
+                                   ,@PasswordSalt
+                                   ,@Role
+                                   ,@ModifiedAt);
+                        SELECT SCOPE_IDENTITY();
+                    ";
 
                     command.Parameters.AddWithValue("@CustomerId", incomingCredentials.CustomerId);
                     command.Parameters.AddWithValue("@EmailAddress", incomingCredentials.EmailAddress);
                     command.Parameters.AddWithValue("@PasswordHash", incomingCredentials.PasswordHash);
                     command.Parameters.AddWithValue("@PasswordSalt", incomingCredentials.PasswordSalt);
                     command.Parameters.AddWithValue("@Role", incomingCredentials.Role);
+                    command.Parameters.AddWithValue("@ModifiedAt", DateTime.UtcNow);
 
                     var result = await command.ExecuteScalarAsync();
 
@@ -229,7 +270,6 @@ namespace DataAccessLayer
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
 
-            // Sanitize input
             email = email.Trim().ToLower();
 
             using (SqlConnection connection = new(sqlCcnString))
@@ -273,18 +313,6 @@ namespace DataAccessLayer
             {
                 using (SqlConnection connection = new(sqlCcnString))
                 {
-                    // Simple DELETE statement
-                    string query = "";
-
-                    using (SqlCommand command = new(query, connection))
-                    {
-
-
-                        // If no exception occurred, we assume success. 
-                        // Even if 0 rows were affected (user didn't exist in secure DB), 
-                        // it is considered "cleaned".
-                    }
-
                     await connection.OpenAsync();
                     using (SqlCommand command = connection.CreateCommand())
                     {
@@ -342,17 +370,19 @@ namespace DataAccessLayer
             using (SqlConnection connection = new(sqlCcnString))
             {
                 const string query = @"
-                                        UPDATE [dbo].[Credentials]
-                                        SET [PasswordHash] = @Hash, 
-                                            [PasswordSalt] = @Salt
-                                        WHERE [CustomerId] = @CustomerId
-                                    ";
+                        UPDATE [dbo].[Credentials]
+                        SET [PasswordHash] = @Hash, 
+                            [PasswordSalt] = @Salt,
+                            [ModifiedAt] = @ModifiedAt
+                        WHERE [CustomerId] = @CustomerId
+                    ";
 
                 using (SqlCommand command = new(query, connection))
                 {
                     command.Parameters.AddWithValue("@Hash", passwordHash);
                     command.Parameters.AddWithValue("@Salt", passwordSalt);
                     command.Parameters.AddWithValue("@CustomerId", customerId);
+                    command.Parameters.AddWithValue("@ModifiedAt", DateTime.UtcNow);
 
                     await connection.OpenAsync();
                     int rowsAffected = await command.ExecuteNonQueryAsync();
