@@ -2,86 +2,52 @@
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Composition;
 
-namespace Ciclilavarizia.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class CartController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    //[Authorize]
-    public class CartController : ControllerBase
+    private readonly MDBService _mdbService;
+
+    public CartController(MDBService mdbService)
     {
-        private MDBService _mdbService;
-        public CartController(MDBService mdbService)
-        {
-            _mdbService = mdbService;
-        }
+        _mdbService = mdbService;
+    }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllOrders()
-        {
-            var mdbJson = await _mdbService.GetAllOrders();
+    [HttpGet("{customerId}")]
+    public async Task<ActionResult<List<MDBOrders>>> GetOrder(int customerId)
+    {
+        var orders = await _mdbService.GetOrder(customerId);
 
-            if(!mdbJson.IsSuccess)
-            {
-                return NotFound(mdbJson.ErrorMessage);
-            }
+        if (orders.Value == null || orders.Value.Count == 0)
+            return NotFound();
 
-            return Ok(mdbJson.Value);
-        }
+        return Ok(orders.Value);
+    }
 
-        [HttpGet("{customerId}")]
-        public async Task<ActionResult<List<MDBOrders>>> GetOrder(int customerId)
-        {
-            var orders = await _mdbService.GetOrder(customerId);
+    [HttpPut]
+    public async Task<IActionResult> AddProducts([FromBody] MDBSingleOrderDto cart)
+    {
+        var result = await _mdbService.AddProducts(
+            cart.ClientID,
+            cart.Products,
+            cart.qty
+        );
 
-            if (orders.Value == null || orders.Value.Count <= 0)
-            {
-                return NotFound();
-            }
+        if (!result.IsSuccess)
+            return BadRequest(result.ErrorMessage);
 
-            return Ok(orders.Value);
-        }
+        return Ok(result.Value);
+    }
 
-        [HttpPost()]
-        public async Task<IActionResult> CreateOrder([FromBody] MDBOrderDto order)
-        {
+    [HttpDelete]
+    public async Task<IActionResult> DeleteOrder([FromQuery] int customerId)
+    {
+        var result = await _mdbService.DeleteOrder(customerId);
 
-            var orders = await _mdbService.CreateOrder(order);
-            if(orders.Value == 0)
-            {
-                return BadRequest(orders.ErrorMessage);
-            }
-            return Ok(orders.Value);
-        }
+        if (!result.Value)
+            return NotFound();
 
-        [HttpPut()]
-        public async Task<IActionResult> AddProducts([FromBody]MDBSingleOrderDto cart)
-        {
-
-            var orders = await _mdbService.AddProducts(cart.ClientID, cart.Products, cart.qty);
-            if(!orders.IsSuccess)
-            {
-                return BadRequest(orders.ErrorMessage);
-            }
-
-            return Ok(orders.Value);
-        }
-
-        [HttpDelete()]
-        public async Task<IActionResult> DeleteOrder(int customerId)
-        {
-
-            var orders = await _mdbService.DeleteOrder(customerId);
-
-            if(!orders.Value)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
-        }
-
+        return NoContent();
     }
 }
-

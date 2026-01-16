@@ -46,7 +46,7 @@ namespace Ciclilavarizia.Controllers
 
         // POST: api/Products
         [HttpPost]
-        [Authorize("AdminPolicy")]
+        //[Authorize("AdminPolicy")]
         public async Task<ActionResult<int>> CreateProduct(ProductDto productDto, CancellationToken cancellationToken)
         {
             var result = await _productsService.AddProductAsync(productDto, cancellationToken);
@@ -60,7 +60,7 @@ namespace Ciclilavarizia.Controllers
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
-        [Authorize("AdminPolicy")]
+        //[Authorize("AdminPolicy")]
         [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto, CancellationToken cancellationToken)
         {
@@ -73,7 +73,7 @@ namespace Ciclilavarizia.Controllers
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        [Authorize("AdminPolicy")]
+        //[Authorize("AdminPolicy")]
         [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
         {

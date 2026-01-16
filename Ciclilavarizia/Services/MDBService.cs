@@ -10,6 +10,7 @@ namespace Ciclilavarizia.Services
     public class MDBService
     {
         private readonly IMongoCollection<MDBOrders> _collection;
+
         public MDBService(IOptions<MDBConfig> mDBConfig)
         {
             MongoClient client = new MongoClient(mDBConfig.Value.ConnectionString);
@@ -19,9 +20,9 @@ namespace Ciclilavarizia.Services
 
         public async Task<Result<object>> GetAllOrders()
         {
-
             var carts = await _collection.Find(new BsonDocument()).ToListAsync();
             var mdbJson = new List<object>();
+
             foreach (var prods in carts)
             {
                 mdbJson.Add(prods.ToJson());
@@ -32,13 +33,9 @@ namespace Ciclilavarizia.Services
                 : Result<object>.Success(0);
         }
 
-
-
         public async Task<Result<List<MDBOrders>>> GetOrder(int clientId)
         {
-
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
-
             var orders = await _collection.Find(filter).ToListAsync();
 
             return orders != null && orders.Count > 0
@@ -48,7 +45,7 @@ namespace Ciclilavarizia.Services
 
         public async Task<Result<int>> CreateOrder(MDBOrderDto order)
         {
-            if(order == null)
+            if (order == null)
             {
                 return Result<int>.Failure("Order data is null");
             }
@@ -64,7 +61,6 @@ namespace Ciclilavarizia.Services
                 {
                     return Result<int>.Failure("ProductId cannot be negative");
                 }
-
             }
 
             await _collection.InsertOneAsync(new MDBOrders
@@ -72,37 +68,39 @@ namespace Ciclilavarizia.Services
                 ClientID = order.ClientID,
                 Products = order.Products,
             });
-            return Result<int>.Success(order.ClientID);
-            
-        }
 
+            return Result<int>.Success(order.ClientID);
+        }
 
         public async Task<Result<int>> AddProducts(int clientId, int product, int quantity)
         {
-
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
+            UpdateDefinition<MDBOrders> update;
 
-            if (quantity > 0) 
+            if (quantity > 0)
             {
-                var update = Builders<MDBOrders>.Update.Set($"Products.{product.ToString()}", quantity);
-                await _collection.UpdateOneAsync(filter, update);
+                update = Builders<MDBOrders>.Update
+                    .Set(o => o.ClientID, clientId)        // ensure document exists
+                    .Set($"Products.{product}", quantity);
             }
-            else if(quantity == 0)
+            else if (quantity == 0)
             {
-                var removal = Builders<MDBOrders>.Update.Unset($"Products.{product.ToString()}");
-                await _collection.UpdateOneAsync(filter, removal);
+                update = Builders<MDBOrders>.Update
+                    .Unset($"Products.{product}");
             }
             else
             {
                 return Result<int>.Failure("Quantity cannot be negative");
             }
 
+            var options = new UpdateOptions { IsUpsert = true };  // 🔑 minimal change
+            await _collection.UpdateOneAsync(filter, update, options);
+
             return Result<int>.Success(clientId);
         }
 
         public async Task<Result<bool>> DeleteOrder(int clientId)
         {
-
             var filter = Builders<MDBOrders>.Filter.Eq("ClientID", clientId);
             var deleted = await _collection.DeleteOneAsync(filter);
 
@@ -110,6 +108,5 @@ namespace Ciclilavarizia.Services
                 ? Result<bool>.Success(true)
                 : Result<bool>.Success(false);
         }
-
     }
 }
