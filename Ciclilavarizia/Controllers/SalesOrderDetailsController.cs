@@ -1,23 +1,19 @@
-﻿using Ciclilavarizia.Data;
-using Ciclilavarizia.Models;
+﻿using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ciclilavarizia.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
     public class SalesOrderDetailsController : ControllerBase
     {
-        private readonly SalesOrderService _service;
-        public SalesOrderDetailsController(SalesOrderService salesOrderService)
-        {     
-            _service = salesOrderService;
+        private readonly SalesOrderDetailsService _service;
+        public SalesOrderDetailsController(SalesOrderDetailsService service)
+        {
+            _service = service;
         }
 
         [HttpGet()]
@@ -29,11 +25,11 @@ namespace Ciclilavarizia.Controllers
                 : NotFound();
         }
 
-        [HttpGet("{SalesOrderID}")]
-        public async Task<ActionResult<List<SalesOrderDetailDto>>> GetMyDetails(int SalesOrderID)
+        [HttpGet("{salesOrderId}")]
+        public async Task<ActionResult<List<SalesOrderDetailDto>>> GetMyDetails(int salesOrderId)
         {
 
-            var details = await _service.GetDetailAsync(SalesOrderID);
+            var details = await _service.GetDetailAsync(salesOrderId);
             if (details.Value == null || details.Value.Count <= 0)
             {
                 return NotFound();
@@ -42,16 +38,16 @@ namespace Ciclilavarizia.Controllers
             return Ok(details.Value);
         }
 
-        [HttpPost("{SalesOrderHeaderID}")]
-        public async Task<ActionResult<SalesOrderDetail>> AddSalesDetails([FromBody] SalesOrderDetailDto sales, int SalesOrderHeaderID)
+        [HttpPost("{salesOrderHeaderId}")]
+        public async Task<ActionResult<SalesOrderDetail>> AddSalesDetails([FromBody] SalesOrderDetailDto sales, int salesOrderHeaderId)
         {
 
-            var details = await _service.AddSalesDetailsAsync(sales, SalesOrderHeaderID);
-            if(!details.IsSuccess)
+            var details = await _service.AddSalesDetailsAsync(sales, salesOrderHeaderId);
+            if (!details.IsSuccess)
             {
                 return BadRequest(details.ErrorMessage);
             }
-            else if(details.Value == 0)
+            else if (details.Value == 0)
             {
                 return NotFound();
             }
@@ -59,12 +55,12 @@ namespace Ciclilavarizia.Controllers
             return CreatedAtAction(nameof(GetMyDetails), new { id = details.Value });
         }
 
-        [HttpPut("{SalesOrderDetailID}")]
-        public async Task<ActionResult<SalesOrderDetail>> ModifySalesDetails([FromBody] SalesOrderDetailDto detail, int SalesOrderDetailID)
+        [HttpPut("{salesOrderDetailsId}")]
+        public async Task<ActionResult<SalesOrderDetail>> ModifySalesDetails([FromBody] SalesOrderDetailDto detail, int salesOrderDetailsId)
         {
 
-            var detailed = await _service.UpdateSalesDetailsAsync(detail, SalesOrderDetailID);
-            if(!detailed.IsSuccess)
+            var detailed = await _service.UpdateSalesDetailsAsync(detail, salesOrderDetailsId);
+            if (!detailed.IsSuccess)
             {
                 return BadRequest(detailed.ErrorMessage);
             }
@@ -76,11 +72,11 @@ namespace Ciclilavarizia.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{SalesOrderDetailsID}")]
-        public async Task<ActionResult> DeleteSalesDetails(int SalesOrderDetailsID)
+        [HttpDelete("{salesOrderDetailsId}")]
+        public async Task<ActionResult> DeleteSalesDetails(int salesOrderDetailsId)
         {
 
-            var details = await _service.DeleteSalesDetailsAsync(SalesOrderDetailsID);
+            var details = await _service.DeleteSalesDetailsAsync(salesOrderDetailsId);
             if (!details.Value)
             {
                 return NotFound();

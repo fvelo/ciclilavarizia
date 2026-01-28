@@ -1,40 +1,35 @@
-﻿using Ciclilavarizia.Data;
-using Ciclilavarizia.Models;
+﻿using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ciclilavarizia.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
     public class SalesOrderHeaderController : ControllerBase
     {
-        private readonly CiclilavariziaDevContext _context;
-        private readonly SalesOrderService _service;
-        public SalesOrderHeaderController(CiclilavariziaDevContext context, SalesOrderService service)
+        private readonly SalesOrderHeaderService _service;
+        public SalesOrderHeaderController(SalesOrderHeaderService service)
         {
-            _context = context;
             _service = service;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public async Task<ActionResult<List<SalesOrderHeader>>> AllHeaders()
         {
             var headers = await _service.GetHeadersAsync();
-            if(!headers.IsSuccess)
+            if (!headers.IsSuccess)
                 return NotFound(headers.ErrorMessage);
-            
+
             return Ok(headers.Value);
         }
 
-        [HttpGet("{CustomerID}")]
-        public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetMyHeader(int CustomerID)
+        [HttpGet("{customerId}")]
+        public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetMyHeader(int customerId)
         {
 
-            var header = await _service.GetHeaderAsync(CustomerID);
+            var header = await _service.GetHeaderAsync(customerId);
             if (!header.IsSuccess)
             {
                 return NotFound(header.ErrorMessage);
@@ -44,7 +39,7 @@ namespace Ciclilavarizia.Controllers
 
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<ActionResult<SalesOrderHeader>> AddSalesHeader([FromBody] SalesOrderHeaderDto sales)
         {
 
@@ -53,7 +48,7 @@ namespace Ciclilavarizia.Controllers
             {
                 return BadRequest(header.ErrorMessage);
             }
-            else if(header.Value == 0)
+            else if (header.Value == 0)
             {
                 return NotFound();
             }
@@ -61,12 +56,12 @@ namespace Ciclilavarizia.Controllers
             return CreatedAtAction("GetMyHeader", header.Value);
         }
 
-        
-        [HttpPut("{SalesOrderID}")]
-        public async Task<ActionResult<SalesOrderHeader>> ModifySalesHeader([FromBody] SalesOrderHeaderDto header, int SalesOrderID)
+
+        [HttpPut("{salesOrderId}")]
+        public async Task<ActionResult<SalesOrderHeader>> ModifySalesHeader([FromBody] SalesOrderHeaderDto header, int salesOrderId)
         {
 
-            var headered = await _service.UpdateSalesHeaderAsync(header, SalesOrderID);
+            var headered = await _service.UpdateSalesHeaderAsync(header, salesOrderId);
 
             if (!headered.IsSuccess)
             {
@@ -80,19 +75,18 @@ namespace Ciclilavarizia.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{SalesOrderID}")]
-        public async Task<ActionResult> DeleteSalesHeader(int SalesOrderID)
+        [HttpDelete("{salesOrderId}")]
+        public async Task<ActionResult> DeleteSalesHeader(int salesOrderId)
         {
 
-            var header = await _service.DeleteSalesHeaderAsync(SalesOrderID);
-            
+            var header = await _service.DeleteSalesHeaderAsync(salesOrderId);
+
             if (!header.IsSuccess)
                 return NotFound();
-            if(!header.Value)
+            if (!header.Value)
                 return Problem();
 
             return NoContent();
         }
     }
 }
-
