@@ -1,5 +1,4 @@
-﻿using Ciclilavarizia.Models;
-using Ciclilavarizia.Models.Dtos;
+﻿using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,84 +8,64 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class SalesOrderHeaderController : ControllerBase
     {
-        private readonly SalesOrderHeaderService _service;
-        public SalesOrderHeaderController(SalesOrderHeaderService service)
+        private readonly ISalesOrderHeaderService _service;
+
+        public SalesOrderHeaderController(ISalesOrderHeaderService service)
         {
             _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<SalesOrderHeader>>> AllHeaders()
+        public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetAllHeaders()
         {
-            var headers = await _service.GetHeadersAsync();
-            if (!headers.IsSuccess)
-                return NotFound(headers.ErrorMessage);
+            var result = await _service.GetHeadersAsync();
+            if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
-            return Ok(headers.Value);
+            return Ok(result.Value);
         }
 
+        // GET: api/SalesOrderHeader/50123
         [HttpGet("{customerId}")]
-        public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetMyHeader(int customerId)
+        public async Task<ActionResult<SalesOrderHeaderDto>> GetMyHeaders(int customerId)
         {
+            var result = await _service.GetHeaderByCustomerIdAsync(customerId);
+            if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
-            var header = await _service.GetHeaderAsync(customerId);
-            if (!header.IsSuccess)
-            {
-                return NotFound(header.ErrorMessage);
-            }
-            return Ok(header.Value);
-
-
+            return Ok(result.Value);
         }
 
+        [HttpGet("single/{orderHeaderId}")]
+        public async Task<ActionResult<SalesOrderHeaderDto>> GetHeader(int orderHeaderId)
+        {
+            var result = await _service.GetHeaderByIdAsync(orderHeaderId);
+            if (!result.IsSuccess) return NotFound(result.ErrorMessage);
+
+            return Ok(result.Value);
+        }
+
+        // TODO: this does not work, make it work
         [HttpPost]
-        public async Task<ActionResult<SalesOrderHeader>> AddSalesHeader([FromBody] SalesOrderHeaderDto sales)
+        public async Task<ActionResult<int>> CreateOrder([FromBody] SalesOrderHeaderCommandDto command)
         {
+            var result = await _service.CreateOrderAsync(command);
+            if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
-            var header = await _service.AddSalesHeaderAsync(sales);
-            if (!header.IsSuccess)
-            {
-                return BadRequest(header.ErrorMessage);
-            }
-            else if (header.Value == 0)
-            {
-                return NotFound();
-            }
-
-            return CreatedAtAction("GetMyHeader", header.Value);
+            // Returns 201 Created with the URI to fetch the new resource
+            return CreatedAtAction(nameof(GetMyHeaders), new { id = result.Value }, result.Value);
         }
 
-
-        [HttpPut("{salesOrderId}")]
-        public async Task<ActionResult<SalesOrderHeader>> ModifySalesHeader([FromBody] SalesOrderHeaderDto header, int salesOrderId)
+        [HttpDelete("{orderHeaderId}")]
+        public async Task<IActionResult> DeleteOrder(int orderHeaderId)
         {
-
-            var headered = await _service.UpdateSalesHeaderAsync(header, salesOrderId);
-
-            if (!headered.IsSuccess)
-            {
-                return BadRequest(headered.ErrorMessage);
-            }
-            else if (headered.Value == 0)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            var result = await _service.DeleteOrderAsync(orderHeaderId);
+            return result.IsSuccess ? NoContent() : NotFound(result.ErrorMessage);
         }
 
-        [HttpDelete("{salesOrderId}")]
-        public async Task<ActionResult> DeleteSalesHeader(int salesOrderId)
+        [HttpPut]
+        public async Task<IActionResult> UpdateOrder(SalesOrderHeaderCommandDto command)
         {
-
-            var header = await _service.DeleteSalesHeaderAsync(salesOrderId);
-
-            if (!header.IsSuccess)
-                return NotFound();
-            if (!header.Value)
-                return Problem();
-
-            return NoContent();
+            var result = await _service.UpdateOrderAsync(command);
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
     }
 }

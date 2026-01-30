@@ -4,7 +4,7 @@
     {
         public static IServiceCollection AddSalesOrderHeaderService(this IServiceCollection services)
         {
-            services.AddScoped<SalesOrderHeaderService>();
+            services.AddScoped<ISalesOrderHeaderService, SalesOrderHeaderService>();
             return services;
         }
     }

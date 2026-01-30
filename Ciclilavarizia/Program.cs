@@ -85,7 +85,6 @@ namespace Ciclilavarizia
             builder.Services.AddProblemDetails();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
-            builder.Services.AddSalesOrderDetailsService();
             builder.Services.AddSalesOrderHeaderService();
             builder.Services.AddMDBService();
 
