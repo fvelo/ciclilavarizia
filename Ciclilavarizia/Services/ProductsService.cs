@@ -88,7 +88,7 @@ namespace Ciclilavarizia.Services
             if (entity == null) return Result<int>.Failure("Product not found.");
 
             if (dto.Weight == 0) return Result<int>.Failure("The Weight must be more than 0.");
-            if (await _context.Products.AnyAsync(p => p.Name == dto.Name)) return Result<int>.Failure("The Name of the product must be unique.");
+            if (await _context.Products.AnyAsync(p => p.Name == dto.Name && p.ProductID != productId)) return Result<int>.Failure("The Name of the product must be unique.");
 
 
             entity.Name = dto.Name ?? entity.Name;
