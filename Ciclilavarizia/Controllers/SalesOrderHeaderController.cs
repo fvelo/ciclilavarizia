@@ -34,10 +34,10 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
-        [HttpGet("single/{orderHeaderId}")]
-        public async Task<ActionResult<SalesOrderHeaderDto>> GetHeader(int orderHeaderId)
+        [HttpGet("single/{salesOrderId}")]
+        public async Task<ActionResult<SalesOrderHeaderDto>> GetHeader(int salesOrderId)
         {
-            var result = await _service.GetHeaderByIdAsync(orderHeaderId);
+            var result = await _service.GetHeaderByIdAsync(salesOrderId);
             if (!result.IsSuccess) return NotFound(result.ErrorMessage);
 
             return Ok(result.Value);
@@ -51,7 +51,7 @@ namespace Ciclilavarizia.Controllers
             if (!result.IsSuccess) return BadRequest(result.ErrorMessage);
 
             // Returns 201 Created with the URI to fetch the new resource
-            return CreatedAtAction(nameof(GetMyHeaders), new { id = result.Value }, result.Value);
+            return CreatedAtAction(nameof(GetMyHeaders), new { customerId = result.Value }, result.Value);
         }
 
         [HttpDelete("{orderHeaderId}")]

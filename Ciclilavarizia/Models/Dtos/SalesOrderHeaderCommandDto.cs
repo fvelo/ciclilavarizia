@@ -1,4 +1,5 @@
-﻿using Ciclilavarizia.Models.Dtos;
+﻿using Ciclilavarizia.Models.Attributes;
+using Ciclilavarizia.Models.Dtos;
 using System.ComponentModel.DataAnnotations;
 
 namespace Ciclilavarizia.Models.Dtos
@@ -16,6 +17,7 @@ namespace Ciclilavarizia.Models.Dtos
 
         [Required]
         [DataType(DataType.DateTime)]
+        [FutureDate(minimumDaysInFuture: 1, ErrorMessage = "DueDate must be scheduled at least 24 hours in the future.")]
         public DateTime DueDate { get; set; }
 
         [Required]
