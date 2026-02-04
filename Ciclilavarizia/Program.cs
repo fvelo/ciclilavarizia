@@ -86,7 +86,7 @@ namespace Ciclilavarizia
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
             builder.Services.AddSalesOrderHeaderService();
-            builder.Services.AddMDBService();
+            builder.Services.AddCartService();
 
             // mongoDb service
             builder.Services.Configure<MdbConnectionSettings>(
