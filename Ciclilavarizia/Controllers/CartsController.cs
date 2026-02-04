@@ -15,14 +15,14 @@ public class CartsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<MdbCart>>> GetCarts()
+    public async Task<ActionResult<List<MdbCartDto>>> GetCarts()
     {
         var result = await _cartService.GetCarts();
         return Ok(result.Value);
     }
 
     [HttpGet("{customerId}")]
-    public async Task<ActionResult<List<MdbCart>>> GetCart(int customerId)
+    public async Task<ActionResult<List<MdbCartDto>>> GetCart(int customerId)
     {
         var result = await _cartService.GetCart(customerId);
 
