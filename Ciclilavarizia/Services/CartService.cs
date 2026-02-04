@@ -22,7 +22,7 @@ namespace Ciclilavarizia.Services
             _context = database.GetCollection<MdbCart>(mdbOptions.Value.CollectionName);
         }
 
-        public async Task<Result<List<MdbCartDto>>> GetCarts()
+        public async Task<Result<List<MdbCartDto>>> GetCartsAsync(CancellationToken cancellationToken = default)
         {
             var carts = await _context.Find(new BsonDocument()).ToListAsync();
             if (carts == null) return Result<List<MdbCartDto>>.Success(new List<MdbCartDto>());
@@ -34,7 +34,7 @@ namespace Ciclilavarizia.Services
             return Result<List<MdbCartDto>>.Success(cartsDto);
         }
 
-        public async Task<Result<MdbCartDto>> GetCart(int customerId)
+        public async Task<Result<MdbCartDto>> GetCartAsync(int customerId, CancellationToken cancellationToken = default)
         {
             var filter = Builders<MdbCart>.Filter.Eq(_customerId, customerId);
             var cart = await _context.Find(filter).FirstOrDefaultAsync();
@@ -45,7 +45,7 @@ namespace Ciclilavarizia.Services
             return Result<MdbCartDto>.Success(cartDto);
         }
 
-        private MdbCartDto ConvertCartToCartDto(MdbCart cart)
+        private MdbCartDto ConvertCartToCartDto(MdbCart cart, CancellationToken cancellationToken = default)
         {
             var cartProducts = new Dictionary<uint, uint>();
             foreach (var product in cart.Products)
@@ -60,7 +60,7 @@ namespace Ciclilavarizia.Services
             return cartDto;
         }
 
-        public async Task<Result<int>> CreateCart(MdbCartDto cart)
+        public async Task<Result<int>> CreateCartAsync(MdbCartDto cart, CancellationToken cancellationToken = default)
         {
             if (cart == null) return Result<int>.Failure("The cart must contain something.");
             var filter = Builders<MdbCart>.Filter.Eq(_customerId, cart.CustomerId);
@@ -88,7 +88,7 @@ namespace Ciclilavarizia.Services
             return Result<int>.Success(cart.CustomerId);
         }
 
-        public async Task<Result<bool>> DeleteCart(int customerId)
+        public async Task<Result<bool>> DeleteCartAsync(int customerId, CancellationToken cancellationToken = default)
         {
             var filter = Builders<MdbCart>.Filter.Eq(_customerId, customerId);
             var deleted = await _context.DeleteOneAsync(filter);
@@ -98,7 +98,7 @@ namespace Ciclilavarizia.Services
                 : Result<bool>.Failure("Not found!");
         }
 
-        public async Task<Result<int>> UpdateCart(int customerId, MdbCartDto cart)
+        public async Task<Result<int>> UpdateCartAsync(int customerId, MdbCartDto cart, CancellationToken cancellationToken = default)
         {
             if (customerId != cart.CustomerId) return Result<int>.Failure("The customerId is not the same.");
             if (cart == null) return Result<int>.Failure("The cart must contain something.");

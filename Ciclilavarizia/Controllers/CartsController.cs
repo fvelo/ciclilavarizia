@@ -15,16 +15,16 @@ public class CartsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<MdbCartDto>>> GetCarts()
+    public async Task<ActionResult<List<MdbCartDto>>> GetCarts(CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.GetCarts();
+        var result = await _cartService.GetCartsAsync(cancellationToken);
         return Ok(result.Value);
     }
 
     [HttpGet("{customerId}")]
-    public async Task<ActionResult<List<MdbCartDto>>> GetCart(int customerId)
+    public async Task<ActionResult<List<MdbCartDto>>> GetCart(int customerId, CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.GetCart(customerId);
+        var result = await _cartService.GetCartAsync(customerId, cancellationToken);
 
         if (!result.IsSuccess)
             return NotFound();
@@ -33,9 +33,9 @@ public class CartsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateCart(MdbCartDto cart)
+    public async Task<IActionResult> CreateCart(MdbCartDto cart, CancellationToken cancellationToken = default)
     {
-        var resultCreate = await _cartService.CreateCart(cart);
+        var resultCreate = await _cartService.CreateCartAsync(cart, cancellationToken);
         if (!resultCreate.IsSuccess)
             return BadRequest(resultCreate.ErrorMessage);
 
@@ -43,9 +43,9 @@ public class CartsController : ControllerBase
     }
 
     [HttpDelete("{customerId}")]
-    public async Task<IActionResult> DeleteCart(int customerId)
+    public async Task<IActionResult> DeleteCart(int customerId, CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.DeleteCart(customerId);
+        var result = await _cartService.DeleteCartAsync(customerId, cancellationToken);
 
         if (!result.IsSuccess)
             return NotFound();
@@ -54,9 +54,9 @@ public class CartsController : ControllerBase
     }
 
     [HttpPut("{customerId}")]
-    public async Task<IActionResult> UpdateCart(int customerId, MdbCartDto cart)
+    public async Task<IActionResult> UpdateCart(int customerId, MdbCartDto cart, CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.UpdateCart(customerId, cart);
+        var result = await _cartService.UpdateCartAsync(customerId, cart, cancellationToken);
         if (!result.IsSuccess)
             return BadRequest(result.ErrorMessage);
         if (result.Value == -1)
