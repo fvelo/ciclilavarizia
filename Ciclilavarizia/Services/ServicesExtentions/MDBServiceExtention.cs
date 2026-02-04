@@ -4,7 +4,7 @@
     {
         public static IServiceCollection AddMDBService(this IServiceCollection services)
         {
-            services.AddScoped<MDBService>();
+            services.AddScoped<CartService>();
             return services;
         }
     }

@@ -89,7 +89,7 @@ namespace Ciclilavarizia
             builder.Services.AddMDBService();
 
             // mongoDb service
-            builder.Services.Configure<MDBConfig>(
+            builder.Services.Configure<MdbConnectionSettings>(
                 builder.Configuration.GetSection("MDBConnection"));
 
 

@@ -1,6 +1,6 @@
 ﻿namespace Ciclilavarizia.Models.Settings
 {
-    public class MDBConfig
+    public class MdbConnectionSettings
     {
         public string? ConnectionString { get; set; }
         public string? DatabaseName { get; set; }
