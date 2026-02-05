@@ -25,7 +25,7 @@ namespace Ciclilavarizia.Services
         public async Task<Result<List<MdbCartDto>>> GetCartsAsync(CancellationToken cancellationToken = default)
         {
             var carts = await _context.Find(new BsonDocument()).ToListAsync(cancellationToken);
-            if (carts == null) return Result<List<MdbCartDto>>.Success(new List<MdbCartDto>());
+            if (carts == null || carts.Count == 0) return Result<List<MdbCartDto>>.Success(new List<MdbCartDto>()); // it does not matter if there is none, I will send a empty list
 
             var cartsDto = new List<MdbCartDto>();
             foreach (var cart in carts)
@@ -34,11 +34,11 @@ namespace Ciclilavarizia.Services
             return Result<List<MdbCartDto>>.Success(cartsDto);
         }
 
-        public async Task<Result<MdbCartDto>> GetCartAsync(int customerId, CancellationToken cancellationToken = default)
+        public async Task<Result<MdbCartDto>> GetCartByCustomerIdAsync(int customerId, CancellationToken cancellationToken = default)
         {
             var filter = Builders<MdbCart>.Filter.Eq(_customerId, customerId);
             var cart = await _context.Find(filter).FirstOrDefaultAsync(cancellationToken);
-            if (cart == null) Result<MdbCartDto>.Failure("Not found!");
+            if (cart == null) return Result<MdbCartDto>.Failure("Not found!");
 
             var cartDto = ConvertCartToCartDto(cart);
 
@@ -88,7 +88,7 @@ namespace Ciclilavarizia.Services
             return Result<int>.Success(cart.CustomerId);
         }
 
-        public async Task<Result<bool>> DeleteCartAsync(int customerId, CancellationToken cancellationToken = default)
+        public async Task<Result<bool>> DeleteCartByCustomerIdAsync(int customerId, CancellationToken cancellationToken = default)
         {
             var filter = Builders<MdbCart>.Filter.Eq(_customerId, customerId);
             var deleted = await _context.DeleteOneAsync(filter, cancellationToken);
@@ -98,7 +98,7 @@ namespace Ciclilavarizia.Services
                 : Result<bool>.Failure("Not found!");
         }
 
-        public async Task<Result<int>> UpdateCartAsync(int customerId, MdbCartDto cart, CancellationToken cancellationToken = default)
+        public async Task<Result<int>> UpdateCartByCostumerIdAsync(int customerId, MdbCartDto cart, CancellationToken cancellationToken = default)
         {
             if (customerId != cart.CustomerId) return Result<int>.Failure("The customerId is not the same.");
             if (cart == null) return Result<int>.Failure("The cart must contain something.");

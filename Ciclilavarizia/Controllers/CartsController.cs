@@ -24,7 +24,7 @@ public class CartsController : ControllerBase
     [HttpGet("{customerId}")]
     public async Task<ActionResult<List<MdbCartDto>>> GetCart(int customerId, CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.GetCartAsync(customerId, cancellationToken);
+        var result = await _cartService.GetCartByCustomerIdAsync(customerId, cancellationToken);
 
         if (!result.IsSuccess)
             return NotFound();
@@ -45,7 +45,7 @@ public class CartsController : ControllerBase
     [HttpDelete("{customerId}")]
     public async Task<IActionResult> DeleteCart(int customerId, CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.DeleteCartAsync(customerId, cancellationToken);
+        var result = await _cartService.DeleteCartByCustomerIdAsync(customerId, cancellationToken);
 
         if (!result.IsSuccess)
             return NotFound();
@@ -56,7 +56,7 @@ public class CartsController : ControllerBase
     [HttpPut("{customerId}")]
     public async Task<IActionResult> UpdateCart(int customerId, MdbCartDto cart, CancellationToken cancellationToken = default)
     {
-        var result = await _cartService.UpdateCartAsync(customerId, cart, cancellationToken);
+        var result = await _cartService.UpdateCartByCostumerIdAsync(customerId, cart, cancellationToken);
         if (!result.IsSuccess)
             return BadRequest(result.ErrorMessage);
         if (result.Value == -1)
