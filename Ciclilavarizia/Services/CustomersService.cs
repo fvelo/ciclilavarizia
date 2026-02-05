@@ -146,6 +146,7 @@ namespace Ciclilavarizia.Services
             // We include relations to ensure delete in the db
             var customer = await _db.Customers
                 .Include(c => c.CustomerAddresses)
+                .Include(c => c.SalesOrderHeaders)
                 .SingleOrDefaultAsync(c => c.CustomerID == id, cancellationToken);
 
             if (customer == null)
@@ -159,6 +160,10 @@ namespace Ciclilavarizia.Services
             if (customer.CustomerAddresses != null && customer.CustomerAddresses.Any()) // you do need to implement every possibile connection with the fk in the db
             {
                 _db.CustomerAddresses.RemoveRange(customer.CustomerAddresses);
+            }
+            if (customer.SalesOrderHeaders != null && customer.SalesOrderHeaders.Any())
+            {
+                _db.SalesOrderHeaders.RemoveRange(customer.SalesOrderHeaders);
             }
 
             _db.Customers.Remove(customer);
