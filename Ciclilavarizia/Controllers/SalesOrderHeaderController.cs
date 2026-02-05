@@ -28,8 +28,8 @@ namespace Ciclilavarizia.Controllers
         [HttpGet("{customerId}")]
         public async Task<ActionResult<SalesOrderHeaderDto>> GetMyHeaders(int customerId)
         {
-            var result = await _service.GetHeaderByCustomerIdAsync(customerId);
-            if (!result.IsSuccess) return NotFound(result.ErrorMessage);
+            var result = await _service.GetHeadersByCustomerIdAsync(customerId);
+            if (!result.IsSuccess) return NotFound();
 
             return Ok(result.Value);
         }
@@ -38,7 +38,7 @@ namespace Ciclilavarizia.Controllers
         public async Task<ActionResult<SalesOrderHeaderDto>> GetHeader(int salesOrderId)
         {
             var result = await _service.GetHeaderByIdAsync(salesOrderId);
-            if (!result.IsSuccess) return NotFound(result.ErrorMessage);
+            if (!result.IsSuccess) return NotFound();
 
             return Ok(result.Value);
         }

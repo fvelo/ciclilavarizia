@@ -2,13 +2,14 @@
 using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 
 namespace Ciclilavarizia.Services
 {
     public interface ISalesOrderHeaderService
     {
         Task<Result<IEnumerable<SalesOrderHeaderDto>>> GetHeadersAsync();
-        Task<Result<IEnumerable<SalesOrderHeaderDto>>> GetHeaderByCustomerIdAsync(int customerId);
+        Task<Result<IEnumerable<SalesOrderHeaderDto>>> GetHeadersByCustomerIdAsync(int customerId);
         Task<Result<SalesOrderHeaderDto>> GetHeaderByIdAsync(int salesOrderId);
         Task<Result<int>> CreateOrderAsync(SalesOrderHeaderCommandDto command);
         Task<Result<bool>> DeleteOrderAsync(int salesOrderId);
@@ -34,13 +35,15 @@ namespace Ciclilavarizia.Services
             return Result<IEnumerable<SalesOrderHeaderDto>>.Success(headers);
         }
 
-        public async Task<Result<IEnumerable<SalesOrderHeaderDto>>> GetHeaderByCustomerIdAsync(int customerId)
+        public async Task<Result<IEnumerable<SalesOrderHeaderDto>>> GetHeadersByCustomerIdAsync(int customerId)
         {
-            var query = _context.SalesOrderHeaders
+            var headers = await _context.SalesOrderHeaders
                 .AsNoTracking()
-                .Where(h => h.CustomerID == customerId);
+                .Where(h => h.CustomerID == customerId)
+                .Select(h => MapToDto(h)).ToListAsync(); ;
 
-            var headers = await query.Select(h => MapToDto(h)).ToListAsync();
+            if (headers == null || headers.Count == 0) return Result<IEnumerable<SalesOrderHeaderDto>>.Failure("Headers not found.");
+
             return Result<IEnumerable<SalesOrderHeaderDto>>.Success(headers);
         }
 
