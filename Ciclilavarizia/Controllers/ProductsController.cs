@@ -1,9 +1,6 @@
 ﻿using Ciclilavarizia.Filters;
-using Ciclilavarizia.Models;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services.Interfaces;
-using Humanizer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ciclilavarizia.Controllers

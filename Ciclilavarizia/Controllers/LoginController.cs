@@ -1,9 +1,6 @@
 ﻿using Ciclilavarizia.Models.Dtos;
-using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
-using DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 
 namespace Ciclilavarizia.Controllers
@@ -12,15 +9,10 @@ namespace Ciclilavarizia.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly SecureDbService _secureDb;
-        private readonly IOptionsMonitor<JwtSettings> _jwtSettingsMonitor;
         private readonly LoginService _loginService;
 
-
-        public LoginController(SecureDbService secureDb, IOptionsMonitor<JwtSettings> jwtSettingsMonitor, LoginService loginService)
+        public LoginController(LoginService loginService)
         {
-            _secureDb = secureDb;
-            _jwtSettingsMonitor = jwtSettingsMonitor;
             _loginService = loginService;
         }
 
