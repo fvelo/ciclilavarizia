@@ -17,6 +17,14 @@ namespace Ciclilavarizia.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Retrieves the binary thumbnail image for a specific product.
+        /// </summary>
+        /// <param name="id">The product ID.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+        /// <returns>A file stream containing the JPEG image.</returns>
+        /// <response code="200">Returns the product thumbnail image.</response>
+        /// <response code="404">If the product or its image is not found.</response>
         [HttpGet("product/{id}")]
         [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> GetProductThumbnail(int id, CancellationToken cancellationToken)

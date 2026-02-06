@@ -21,6 +21,13 @@ namespace Ciclilavarizia.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Retrieves a summary list of all products in the catalog.
+        /// </summary>
+        /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+        /// <returns>A list of summarized product details.</returns>
+        /// <response code="200">Returns the list of product summaries.</response>
+        /// <response code="400">If the retrieval operation fails.</response>
         // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<List<ProductSummaryDto>>> GetProducts(CancellationToken cancellationToken)
@@ -32,6 +39,14 @@ namespace Ciclilavarizia.Controllers
                 : BadRequest(result.ErrorMessage);
         }
 
+        /// <summary>
+        /// Retrieves full details for a single product.
+        /// </summary>
+        /// <param name="id">The unique ID of the product.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+        /// <returns>The detailed product information.</returns>
+        /// <response code="200">Returns the requested product details.</response>
+        /// <response code="404">If the product does not exist.</response>
         // GET: api/Products/5
         [HttpGet("{id}")]
         [EnsureProductExists(IdParameterName = "id")]
@@ -44,6 +59,14 @@ namespace Ciclilavarizia.Controllers
                 : NotFound(result.ErrorMessage);
         }
 
+        /// <summary>
+        /// Adds a new product to the catalog.
+        /// </summary>
+        /// <param name="productDto">The product information to create.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+        /// <returns>The ID of the newly created product.</returns>
+        /// <response code="201">Returns the ID of the created product.</response>
+        /// <response code="400">If the product data is invalid.</response>
         // POST: api/Products
         [HttpPost]
         //[Authorize("AdminPolicy")]
@@ -58,6 +81,14 @@ namespace Ciclilavarizia.Controllers
             //return CreatedAtAction(nameof(GetProductById), new { id = result.Value }, result.Value);
         }
 
+        /// <summary>
+        /// Updates an existing product's information.
+        /// </summary>
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="productDto">The updated product data.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+        /// <response code="204">Product was successfully updated.</response>
+        /// <response code="400">If update logic fails or validation errors occur.</response>
         // PUT: api/Products/5
         [HttpPut("{id}")]
         //[Authorize("AdminPolicy")]
@@ -71,6 +102,13 @@ namespace Ciclilavarizia.Controllers
                 : BadRequest(result.ErrorMessage);
         }
 
+        /// <summary>
+        /// Deletes a product from the catalog.
+        /// </summary>
+        /// <param name="id">The ID of the product to remove.</param>
+        /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
+        /// <response code="204">Product was successfully deleted.</response>
+        /// <response code="400">If deletion is prohibited (e.g., product linked to existing orders).</response>
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
         //[Authorize("AdminPolicy")]

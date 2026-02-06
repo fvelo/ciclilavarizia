@@ -15,6 +15,12 @@ namespace Ciclilavarizia.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Retrieves all sales order headers in the system.
+        /// </summary>
+        /// <returns>A list of sales order headers.</returns>
+        /// <response code="200">Returns the list of orders.</response>
+        /// <response code="404">If no orders are found.</response>
         [HttpGet]
         public async Task<ActionResult<List<SalesOrderHeaderDto>>> GetAllHeaders()
         {
@@ -24,6 +30,13 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
+        /// <summary>
+        /// Retrieves all orders belonging to a specific customer.
+        /// </summary>
+        /// <param name="customerId">The customer's unique identifier.</param>
+        /// <returns>A list of sales orders for the customer.</returns>
+        /// <response code="200">Returns the customer's orders.</response>
+        /// <response code="404">If no orders are found for this customer.</response>
         // GET: api/SalesOrderHeader/50123
         [HttpGet("{customerId}")]
         public async Task<ActionResult<SalesOrderHeaderDto>> GetMyHeaders(int customerId)
@@ -34,6 +47,13 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
+        /// <summary>
+        /// Retrieves a specific sales order by its unique ID.
+        /// </summary>
+        /// <param name="salesOrderId">The ID of the sales order header.</param>
+        /// <returns>The requested sales order header details.</returns>
+        /// <response code="200">Returns the requested order.</response>
+        /// <response code="404">If the order header does not exist.</response>
         [HttpGet("single/{salesOrderId}")]
         public async Task<ActionResult<SalesOrderHeaderDto>> GetHeader(int salesOrderId)
         {
@@ -43,7 +63,13 @@ namespace Ciclilavarizia.Controllers
             return Ok(result.Value);
         }
 
-        // TODO: this does not work, make it work
+        /// <summary>
+        /// Submits a new sales order with multiple line items.
+        /// </summary>
+        /// <param name="command">The order details and item list.</param>
+        /// <returns>The ID of the newly created order.</returns>
+        /// <response code="201">Order created successfully; returns the order ID.</response>
+        /// <response code="400">If the order data is invalid or calculations fail.</response>
         [HttpPost]
         public async Task<ActionResult<int>> CreateOrder([FromBody] SalesOrderHeaderCommandDto command)
         {
@@ -54,6 +80,12 @@ namespace Ciclilavarizia.Controllers
             return CreatedAtAction(nameof(GetMyHeaders), new { customerId = result.Value }, result.Value);
         }
 
+        /// <summary>
+        /// Removes an existing sales order header.
+        /// </summary>
+        /// <param name="orderHeaderId">The unique ID of the order header to delete.</param>
+        /// <response code="204">The order was successfully removed.</response>
+        /// <response code="404">If the order header was not found.</response>
         [HttpDelete("{orderHeaderId}")]
         public async Task<IActionResult> DeleteOrder(int orderHeaderId)
         {
@@ -61,6 +93,13 @@ namespace Ciclilavarizia.Controllers
             return result.IsSuccess ? NoContent() : NotFound(result.ErrorMessage);
         }
 
+        /// <summary>
+        /// Performs a full update of an existing order and its associated details.
+        /// </summary>
+        /// <param name="command">The updated order structure.</param>
+        /// <returns>The ID of the updated order.</returns>
+        /// <response code="200">Order successfully updated.</response>
+        /// <response code="400">If business rules prevent the update.</response>
         [HttpPut]
         public async Task<IActionResult> UpdateOrder(SalesOrderHeaderCommandDto command)
         {

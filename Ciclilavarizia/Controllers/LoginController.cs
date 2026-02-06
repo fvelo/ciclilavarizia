@@ -3,7 +3,6 @@ using Ciclilavarizia.Models.Settings;
 using Ciclilavarizia.Services;
 using DataAccessLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Options;
 
 
@@ -25,15 +24,23 @@ namespace Ciclilavarizia.Controllers
             _loginService = loginService;
         }
 
+        /// <summary>
+        /// Authenticates a user and generates a JWT access token.
+        /// </summary>
+        /// <param name="credentials">The user's email and password.</param>
+        /// <returns>A JSON object containing the Bearer token.</returns>
+        /// <response code="200">Authentication successful; returns the token.</response>
+        /// <response code="400">If the request payload is malformed.</response>
+        /// <response code="401">If the email or password is incorrect.</response>
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] CredentialDto credentials)
+        public async Task<IActionResult> Login(CredentialDto credentials)
         {
             if (credentials == null || string.IsNullOrEmpty(credentials.EmailAddress))
                 return BadRequest("Credentials required.");
 
             var userResult = await _loginService.ValidateUserAsync(credentials);
 
-            if(!userResult.IsSuccess) return BadRequest(userResult.ErrorMessage);
+            if (!userResult.IsSuccess) return BadRequest(userResult.ErrorMessage);
 
             var user = userResult.Value;
 
@@ -47,25 +54,5 @@ namespace Ciclilavarizia.Controllers
 
             return Ok(new { Token = token });
         }
-
-        //[HttpPost]
-        //public async Task<IActionResult> IsRegistered([FromBody] CredentialDto credentials)
-        //{
-        //    if (credentials == null) return BadRequest();
-        //    string email = credentials.EmailAddress;
-        //    string plainPassword = credentials.PlainPassword; // da capire come fare
-
-        //    email = email ?? string.Empty;
-        //    email = email.ToLower().Replace(" ", "");
-        //    bool isThereAUSer = await _secureDb.DoesCredentialExistsByEmail(email);
-        //    if (!isThereAUSer) return NotFound();
-        //    var role = "user";
-
-        //    var customerId = await _secureDb.GetCustomerIdByEmailAddressAsync(email);
-        //    if (customerId == null) return BadRequest();
-
-        //    var jwtToken = _loginService.GenerateJwtTokenAsync(credentials, role.ToLower(), (int)customerId);
-        //    return Ok(new { token = jwtToken });
-        //}
     }
 }
