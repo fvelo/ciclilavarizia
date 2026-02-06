@@ -1,5 +1,6 @@
 ﻿using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -20,6 +21,7 @@ public class CartsController : ControllerBase
     /// <returns>A list of cart data transfer objects.</returns>
     /// <response code="200">Returns the list of carts.</response>
     [HttpGet]
+    [Authorize("AdminPolicy")]
     public async Task<ActionResult<List<MdbCartDto>>> GetCarts(CancellationToken cancellationToken = default)
     {
         var result = await _cartService.GetCartsAsync(cancellationToken);

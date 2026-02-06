@@ -1,6 +1,7 @@
 ﻿using Ciclilavarizia.Filters;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ciclilavarizia.Controllers
@@ -21,9 +22,10 @@ namespace Ciclilavarizia.Controllers
         /// </summary>
         /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
         /// <response code="200">The customers were successfully found.</response>
+        /// <response code="401">The user is not authorized.</response>
         /// <response code="500">There was an internal server error processing the request.</response>
         [HttpGet]
-        //[Authorize("AdminPolicy")]
+        [Authorize("AdminPolicy")]
         public async Task<ActionResult<IEnumerable<CustomerSummaryDto>>> GetCustomersAsync(CancellationToken cancellationToken)
         {
             var result = await _customersService.GetCustomersSummaryAsync(cancellationToken);
@@ -38,11 +40,12 @@ namespace Ciclilavarizia.Controllers
         /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
         /// <returns>The details of the searched customer.</returns>
         /// <response code="200">The customer was successfully found.</response>
+        /// <response code="401">The user is not authorized.</response>
         /// <response code="400">The input data is invalid or fails business rules.</response>
         /// <response code="404">No customer was found with the provided ID.</response>
         /// <response code="500">There was an internal server error processing the request.</response>
         [HttpGet("{customerId}")]
-        //[Authorize("UserPolicy")]
+        [Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "customerId")]
         public async Task<ActionResult<CustomerDetailDto>> GetCustomerAsync(int customerId, CancellationToken cancellationToken)
         {
@@ -81,10 +84,11 @@ namespace Ciclilavarizia.Controllers
         /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
         /// <returns>The ID of the deleted customer upon success.</returns>
         /// <response code="200">The customer was successfully deleted.</response>
+        /// <response code="401">The user is not authorized.</response>
         /// <response code="404">No customer was found with the provided ID.</response>
         /// <response code="500">An error occurred during the deletion process.</response>
         [HttpDelete("{id}")]
-        //[Authorize("UserPolicy")]
+        [Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteCustomer(int id, CancellationToken cancellationToken)
         {
@@ -108,8 +112,9 @@ namespace Ciclilavarizia.Controllers
         /// <returns>The ID of the updated customer.</returns>
         /// <response code="200">The profile was updated successfully.</response>
         /// <response code="400">IDs do not match or the update failed validation.</response>
+        /// <response code="401">The user is not authorized.</response>
         [HttpPut("{id}")]
-        //[Authorize("UserPolicy")]
+        [Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerAsync(int id, CustomerDetailDto incomingCustomer, CancellationToken cancellationToken)
         {
@@ -134,8 +139,9 @@ namespace Ciclilavarizia.Controllers
         /// <returns>The ID of the customer whose password was updated.</returns>
         /// <response code="200">The password has been reset successfully.</response>
         /// <response code="400">The password does not meet security requirements or update failed.</response>
+        /// <response code="401">The user is not authorized.</response>
         [HttpPut("password/{id}")]
-        //[Authorize("UserPolicy")]
+        [Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerPasswordAsync(int id, [FromBody] PutPasswordDto newPlainPassword, CancellationToken cancellationToken)
         {
@@ -157,8 +163,9 @@ namespace Ciclilavarizia.Controllers
         /// <returns>The ID of the customer whose email was updated.</returns>
         /// <response code="200">The email address was updated successfully.</response>
         /// <response code="400">The email is already in use or is incorrectly formatted.</response>
+        /// <response code="401">The user is not authorized.</response>
         [HttpPut("email/{id}/{newEmail}")]
-        //[Authorize("UserPolicy")]
+        [Authorize("UserPolicy")]
         [EnsureCustomerExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateCustomerEmailAsync(int id, string newEmail, CancellationToken cancellationToken)
         {

@@ -1,6 +1,7 @@
 ﻿using Ciclilavarizia.Filters;
 using Ciclilavarizia.Models.Dtos;
 using Ciclilavarizia.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ciclilavarizia.Controllers
@@ -10,12 +11,10 @@ namespace Ciclilavarizia.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductsService _productsService;
-        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(IProductsService productsService, ILogger<ProductsController> logger)
+        public ProductsController(IProductsService productsService)
         {
             _productsService = productsService;
-            _logger = logger;
         }
 
         /// <summary>
@@ -64,9 +63,10 @@ namespace Ciclilavarizia.Controllers
         /// <returns>The ID of the newly created product.</returns>
         /// <response code="201">Returns the ID of the created product.</response>
         /// <response code="400">If the product data is invalid.</response>
+        /// <response code="401">The user is not authorized.</response>
         // POST: api/Products
         [HttpPost]
-        //[Authorize("AdminPolicy")]
+        [Authorize("AdminPolicy")]
         public async Task<ActionResult<int>> CreateProduct(ProductDto productDto, CancellationToken cancellationToken)
         {
             var result = await _productsService.AddProductAsync(productDto, cancellationToken);
@@ -86,9 +86,10 @@ namespace Ciclilavarizia.Controllers
         /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
         /// <response code="204">Product was successfully updated.</response>
         /// <response code="400">If update logic fails or validation errors occur.</response>
+        /// <response code="401">The user is not authorized.</response>
         // PUT: api/Products/5
         [HttpPut("{id}")]
-        //[Authorize("AdminPolicy")]
+        [Authorize("AdminPolicy")]
         [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> UpdateProduct(int id, ProductDto productDto, CancellationToken cancellationToken)
         {
@@ -106,9 +107,10 @@ namespace Ciclilavarizia.Controllers
         /// <param name="cancellationToken">Propagates notification that operations should be cancelled.</param>
         /// <response code="204">Product was successfully deleted.</response>
         /// <response code="400">If deletion is prohibited (e.g., product linked to existing orders).</response>
+        /// <response code="401">The user is not authorized.</response>
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        //[Authorize("AdminPolicy")]
+        [Authorize("AdminPolicy")]
         [EnsureProductExists(IdParameterName = "id")]
         public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
         {
