@@ -8,6 +8,7 @@ using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using System.Reflection;
 
 namespace Ciclilavarizia
 {
@@ -34,8 +35,14 @@ namespace Ciclilavarizia
                 o.AppendTrailingSlash = true;
             });
 
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(opts =>
+            {
+                var file = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                opts.IncludeXmlComments(
+                Path.Combine(AppContext.BaseDirectory, file));
+            });
 
             // bind IOptions
             builder.Services.Configure<JwtSettings>(
